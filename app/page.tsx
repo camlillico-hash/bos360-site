@@ -155,7 +155,9 @@ className="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-slate-900 tr
 cam@camlillico.com
 </a>
 <a
-href="#"
+href="https://calendar.app.google/M4pokXD8CBpc1c4U6"
+target="_blank"
+rel="noopener noreferrer"
 className="rounded-xl border border-slate-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
 >
 Book a Discovery Call
