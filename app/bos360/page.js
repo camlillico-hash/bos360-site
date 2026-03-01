@@ -198,16 +198,21 @@ export default function Bos360Page() {
               <span aria-hidden className="text-cyan-300">👤</span>
               About Cam Lillico
             </h2>
-            <p className="mt-5 text-slate-300">
-              Cam is a certified BOS360 facilitator and seasoned revenue leader who helps
-              CEOs and leadership teams turn vision into disciplined execution. With nearly
-              a decade of hands-on experience running annual and quarterly planning sessions,
-              he combines structured frameworks with calm, unbiased facilitation to drive
-              clarity, accountability, and momentum. Cam doesn’t act as a consultant telling
-              teams what to do — he creates the space for honest dialogue, healthy debate,
-              and aligned decision-making. His focus is simple: build strong teams, sharpen
-              strategy, and ensure execution matches ambition.
-            </p>
+            <div className="mt-5 space-y-4 text-slate-300">
+              <p>
+                Cam is a certified BOS360 facilitator and seasoned revenue leader who helps
+                CEOs and leadership teams turn vision into disciplined execution. With nearly
+                a decade of hands-on experience running annual and quarterly planning sessions,
+                he combines structured frameworks with calm, unbiased facilitation to drive
+                clarity, accountability, and momentum.
+              </p>
+              <p>
+                Cam doesn’t act as a consultant telling teams what to do — he creates the
+                space for honest dialogue, healthy debate, and aligned decision-making. His
+                focus is simple: build strong teams, sharpen strategy, and ensure execution
+                matches ambition.
+              </p>
+            </div>
           </div>
 
           <div className="rounded-2xl border border-slate-800 bg-slate-900 p-8">
