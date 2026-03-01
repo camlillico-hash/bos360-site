@@ -49,7 +49,7 @@ export default function Home() {
 
         <div className="mt-7 overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/50 shadow-2xl shadow-black/30">
           <img
-            src="/philosophy-hero.jpg"
+            src="/hero-variants/philosophy-hero-v2a.jpg"
             alt="Abstract philosophical visual: shadow, light, and tension"
             className="h-44 w-full object-cover opacity-90 md:h-64"
             loading="eager"
