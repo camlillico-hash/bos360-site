@@ -150,7 +150,7 @@ export default function Bos360Page() {
                 <p className="text-sm font-semibold uppercase tracking-wider text-blue-300">
                   Step {i + 1}
                 </p>
-                <h3 className="mt-2 text-lg font-semibold text-slate-100">{step.title}</h3>
+                <h3 className="mt-2 text-xl font-semibold text-slate-100 md:text-2xl">{step.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-300">{step.text}</p>
               </li>
             ))}
