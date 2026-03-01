@@ -192,12 +192,14 @@ export default function Bos360Page() {
           <blockquote className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-6 italic text-slate-100">
             “Cam helped us get brutally clear on priorities and gave our leadership team a practical operating cadence we could actually sustain. Execution quality improved almost immediately.”
             <div className="mt-4 space-y-3 not-italic">
-              <img
-                src="/logos/kira-talent.png"
-                alt="Kira Talent logo"
-                className="h-7 w-auto opacity-95"
-                loading="lazy"
-              />
+              <div className="inline-flex min-h-14 items-center rounded-xl border border-white/15 bg-white px-4 py-2 shadow-lg shadow-black/25 ring-1 ring-cyan-200/10">
+                <img
+                  src="/logos/kira-talent.png"
+                  alt="Kira Talent logo"
+                  className="h-6 w-auto object-contain"
+                  loading="lazy"
+                />
+              </div>
               <span className="block font-semibold text-cyan-200">
                 — Emilie Cushman, CEO at Kira Talent
               </span>
@@ -207,12 +209,14 @@ export default function Bos360Page() {
           <blockquote className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-6 italic text-slate-100">
             “What stood out was the balance of strategy and accountability. Cam challenged our assumptions, tightened ownership, and helped us move from busy to effective.”
             <div className="mt-4 space-y-3 not-italic">
-              <img
-                src="/logos/ctc-communications.png"
-                alt="CTC Communications logo"
-                className="h-7 w-auto opacity-95"
-                loading="lazy"
-              />
+              <div className="inline-flex min-h-14 items-center rounded-xl border border-white/15 bg-white px-4 py-2 shadow-lg shadow-black/25 ring-1 ring-cyan-200/10">
+                <img
+                  src="/logos/ctc-communications.png"
+                  alt="CTC Communications logo"
+                  className="h-6 w-auto object-contain"
+                  loading="lazy"
+                />
+              </div>
               <span className="block font-semibold text-cyan-200">
                 — Brennan Smith, CEO at CTC Communications
               </span>
@@ -222,12 +226,14 @@ export default function Bos360Page() {
           <blockquote className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-6 italic text-slate-100">
             “Cam brought structure without bureaucracy. We left each session with clear decisions, named owners, and real momentum—exactly what we needed at our stage.”
             <div className="mt-4 space-y-3 not-italic">
-              <img
-                src="/logos/autohost.png"
-                alt="Autohost logo"
-                className="h-7 w-auto opacity-95"
-                loading="lazy"
-              />
+              <div className="inline-flex min-h-14 items-center rounded-xl border border-white/15 bg-white px-4 py-2 shadow-lg shadow-black/25 ring-1 ring-cyan-200/10">
+                <img
+                  src="/logos/autohost.png"
+                  alt="Autohost logo"
+                  className="h-6 w-auto object-contain"
+                  loading="lazy"
+                />
+              </div>
               <span className="block font-semibold text-cyan-200">
                 — Roy Firestein, CEO at Autohost
               </span>
