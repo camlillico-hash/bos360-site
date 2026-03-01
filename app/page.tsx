@@ -41,10 +41,20 @@ export default function Home() {
 
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-6 pb-14 pt-24 md:pt-32">
-        <p className="inline-flex items-center gap-2 rounded-full border border-slate-700/80 bg-slate-900/70 px-4 py-1 text-xs uppercase tracking-[0.2em] text-slate-300 backdrop-blur">
+        <p className="inline-flex w-fit max-w-full items-center gap-1.5 whitespace-nowrap rounded-full border border-slate-700/80 bg-slate-900/70 px-3 py-1 text-[10px] uppercase tracking-[0.14em] text-slate-300 backdrop-blur sm:gap-2 sm:px-4 sm:text-xs sm:tracking-[0.2em]">
           <span aria-hidden>✶</span> Philosophy • Friction • Forward Motion
         </p>
 
+
+
+        <div className="mt-7 overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/50 shadow-2xl shadow-black/30">
+          <img
+            src="/philosophy-hero.jpg"
+            alt="Abstract philosophical visual: shadow, light, and tension"
+            className="h-44 w-full object-cover opacity-90 md:h-64"
+            loading="eager"
+          />
+        </div>
         <h1 className="mt-7 max-w-5xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
           Between Schopenhauer’s shadow and Nietzsche’s fire.
         </h1>
