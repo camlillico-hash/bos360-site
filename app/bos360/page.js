@@ -99,7 +99,7 @@ export default function Bos360Page() {
             href="https://calendar.app.google/M4pokXD8CBpc1c4U6"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-xl bg-gradient-to-r from-orange-100 via-[#ed7d31] to-orange-700 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:opacity-90"
+            className="rounded-xl bg-gradient-to-r from-orange-300 via-[#ed7d31] to-orange-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:opacity-90"
           >
             Book a Discovery Call
           </a>
@@ -293,7 +293,7 @@ export default function Bos360Page() {
                 href="https://calendar.app.google/M4pokXD8CBpc1c4U6"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-lg bg-gradient-to-r from-orange-100 via-[#ed7d31] to-orange-700 px-4 py-2 text-sm font-semibold text-slate-950 hover:opacity-90"
+                className="rounded-lg bg-gradient-to-r from-orange-300 via-[#ed7d31] to-orange-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:opacity-90"
               >
                 Book a Discovery Call
               </a>
