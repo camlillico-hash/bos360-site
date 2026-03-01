@@ -191,23 +191,47 @@ export default function Bos360Page() {
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           <blockquote className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-6 italic text-slate-100">
             “Cam helped us get brutally clear on priorities and gave our leadership team a practical operating cadence we could actually sustain. Execution quality improved almost immediately.”
-            <span className="mt-3 block not-italic font-semibold text-cyan-200">
-              — Emilie Cushman, CEO at Kira Talent
-            </span>
+            <div className="mt-4 space-y-3 not-italic">
+              <img
+                src="/logos/kira-talent.png"
+                alt="Kira Talent logo"
+                className="h-7 w-auto opacity-95"
+                loading="lazy"
+              />
+              <span className="block font-semibold text-cyan-200">
+                — Emilie Cushman, CEO at Kira Talent
+              </span>
+            </div>
           </blockquote>
 
           <blockquote className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-6 italic text-slate-100">
             “What stood out was the balance of strategy and accountability. Cam challenged our assumptions, tightened ownership, and helped us move from busy to effective.”
-            <span className="mt-3 block not-italic font-semibold text-cyan-200">
-              — Brennan Smith, CEO at CTC Communications
-            </span>
+            <div className="mt-4 space-y-3 not-italic">
+              <img
+                src="/logos/ctc-communications.png"
+                alt="CTC Communications logo"
+                className="h-7 w-auto opacity-95"
+                loading="lazy"
+              />
+              <span className="block font-semibold text-cyan-200">
+                — Brennan Smith, CEO at CTC Communications
+              </span>
+            </div>
           </blockquote>
 
           <blockquote className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-6 italic text-slate-100">
             “Cam brought structure without bureaucracy. We left each session with clear decisions, named owners, and real momentum—exactly what we needed at our stage.”
-            <span className="mt-3 block not-italic font-semibold text-cyan-200">
-              — Roy Firestein, CEO at Autohost
-            </span>
+            <div className="mt-4 space-y-3 not-italic">
+              <img
+                src="/logos/autohost.png"
+                alt="Autohost logo"
+                className="h-7 w-auto opacity-95"
+                loading="lazy"
+              />
+              <span className="block font-semibold text-cyan-200">
+                — Roy Firestein, CEO at Autohost
+              </span>
+            </div>
           </blockquote>
         </div>
       </section>
