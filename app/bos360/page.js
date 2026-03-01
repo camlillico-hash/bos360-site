@@ -22,11 +22,30 @@ const pillars = [
 ];
 
 const process = [
-  "Assess your current business reality",
-  "Align on 90-day outcomes and priorities",
-  "Build a focused execution plan",
-  "Install accountability rhythms",
-  "Review, refine, and scale what works",
+  {
+    title: "Clarify the Vision",
+    text: "Define a clear 3-Year and 1-Year direction with measurable targets. Align the leadership team around purpose, priorities, and what success actually looks like.",
+  },
+  {
+    title: "Strengthen the Team",
+    text: "Build trust, encourage healthy conflict, and ensure the right people are in the right seats. High performance starts with a cohesive leadership team.",
+  },
+  {
+    title: "Pressure-Test the Strategy",
+    text: "Assess strengths, gaps, market trends, and key risks. Refine the strategic plan so it’s focused, differentiated, and executable.",
+  },
+  {
+    title: "Set Quarterly Priorities (Rocks)",
+    text: "Translate strategy into 3–5 critical priorities per quarter. Assign clear ownership and measurable outcomes.",
+  },
+  {
+    title: "Execute with Discipline",
+    text: "Establish a consistent meeting rhythm, track weekly metrics, and tackle issues head-on using structured problem solving.",
+  },
+  {
+    title: "Repeat & Elevate",
+    text: "Every 90 days, recalibrate. Reinforce what’s working, fix what’s not, and raise the standard of clarity, accountability, and performance.",
+  },
 ];
 
 export default function Bos360Page() {
@@ -122,21 +141,24 @@ export default function Bos360Page() {
             <span aria-hidden className="text-cyan-300">⚡</span>
             My BOS360 Coaching Approach
           </h2>
-          <ol className="mt-8 grid gap-4 md:grid-cols-5">
+          <ol className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {process.map((step, i) => (
               <li
-                key={step}
+                key={step.title}
                 className="rounded-2xl border border-slate-800 bg-slate-900 p-5"
               >
-                <p className="text-sm font-semibold uppercase tracking-wider text-blue-300 md:text-xs">
+                <p className="text-sm font-semibold uppercase tracking-wider text-blue-300">
                   Step {i + 1}
                 </p>
-                <p className="mt-2 text-base font-medium leading-relaxed text-slate-200 md:text-sm">
-                  {step}
-                </p>
+                <h3 className="mt-2 text-lg font-semibold text-slate-100">{step.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-300">{step.text}</p>
               </li>
             ))}
           </ol>
+
+          <p className="mt-8 max-w-4xl text-slate-300">
+            BOS360 is a practical operating system for leadership teams who want traction — not theory.
+          </p>
         </div>
       </section>
 
