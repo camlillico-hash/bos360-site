@@ -62,12 +62,20 @@ export default function Bos360Page() {
           to scale with clarity, execution, and accountability.
         </h1>
 
-        <p className="mt-6 max-w-3xl text-lg text-slate-300">
-          I partner with founders and leadership teams to align priorities, build
-          execution discipline, and create measurable momentum—without adding chaos.
-        </p>
+        <div className="mt-6 flex max-w-4xl items-center gap-4 md:gap-5">
+          <p className="text-lg text-slate-300">
+            I partner with founders and leadership teams to align priorities, build
+            execution discipline, and create measurable momentum—without adding chaos.
+          </p>
+          <img
+            src="/cam-headshot-circle.png"
+            alt="Cam Lillico headshot"
+            className="h-16 w-16 shrink-0 rounded-full border border-cyan-300/40 object-cover shadow-lg shadow-cyan-900/30 md:h-20 md:w-20"
+            loading="eager"
+          />
+        </div>
 
-        <div className="mt-10 flex flex-wrap gap-4">
+        <div className="mt-8 flex flex-wrap gap-4">
           <a
             href="https://calendar.app.google/M4pokXD8CBpc1c4U6"
             target="_blank"
