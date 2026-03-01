@@ -25,6 +25,14 @@ const dynamicPoints = [
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#06090f] text-slate-100">
+      <a
+        href="/bos360"
+        aria-label="Navigate to BOS360"
+        title="BOS360"
+        className="fixed bottom-3 right-3 z-20 text-[10px] tracking-[0.25em] uppercase text-slate-500/35 transition hover:text-cyan-300/70"
+      >
+        ◌
+      </a>
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-violet-500/20 blur-3xl" />
         <div className="absolute top-1/4 -right-20 h-96 w-96 rounded-full bg-cyan-400/15 blur-3xl" />

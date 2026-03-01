@@ -29,6 +29,15 @@ const process = [
 export default function Bos360Page() {
 return (
 <main className="min-h-screen bg-slate-950 text-slate-100">
+<a
+href="/"
+aria-label="Navigate to philosophy page"
+title="Philosophy"
+className="fixed bottom-3 right-3 z-20 text-[10px] tracking-[0.25em] uppercase text-slate-500/35 transition hover:text-cyan-300/70"
+>
+◌
+</a>
+
 {/* Background glow accents */}
 <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
 <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
