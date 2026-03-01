@@ -63,16 +63,16 @@ export default function Bos360Page() {
         </h1>
 
         <div className="mt-6 flex max-w-4xl items-center gap-4 md:gap-5">
-          <p className="text-lg text-slate-300">
-            I partner with founders and leadership teams to align priorities, build
-            execution discipline, and create measurable momentum—without adding chaos.
-          </p>
           <img
             src="/cam-headshot-circle.png"
             alt="Cam Lillico headshot"
             className="h-16 w-16 shrink-0 rounded-full border border-cyan-300/40 object-cover shadow-lg shadow-cyan-900/30 md:h-20 md:w-20"
             loading="eager"
           />
+          <p className="text-lg text-slate-300">
+            I partner with founders and leadership teams to align priorities, build
+            execution discipline, and create measurable momentum—without adding chaos.
+          </p>
         </div>
 
         <div className="mt-8 flex flex-wrap gap-4">
@@ -199,10 +199,14 @@ export default function Bos360Page() {
               About Cam Lillico
             </h2>
             <p className="mt-5 text-slate-300">
-              I’m a BOS360 business coach helping B2B SaaS founders and leadership teams
-              scale with intention. My coaching style is direct, practical, and rooted in
-              real-world operating experience—so your team gains clarity, executes faster,
-              and drives meaningful results.
+              Cam is a certified BOS360 facilitator and seasoned revenue leader who helps
+              CEOs and leadership teams turn vision into disciplined execution. With nearly
+              a decade of hands-on experience running annual and quarterly planning sessions,
+              he combines structured frameworks with calm, unbiased facilitation to drive
+              clarity, accountability, and momentum. Cam doesn’t act as a consultant telling
+              teams what to do — he creates the space for honest dialogue, healthy debate,
+              and aligned decision-making. His focus is simple: build strong teams, sharpen
+              strategy, and ensure execution matches ambition.
             </p>
           </div>
 
