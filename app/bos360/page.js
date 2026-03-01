@@ -156,9 +156,15 @@ export default function Bos360Page() {
             ))}
           </ol>
 
-          <p className="mt-8 max-w-4xl text-slate-300">
-            BOS360 is a practical operating system for leadership teams who want traction — not theory.
-          </p>
+          <div className="mt-8 max-w-4xl rounded-2xl border border-cyan-300/25 bg-gradient-to-r from-cyan-400/10 via-blue-400/5 to-transparent p-5 shadow-lg shadow-cyan-900/20">
+            <p className="text-base font-medium leading-relaxed text-slate-100 md:text-lg">
+              <span className="mr-2 text-cyan-300">◉</span>
+              BOS360 is a practical operating system for leadership teams who want
+              <span className="font-semibold text-cyan-200"> traction</span>
+              <span className="text-slate-400"> — not </span>
+              <span className="font-semibold text-cyan-200">theory</span>.
+            </p>
+          </div>
         </div>
       </section>
 
