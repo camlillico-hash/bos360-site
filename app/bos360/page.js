@@ -48,14 +48,14 @@ export default function Bos360Page() {
       </div>
 
       {/* HERO */}
-      <section className="mx-auto max-w-6xl px-6 pb-16 pt-24 md:pt-32">
+      <section className="mx-auto max-w-6xl px-6 pb-8 pt-24 md:pb-10 md:pt-32">
         <p className="inline-flex items-center gap-2 rounded-full border border-blue-400/40 bg-blue-500/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-blue-200">
           <span aria-hidden>◉</span>
           BOS360 Business Coaching
         </p>
 
         <h1 className="mt-6 max-w-5xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
-          I work with B2B SaaS companies at
+          I work with companies at
           <span className="bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
             {" "}$2M to $50M revenue
           </span>{" "}
@@ -86,7 +86,7 @@ export default function Bos360Page() {
       </section>
 
       {/* PILLARS */}
-      <section className="mx-auto max-w-6xl px-6 py-16">
+      <section className="mx-auto max-w-6xl px-6 py-10 md:py-12">
         <h2 className="flex items-center gap-3 text-3xl font-bold md:text-4xl">
           <span aria-hidden className="text-cyan-300">✦</span>
           What I Help You Solve
@@ -158,14 +158,28 @@ export default function Bos360Page() {
           </div>
         </div>
 
-        <blockquote className="mt-10 rounded-2xl border border-blue-400/30 bg-blue-500/10 p-6 italic text-slate-100">
-          “Cam brought structure and accountability to our leadership team at the
-          exact moment we needed it. We made better decisions, faster—and executed
-          with way more consistency.”
-          <span className="mt-3 block not-italic font-semibold text-cyan-200">
-            — Client testimonial (add approved quote)
-          </span>
-        </blockquote>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          <blockquote className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-6 italic text-slate-100">
+            “Cam helped us get brutally clear on priorities and gave our leadership team a practical operating cadence we could actually sustain. Execution quality improved almost immediately.”
+            <span className="mt-3 block not-italic font-semibold text-cyan-200">
+              — Emilie Cushman, CEO at Kira Talent
+            </span>
+          </blockquote>
+
+          <blockquote className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-6 italic text-slate-100">
+            “What stood out was the balance of strategy and accountability. Cam challenged our assumptions, tightened ownership, and helped us move from busy to effective.”
+            <span className="mt-3 block not-italic font-semibold text-cyan-200">
+              — Brennan Smith, CEO at CTC Communications
+            </span>
+          </blockquote>
+
+          <blockquote className="rounded-2xl border border-blue-400/30 bg-blue-500/10 p-6 italic text-slate-100">
+            “Cam brought structure without bureaucracy. We left each session with clear decisions, named owners, and real momentum—exactly what we needed at our stage.”
+            <span className="mt-3 block not-italic font-semibold text-cyan-200">
+              — Roy Firestein, CEO at Autohost
+            </span>
+          </blockquote>
+        </div>
       </section>
 
       {/* ABOUT + CTA */}
