@@ -98,7 +98,7 @@ export default function ChessPage() {
             <img
               src="/chess-never-give-up.jpg"
               alt="Humorous chess meme saying never give up, with a pawn casting a queen shadow"
-              className="h-[320px] w-full object-cover md:h-[420px]"
+              className="w-full h-auto object-contain"
               loading="eager"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
