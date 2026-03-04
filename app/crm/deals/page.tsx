@@ -8,6 +8,7 @@ export default function DealsPage() {
   const [deals, setDeals] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
   const [form, setForm] = useState<any>({ stage: STAGES[0] });
+  const [error, setError] = useState("");
 
   const load = async () => {
     const d = await (await fetch('/api/crm/deals', { cache: 'no-store' })).json();
@@ -22,9 +23,9 @@ export default function DealsPage() {
       <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
         <h2 className="font-semibold">Add deal</h2>
         <div className="mt-2 grid gap-2 md:grid-cols-3">
-          <input placeholder="Deal name" className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <input placeholder="Deal name *" className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5" value={form.name || ''} onChange={(e) => setForm({ ...form, name: e.target.value })} />
           <select className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5" value={form.contactId || ''} onChange={(e) => setForm({ ...form, contactId: e.target.value })}>
-            <option value="">No contact linked</option>
+            <option value="">Select linked contact *</option>
             {contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName} {c.email ? `(${c.email})` : ''}</option>)}
           </select>
           <select className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5" value={form.stage || STAGES[0]} onChange={(e) => setForm({ ...form, stage: e.target.value })}>
@@ -35,7 +36,13 @@ export default function DealsPage() {
           <input type="date" className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5" value={form.expectedCloseDate || ''} onChange={(e) => setForm({ ...form, expectedCloseDate: e.target.value })} />
         </div>
         <input placeholder="Next step" className="mt-2 w-full rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5" value={form.nextStep || ''} onChange={(e) => setForm({ ...form, nextStep: e.target.value })} />
-        <button className="mt-2 rounded bg-[#036734] px-3 py-1.5" onClick={async () => { await fetch('/api/crm/deals', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(form) }); setForm({ stage: STAGES[0] }); load(); }}>Save deal</button>
+        {error && <p className="mt-2 text-sm text-red-300">{error}</p>}
+        <button className="mt-2 rounded bg-[#036734] px-3 py-1.5" onClick={async () => {
+          setError("");
+          const res = await fetch('/api/crm/deals', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(form) });
+          if (!res.ok) { const j = await res.json().catch(() => ({})); setError(j.error || "Could not save deal"); return; }
+          setForm({ stage: STAGES[0] }); load();
+        }}>Save deal</button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

@@ -9,6 +9,7 @@ export default function ContactsPage() {
   const [query, setQuery] = useState("");
   const [form, setForm] = useState<any>({});
   const [gmail, setGmail] = useState<any[]>([]);
+  const [error, setError] = useState("");
 
   const load = async () => {
     setItems(await (await fetch("/api/crm/contacts", { cache: "no-store" })).json());
@@ -28,14 +29,20 @@ export default function ContactsPage() {
             ["firstName", "First name"], ["lastName", "Last name"], ["email", "Email"],
             ["phone", "Phone"], ["company", "Company"], ["title", "Title"], ["leadSource", "Lead source"], ["status", "Status"]
           ].map(([k, label]) => (
-            <input key={k} placeholder={label} className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5"
+            <input key={k} placeholder={label + ((k === "firstName" || k === "lastName") ? " *" : "")} className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5"
               value={form[k] || ""} onChange={(e) => setForm({ ...form, [k]: e.target.value })} />
           ))}
         </div>
         <textarea placeholder="Notes" className="mt-2 w-full rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5"
           value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+        {error && <p className="mt-2 text-sm text-red-300">{error}</p>}
         <button className="mt-2 rounded bg-[#036734] px-3 py-1.5"
-          onClick={async () => { await fetch('/api/crm/contacts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(form) }); setForm({}); load(); }}>
+          onClick={async () => {
+            setError("");
+            const res = await fetch('/api/crm/contacts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(form) });
+            if (!res.ok) { const j = await res.json().catch(() => ({})); setError(j.error || "Could not save contact"); return; }
+            setForm({}); load();
+          }}>
           Save contact
         </button>
       </div>

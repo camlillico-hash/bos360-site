@@ -8,6 +8,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
+  if (!String(body.firstName || "").trim() || !String(body.lastName || "").trim()) {
+    return NextResponse.json({ error: "First name and last name are required" }, { status: 400 });
+  }
   const store = await getStore();
   const record = { id: id(), createdAt: now(), updatedAt: now(), ...body };
   store.contacts.unshift(record);
@@ -17,6 +20,9 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   const body = await req.json();
+  if (!String(body.firstName || "").trim() || !String(body.lastName || "").trim()) {
+    return NextResponse.json({ error: "First name and last name are required" }, { status: 400 });
+  }
   const store = await getStore();
   const idx = store.contacts.findIndex((c) => c.id === body.id);
   if (idx < 0) return NextResponse.json({ error: "Not found" }, { status: 404 });

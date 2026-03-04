@@ -8,6 +8,12 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
+  if (!String(body.name || "").trim()) {
+    return NextResponse.json({ error: "Deal name is required" }, { status: 400 });
+  }
+  if (!String(body.contactId || "").trim()) {
+    return NextResponse.json({ error: "Linked contact is required" }, { status: 400 });
+  }
   const store = await getStore();
   const record = { id: id(), createdAt: now(), updatedAt: now(), stage: DEAL_STAGES[0], ...body };
   store.deals.unshift(record);
@@ -17,6 +23,12 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   const body = await req.json();
+  if (!String(body.name || "").trim()) {
+    return NextResponse.json({ error: "Deal name is required" }, { status: 400 });
+  }
+  if (!String(body.contactId || "").trim()) {
+    return NextResponse.json({ error: "Linked contact is required" }, { status: 400 });
+  }
   const store = await getStore();
   const idx = store.deals.findIndex((d) => d.id === body.id);
   if (idx < 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
