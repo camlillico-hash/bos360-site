@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
 import { getStore, id, now, saveStore } from "@/lib/crm-store";
 
+const TASK_STATUSES = ["Not started", "Complete", "Canceled"] as const;
+
+function normalizeStatus(body: any) {
+  const v = String(body.status || "").trim();
+  if ((TASK_STATUSES as readonly string[]).includes(v)) return v;
+  if (body.done === true) return "Complete";
+  return "Not started";
+}
+
 function validateTaskPayload(body: any, store: any) {
   if (!String(body.title || "").trim()) return "Task title is required";
   if (body.relatedType !== "contact") return "Tasks must be associated to a contact";
@@ -12,7 +21,7 @@ function validateTaskPayload(body: any, store: any) {
 
 export async function GET() {
   const store = await getStore();
-  return NextResponse.json(store.tasks);
+  return NextResponse.json({ tasks: store.tasks, statuses: TASK_STATUSES });
 }
 
 export async function POST(req: Request) {
@@ -21,7 +30,8 @@ export async function POST(req: Request) {
   const error = validateTaskPayload(body, store);
   if (error) return NextResponse.json({ error }, { status: 400 });
 
-  const record = { id: id(), createdAt: now(), updatedAt: now(), done: false, ...body };
+  const status = normalizeStatus(body);
+  const record = { id: id(), createdAt: now(), updatedAt: now(), ...body, status, done: status === "Complete" };
   store.tasks.unshift(record);
   await saveStore(store);
   return NextResponse.json(record);
@@ -36,7 +46,8 @@ export async function PUT(req: Request) {
   const error = validateTaskPayload(body, store);
   if (error) return NextResponse.json({ error }, { status: 400 });
 
-  store.tasks[idx] = { ...store.tasks[idx], ...body, updatedAt: now() };
+  const status = normalizeStatus(body);
+  store.tasks[idx] = { ...store.tasks[idx], ...body, status, done: status === "Complete", updatedAt: now() };
   await saveStore(store);
   return NextResponse.json(store.tasks[idx]);
 }

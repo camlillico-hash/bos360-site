@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CheckSquare, Plus, Save, Check, CornerUpLeft, Trash2, LayoutGrid, List, X, Pencil } from "lucide-react";
+import { CheckSquare, Plus, Save, CornerUpLeft, Trash2, LayoutGrid, List, X, Pencil } from "lucide-react";
 
-type SortBy = "createdAt" | "contact" | "dueDate";
+type SortBy = "createdAt" | "contact" | "dueDate" | "status";
+const TASK_STATUSES = ["Not started", "Complete", "Canceled"];
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -12,16 +13,19 @@ export default function TasksPage() {
   const [view, setView] = useState<"bucket" | "table">("table");
   const [sortBy, setSortBy] = useState<SortBy>("createdAt");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
 
   const [selected, setSelected] = useState<any>(null);
   const [draft, setDraft] = useState<any>(null);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [inlineDraft, setInlineDraft] = useState<any>(null);
 
   const load = async () => {
-    setTasks(await (await fetch('/api/crm/tasks', { cache: 'no-store' })).json());
+    const tasksRes = await (await fetch('/api/crm/tasks', { cache: 'no-store' })).json();
+    setTasks(Array.isArray(tasksRes) ? tasksRes : tasksRes.tasks || []);
     const contactsRes = await (await fetch('/api/crm/contacts', { cache: 'no-store' })).json();
     setContacts(Array.isArray(contactsRes) ? contactsRes : contactsRes.contacts || []);
   };
@@ -38,6 +42,7 @@ export default function TasksPage() {
       let va: any = "", vb: any = "";
       if (sortBy === "createdAt") { va = new Date(a.createdAt || 0).getTime(); vb = new Date(b.createdAt || 0).getTime(); }
       else if (sortBy === "contact") { va = contactName(a.relatedId).toLowerCase(); vb = contactName(b.relatedId).toLowerCase(); }
+      else if (sortBy === "status") { va = a.status || "Not started"; vb = b.status || "Not started"; }
       else { va = a.dueDate || ""; vb = b.dueDate || ""; }
       if (va < vb) return sortDir === "asc" ? -1 : 1;
       if (va > vb) return sortDir === "asc" ? 1 : -1;
@@ -46,8 +51,11 @@ export default function TasksPage() {
     return arr;
   }, [tasks, sortBy, sortDir, contacts]);
 
+  function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ relatedType: "contact", status: "Not started" }); setError(""); }
+  function openTask(t: any) { setSelected(t); setDraft({ ...t, status: t.status || (t.done ? "Complete" : "Not started") }); setCreateMode(false); setEditMode(false); setError(""); }
+  function closeTray() { setSelected(null); setDraft(null); setCreateMode(false); setEditMode(false); setError(""); }
 
-  function startInlineEdit(t: any) { setEditingId(t.id); setInlineDraft({ ...t }); }
+  function startInlineEdit(t: any) { setEditingId(t.id); setInlineDraft({ ...t, status: t.status || (t.done ? "Complete" : "Not started") }); }
   function cancelInlineEdit() { setEditingId(null); setInlineDraft(null); }
   async function saveInlineEdit() {
     if (!inlineDraft) return;
@@ -57,9 +65,16 @@ export default function TasksPage() {
     cancelInlineEdit();
   }
 
-  function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ relatedType: "contact", done: false }); setError(""); }
-  function openTask(t: any) { setSelected(t); setDraft({ ...t }); setCreateMode(false); setEditMode(false); setError(""); }
-  function closeTray() { setSelected(null); setDraft(null); setCreateMode(false); setEditMode(false); setError(""); }
+  async function moveTaskStatus(taskId: string, status: string) {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task || (task.status || "Not started") === status) return;
+    await fetch('/api/crm/tasks', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ...task, status, relatedType: 'contact' }),
+    });
+    await load();
+  }
 
   async function saveTask() {
     if (!draft) return;
@@ -76,7 +91,7 @@ export default function TasksPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-2"><CheckSquare size={20} /> Tasks & Reminders</h1>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-2"><CheckSquare size={20} /> Tasks</h1>
         <div className="flex items-center gap-2">
           <button className="crm-btn inline-flex items-center gap-1.5" onClick={openCreate}><Plus size={14} /> New task record</button>
           <div className="inline-flex rounded-lg border border-neutral-700 p-1">
@@ -87,25 +102,28 @@ export default function TasksPage() {
       </div>
 
       <div className="grid gap-2 md:grid-cols-3">
-        <select className="crm-input" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)}><option value="createdAt">Sort: Created date</option><option value="contact">Sort: Contact</option><option value="dueDate">Sort: Due date</option></select>
+        <select className="crm-input" value={sortBy} onChange={(e) => setSortBy(e.target.value as SortBy)}><option value="createdAt">Sort: Created date</option><option value="contact">Sort: Contact</option><option value="dueDate">Sort: Due date</option><option value="status">Sort: Task status</option></select>
         <select className="crm-input" value={sortDir} onChange={(e) => setSortDir(e.target.value as any)}><option value="desc">Newest / Z-A</option><option value="asc">Oldest / A-Z</option></select>
       </div>
 
       {view === "bucket" ? (
-        <div className="space-y-2">
-          {sorted.map((t) => (
-            <div key={t.id} className="flex items-center justify-between crm-card p-3 cursor-pointer" onClick={() => openTask(t)}>
-              <div>
-                <p className={t.done ? 'line-through text-slate-500' : ''}>{t.title}</p>
-                <p className="text-xs text-emerald-300">Contact: {contactName(t.relatedId)}</p>
-                <p className="text-xs text-slate-400">Due: {t.dueDate || '—'} {t.notes ? `· ${t.notes}` : ''}</p>
+        <div className="overflow-x-auto pb-2">
+          <div className="flex gap-4 min-w-max">
+            {TASK_STATUSES.map((status) => (
+              <div key={status} className="crm-card p-3 w-[320px] shrink-0" onDragOver={(e)=>e.preventDefault()} onDrop={async ()=>{ if(!draggingTaskId) return; await moveTaskStatus(draggingTaskId, status); setDraggingTaskId(null); }}>
+                <h3 className="mb-3 font-semibold text-emerald-300">{status}</h3>
+                <div className="space-y-2 min-h-10">
+                  {sorted.filter((t) => (t.status || (t.done ? "Complete" : "Not started")) === status).map((t) => (
+                    <button key={t.id} draggable onDragStart={() => setDraggingTaskId(t.id)} onDragEnd={() => setDraggingTaskId(null)} className="crm-card w-full p-3 text-left cursor-grab" onClick={() => openTask(t)}>
+                      <p className="font-medium">{t.title}</p>
+                      <p className="text-xs text-emerald-300">Contact: {contactName(t.relatedId)}</p>
+                      <p className="text-xs text-slate-400">Due: {t.dueDate || '—'}</p>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                <button className="crm-btn-ghost text-xs" onClick={async () => { await fetch('/api/crm/tasks', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...t, done: !t.done, relatedType: 'contact' }) }); load(); }}>{t.done ? <span className='inline-flex items-center gap-1'><CornerUpLeft size={13} /> Undo</span> : <span className='inline-flex items-center gap-1'><Check size={13} /> Done</span>}</button>
-                <button className="text-xs text-red-300 inline-flex items-center gap-1" onClick={async () => deleteTask(t.id)}><Trash2 size={13} /> Delete</button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ) : (
         <div className="crm-card overflow-auto">
@@ -114,13 +132,14 @@ export default function TasksPage() {
             <tbody>
               {sorted.map((t) => {
                 const editing = editingId === t.id;
+                const status = t.status || (t.done ? 'Complete' : 'Not started');
                 return (
                   <tr key={t.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
                     <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <input className="crm-input" value={inlineDraft.title || ''} onChange={(e)=>setInlineDraft({...inlineDraft, title:e.target.value})} /> : t.title}</td>
                     <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.relatedId || ''} onChange={(e)=>setInlineDraft({...inlineDraft, relatedId:e.target.value, relatedType:'contact'})}><option value="">Select linked contact *</option>{contacts.map((c)=> <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</select> : contactName(t.relatedId)}</td>
                     <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <input type="date" className="crm-input" value={inlineDraft.dueDate || ''} onChange={(e)=>setInlineDraft({...inlineDraft, dueDate:e.target.value})} /> : (t.dueDate || '—')}</td>
                     <td className="px-3 py-2 text-slate-400">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}</td>
-                    <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.done ? 'done':'open'} onChange={(e)=>setInlineDraft({...inlineDraft, done:e.target.value==='done'})}><option value="open">Open</option><option value="done">Done</option></select> : (t.done ? <span className="text-emerald-300">Done</span> : <span className="text-amber-300">Open</span>)}</td>
+                    <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.status || 'Not started'} onChange={(e)=>setInlineDraft({...inlineDraft, status:e.target.value})}>{TASK_STATUSES.map((s)=> <option key={s} value={s}>{s}</option>)}</select> : <span className={status === 'Complete' ? 'text-emerald-300' : status === 'Canceled' ? 'text-rose-300' : 'text-amber-300'}>{status}</span>}</td>
                     <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" onClick={saveInlineEdit}>Save</button><button className="crm-btn-ghost" onClick={cancelInlineEdit}>Cancel</button></div> : <button className="crm-btn-ghost" onClick={() => openTask(t)}>Open</button>}</td>
                   </tr>
                 );
@@ -142,9 +161,9 @@ export default function TasksPage() {
             <div className="mt-5 space-y-3">
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Task title</label>{(editMode || createMode) ? <input className="crm-input" value={draft.title || ''} onChange={(e) => setDraft({ ...draft, title: e.target.value })} /> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.title || '—'}</p>}</div>
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Linked contact</label>{(editMode || createMode) ? <select className="crm-input" value={draft.relatedId || ''} onChange={(e) => setDraft({ ...draft, relatedId: e.target.value, relatedType: 'contact' })}><option value="">Select linked contact *</option>{contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</select> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{contactName(draft.relatedId)}</p>}</div>
+              <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Task status</label>{(editMode || createMode) ? <select className="crm-input" value={draft.status || 'Not started'} onChange={(e)=>setDraft({...draft, status:e.target.value})}>{TASK_STATUSES.map((s)=> <option key={s} value={s}>{s}</option>)}</select> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.status || 'Not started'}</p>}</div>
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Due date</label>{(editMode || createMode) ? <input type="date" className="crm-input" value={draft.dueDate || ''} onChange={(e) => setDraft({ ...draft, dueDate: e.target.value })} /> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.dueDate || '—'}</p>}</div>
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Notes</label>{(editMode || createMode) ? <textarea className="crm-input min-h-28" value={draft.notes || ''} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} /> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm whitespace-pre-wrap">{draft.notes || '—'}</p>}</div>
-              {!createMode && <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Done</label><button className="crm-btn-ghost" onClick={async () => { await fetch('/api/crm/tasks', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...draft, done: !draft.done, relatedType: 'contact' }) }); await load(); setDraft({ ...draft, done: !draft.done }); }}>{draft.done ? 'Mark as open' : 'Mark as done'}</button></div>}
               {error && <p className="text-sm text-red-300">{error}</p>}
             </div>
           </aside>
