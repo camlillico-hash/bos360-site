@@ -30,6 +30,7 @@ export default function ContactsPage() {
   const [form, setForm] = useState<any>({ status: "New" });
   const [gmail, setGmail] = useState<any[]>([]);
   const [error, setError] = useState("");
+  const [draggingContactId, setDraggingContactId] = useState<string | null>(null);
 
   const [selected, setSelected] = useState<Contact | null>(null);
   const [draft, setDraft] = useState<any>(null);
@@ -54,6 +55,17 @@ export default function ContactsPage() {
       ),
     [items, query]
   );
+
+  async function moveContactStage(contactId: string, status: string) {
+    const contact = items.find((c) => c.id === contactId);
+    if (!contact || (contact.status || "New") === status) return;
+    await fetch("/api/crm/contacts", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ ...contact, status }),
+    });
+    await load();
+  }
 
   function openTray(contact: Contact) {
     setSelected(contact);
@@ -149,7 +161,7 @@ export default function ContactsPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
         {CONTACT_STAGES.map((stage, i) => (
-          <div key={stage} className="crm-card p-3">
+          <div key={stage} className="crm-card p-3" onDragOver={(e) => e.preventDefault()} onDrop={async () => { if (!draggingContactId) return; await moveContactStage(draggingContactId, stage); setDraggingContactId(null); }}>
             <h3 className="mb-3 font-semibold text-emerald-300">{stageLabel(stage, i)}</h3>
             <div className="space-y-2">
               {filtered
@@ -157,7 +169,10 @@ export default function ContactsPage() {
                 .map((c) => (
                   <button
                     key={c.id}
-                    className="crm-card w-full p-3 text-left"
+                    draggable
+                    onDragStart={() => setDraggingContactId(c.id)}
+                    onDragEnd={() => setDraggingContactId(null)}
+                    className="crm-card w-full p-3 text-left cursor-grab active:cursor-grabbing"
                     onClick={() => openTray(c)}
                   >
                     <p className="font-semibold">{c.firstName} {c.lastName}</p>

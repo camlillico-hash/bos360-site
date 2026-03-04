@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
 import { getStore, id, now, saveStore } from "@/lib/crm-store";
 
+function validateTaskPayload(body: any, store: any) {
+  if (!String(body.title || "").trim()) return "Task title is required";
+  if (body.relatedType !== "contact") return "Tasks must be associated to a contact";
+  if (!String(body.relatedId || "").trim()) return "Linked contact is required";
+  const contactExists = store.contacts.some((c: any) => c.id === body.relatedId);
+  if (!contactExists) return "Linked contact not found";
+  return null;
+}
+
 export async function GET() {
   const store = await getStore();
   return NextResponse.json(store.tasks);
@@ -9,6 +18,9 @@ export async function GET() {
 export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const store = await getStore();
+  const error = validateTaskPayload(body, store);
+  if (error) return NextResponse.json({ error }, { status: 400 });
+
   const record = { id: id(), createdAt: now(), updatedAt: now(), done: false, ...body };
   store.tasks.unshift(record);
   await saveStore(store);
@@ -20,6 +32,10 @@ export async function PUT(req: Request) {
   const store = await getStore();
   const idx = store.tasks.findIndex((t) => t.id === body.id);
   if (idx < 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const error = validateTaskPayload(body, store);
+  if (error) return NextResponse.json({ error }, { status: 400 });
+
   store.tasks[idx] = { ...store.tasks[idx], ...body, updatedAt: now() };
   await saveStore(store);
   return NextResponse.json(store.tasks[idx]);
