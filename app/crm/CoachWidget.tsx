@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ChevronUp, ChevronDown, Flame, Hammer, Heart } from "lucide-react";
 
 export default function CoachWidget() {
   const [data, setData] = useState<any>(null);
@@ -21,35 +21,46 @@ export default function CoachWidget() {
 
   if (!data) return null;
 
+  const Icon = data.icon === "flame" ? Flame : data.icon === "heart" ? Heart : Hammer;
+  const iconClass = data.iconColor === "red"
+    ? "bg-rose-600/20 text-rose-300 border-rose-500/40"
+    : data.iconColor === "green"
+      ? "bg-emerald-600/20 text-emerald-300 border-emerald-500/40"
+      : "bg-sky-600/20 text-sky-300 border-sky-500/40";
+
   return (
     <>
-      {/* Desktop: inline header coach panel */}
+      {/* Desktop */}
       <div className="mx-4 hidden min-w-0 flex-1 items-center gap-3 rounded-xl border border-neutral-700 bg-neutral-900/80 px-3 py-2 md:flex">
         <img src={data.avatar} alt="Glyphy avatar" className="h-[65px] w-[65px] shrink-0 rounded-xl border border-neutral-700 object-cover" />
         <div className="min-w-0">
-          <p className="truncate text-lg font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }}>{data.name}</p>
+          <div className="flex items-center gap-2">
+            <p className="truncate text-lg font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }}>{data.name}</p>
+            <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${iconClass}`}>
+              <Icon size={12} /> {data.statusLabel}
+            </span>
+          </div>
           <p className="truncate text-sm text-slate-200">{data.message}</p>
         </div>
       </div>
 
-      {/* Mobile: bottom-right coach bubble */}
-      <div className="md:hidden fixed bottom-4 right-4 z-50">
-        <button
-          onClick={() => setMobileOpen((v) => !v)}
-          className="h-16 w-16 overflow-hidden rounded-full border-2 border-neutral-600 shadow-2xl"
-          aria-label="Toggle Sales Coach Glyphy"
-        >
+      {/* Mobile bubble */}
+      <div className="fixed bottom-4 right-4 z-50 md:hidden">
+        <button onClick={() => setMobileOpen((v) => !v)} className="h-16 w-16 overflow-hidden rounded-full border-2 border-neutral-600 shadow-2xl" aria-label="Toggle Sales Coach Glyphy">
           <img src={data.avatar} alt="Glyphy avatar" className="h-full w-full object-cover" />
         </button>
 
         {mobileOpen && (
-          <div className="mt-2 w-[78vw] max-w-[320px] rounded-xl border border-neutral-700 bg-neutral-950/95 p-3 shadow-2xl backdrop-blur">
+          <div className="mt-2 w-[78vw] max-w-[330px] rounded-xl border border-neutral-700 bg-neutral-950/95 p-3 shadow-2xl backdrop-blur">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-base font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }}>{data.name}</p>
               <button className="text-slate-300" onClick={() => setMobileOpen(false)}>
                 {mobileOpen ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
               </button>
             </div>
+            <p className={`mb-2 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${iconClass}`}>
+              <Icon size={12} /> {data.statusLabel}
+            </p>
             <p className="text-sm text-slate-200">{data.message}</p>
           </div>
         )}

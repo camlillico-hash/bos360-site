@@ -7,6 +7,8 @@ function daysSince(iso?: string) {
   return ms / (1000 * 60 * 60 * 24);
 }
 
+type Mood = "fired_up" | "on_it" | "crushing";
+
 export async function GET() {
   const store = await getStore();
   const contacts = store.contacts || [];
@@ -15,7 +17,6 @@ export async function GET() {
 
   const openDeals = deals.filter((d) => d.stage !== "Client signed (won)" && d.stage !== "Lost");
   const wonDeals = deals.filter((d) => d.stage === "Client signed (won)");
-  const lostDeals = deals.filter((d) => d.stage === "Lost");
 
   const overdueTasks = tasks.filter((t: any) => !t.done && t.dueDate && new Date(t.dueDate).getTime() < Date.now()).length;
   const doneTasks = tasks.filter((t: any) => t.done || t.status === "Complete").length;
@@ -29,41 +30,53 @@ export async function GET() {
   const staleDays = daysSince(lastUpdatedAt);
   const staleDeals = openDeals.filter((d) => daysSince(d.updatedAt) > 7).length;
 
-  let mood: "push" | "praise" | "warning" = "push";
-  let message = "Move one deal, complete one task, and stop negotiating with your potential.";
+  let mood: Mood = "on_it";
+  let statusLabel = "So you think you're good?!";
+  let icon = "hammer";
+  let iconColor = "blue";
+  let avatar = "/glyphy-mood-on-it.jpg";
+  let message = "Nice pace. Now sharpen it: move 1 deal stage and complete 2 tasks before day-end.";
 
-  if (wonDeals.length > 0 && doneTasks >= 3) {
-    mood = "praise";
-    message = "Good. You executed. Now do it again before your comfort zone files a comeback.";
+  // Fired up = behind/slacking
+  if (overdueTasks > 0 || staleDeals > 0 || staleDays > 2 || openDeals.length === 0) {
+    mood = "fired_up";
+    statusLabel = "Fired up!";
+    icon = "flame";
+    iconColor = "red";
+    avatar = "/glyphy-mood-fired-up.jpg";
+
+    if (openDeals.length === 0 && contacts.length > 0) {
+      message = "No open deals? That’s not a pipeline, that’s a wishlist. Promote a contact to Discovery now.";
+    } else if (contacts.length === 0) {
+      message = "Pipeline starts with people. Add 3 contacts today and stop hiding behind planning.";
+    } else {
+      message = `You’re drifting. ${overdueTasks} overdue task(s), ${staleDeals} stale deal(s). Execute now, excuses later.`;
+    }
   }
 
-  if (overdueTasks > 0 || staleDeals > 0 || staleDays > 2) {
-    mood = "warning";
-    message = `Board check: ${overdueTasks} overdue task(s), ${staleDeals} stale deal(s). Less scrolling, more closing.`;
+  // Crushing it = exceeding expectations
+  if (wonDeals.length >= 1 && doneTasks >= 5 && overdueTasks === 0 && staleDeals === 0 && staleDays <= 1) {
+    mood = "crushing";
+    statusLabel = "You're crushing it!";
+    icon = "heart";
+    iconColor = "green";
+    avatar = "/glyphy-drill-sergeant.jpg";
+    message = "Elite consistency. Keep pressure on: top up pipeline while conversion is hot.";
   }
-
-  if (openDeals.length === 0 && contacts.length > 0) {
-    mood = "push";
-    message = "No open deals. Promote a contact to Discovery today — pipeline is built, not wished into existence.";
-  }
-
-  if (contacts.length === 0) {
-    mood = "warning";
-    message = "Recruit leads. Add 3 contacts today. Strategy without outreach is just decorative thinking.";
-  }
-
 
   return NextResponse.json({
     name: "Sales Coach Glyphy",
     title: "Revenue Drill Sergeant",
-    avatar: "/glyphy-drill-sergeant.jpg",
     mood,
+    statusLabel,
+    icon,
+    iconColor,
+    avatar,
     message,
     stats: {
       contacts: contacts.length,
       openDeals: openDeals.length,
       wonDeals: wonDeals.length,
-      lostDeals: lostDeals.length,
       overdueTasks,
       doneTasks,
       staleDeals,
