@@ -92,7 +92,7 @@ export default function TasksPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-2 text-violet-200"><CheckSquare size={20} /> Tasks</h1>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-2 text-violet-200"><CheckSquare size={20} /> Tasks ({tasks.length})</h1>
         <div className="flex items-center gap-2">
           <button className="inline-flex items-center gap-1.5 rounded-lg bg-violet-700 px-3 py-2 font-semibold text-white hover:bg-violet-600" onClick={openCreate}><Plus size={14} /> New</button>
           <div className="inline-flex rounded-lg border border-neutral-700 p-1">

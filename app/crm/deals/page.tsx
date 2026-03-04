@@ -79,7 +79,7 @@ export default function DealsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-2 text-amber-200"><BriefcaseBusiness size={20} /> Deals</h1>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-2 text-amber-200"><BriefcaseBusiness size={20} /> Deals ({deals.length})</h1>
         <div className="flex items-center gap-2">
           <button className="inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-2 font-semibold text-white hover:bg-amber-600" onClick={openCreate}><Plus size={14} /> New</button>
           <div className="inline-flex rounded-lg border border-neutral-700 p-1">
