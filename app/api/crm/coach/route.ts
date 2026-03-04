@@ -56,7 +56,7 @@ export async function GET() {
   return NextResponse.json({
     name: "Sales Coach Glyphy",
     title: "Revenue Drill Sergeant",
-    avatar: "/glyphord-coach.svg",
+    avatar: "/glyphy-drill-sergeant.jpg",
     mood,
     message,
     stats: {
