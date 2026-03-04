@@ -20,11 +20,11 @@ export default function CoachWidget() {
   if (!data) return null;
 
   return (
-    <div className="mx-4 hidden min-w-0 flex-1 items-center gap-2 rounded-xl border border-neutral-700 bg-neutral-900/80 px-2 py-1.5 md:flex">
-      <img src={data.avatar} alt="Glyphy avatar" className="h-8 w-8 shrink-0 rounded-lg border border-neutral-700" />
+    <div className="mx-4 hidden min-w-0 flex-1 items-center gap-3 rounded-xl border border-neutral-700 bg-neutral-900/80 px-3 py-2 md:flex">
+      <img src={data.avatar} alt="Glyphy avatar" className="h-16 w-16 shrink-0 rounded-xl border border-neutral-700 object-cover" />
       <div className="min-w-0">
-        <p className="truncate text-[11px] uppercase tracking-wider text-emerald-300">{data.name}</p>
-        <p className="truncate text-xs text-slate-300">{data.message}</p>
+        <p className="truncate text-xs uppercase tracking-wider text-emerald-300">{data.name}</p>
+        <p className="truncate text-sm text-slate-200">{data.message}</p>
       </div>
     </div>
   );
