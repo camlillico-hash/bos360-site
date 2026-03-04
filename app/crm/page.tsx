@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { getStore } from "@/lib/crm-store";
 import { Users, BriefcaseBusiness, BarChart3, CheckSquare } from "lucide-react";
