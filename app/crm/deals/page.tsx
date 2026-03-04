@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 const STAGES = ["Discovery meeting booked", "90-minute booked", "90-minute complete", "Verbal Yes", "Client signed (won)", "Lost"];
+const stageLabel = (stage: string, idx: number) => `${idx + 1}. ${stage}`;
 
 export default function DealsPage() {
   const [deals, setDeals] = useState<any[]>([]);
@@ -78,7 +79,7 @@ export default function DealsPage() {
             {contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName} {c.email ? `(${c.email})` : ""}</option>)}
           </select>
           <select className="crm-input" value={form.stage || STAGES[0]} onChange={(e) => setForm({ ...form, stage: e.target.value })}>
-            {STAGES.map((s) => <option key={s}>{s}</option>)}
+            {STAGES.map((s, i) => <option key={s} value={s}>{stageLabel(s, i)}</option>)}
           </select>
           <input placeholder="Value" type="number" className="crm-input" value={form.value || ""} onChange={(e) => setForm({ ...form, value: Number(e.target.value || 0) })} />
           <input placeholder="Probability %" type="number" className="crm-input" value={form.probability || ""} onChange={(e) => setForm({ ...form, probability: Number(e.target.value || 0) })} />
@@ -98,7 +99,7 @@ export default function DealsPage() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {STAGES.map((stage) => (
           <div key={stage} className="crm-card p-3">
-            <h3 className="mb-3 font-semibold text-emerald-300">{stage}</h3>
+            <h3 className="mb-3 font-semibold text-emerald-300">{stageLabel(stage, STAGES.indexOf(stage))}</h3>
             <div className="space-y-2">
               {deals.filter((d) => d.stage === stage).map((d) => (
                 <button key={d.id} className="crm-card bg-neutral-950 w-full p-2 text-left" onClick={() => openTray(d)}>
@@ -143,9 +144,9 @@ export default function DealsPage() {
                   {contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName} {c.email ? `(${c.email})` : ""}</option>)}
                 </select>
               </Field>
-              <Field label="Stage" editMode={editMode} read={draft.stage || "—"}>
+              <Field label="Stage" editMode={editMode} read={draft.stage ? stageLabel(draft.stage, STAGES.indexOf(draft.stage)) : "—"}>
                 <select className="crm-input" value={draft.stage || STAGES[0]} onChange={(e) => setDraft({ ...draft, stage: e.target.value })}>
-                  {STAGES.map((s) => <option key={s}>{s}</option>)}
+                  {STAGES.map((s, i) => <option key={s} value={s}>{stageLabel(s, i)}</option>)}
                 </select>
               </Field>
               <Field label="Value" editMode={editMode} read={draft.value ? `$${draft.value}` : "—"}>

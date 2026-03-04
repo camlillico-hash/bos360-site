@@ -22,6 +22,8 @@ const contactFields: Array<[string, string, string]> = [
   ["leadSource", "Lead source", "text"],
 ];
 
+const stageLabel = (stage: string, idx: number) => `${idx + 1}. ${stage}`;
+
 export default function ContactsPage() {
   const [items, setItems] = useState<Contact[]>([]);
   const [query, setQuery] = useState("");
@@ -106,7 +108,7 @@ export default function ContactsPage() {
             />
           ))}
           <select className="crm-input" value={form.status || "New"} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-            {CONTACT_STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
+            {CONTACT_STAGES.map((s, i) => <option key={s} value={s}>{stageLabel(s, i)}</option>)}
           </select>
         </div>
         <textarea
@@ -145,25 +147,29 @@ export default function ContactsPage() {
         className="crm-input"
       />
 
-      <div className="space-y-3">
-        {filtered.map((c) => (
-          <button
-            key={c.id}
-            className="crm-card w-full p-4 text-left"
-            onClick={() => openTray(c)}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="font-semibold">{c.firstName} {c.lastName}</p>
-                <p className="text-sm text-slate-400">{c.email || "No email"} · {c.company || "No company"}</p>
-                <p className="text-xs text-emerald-300">Stage: {c.status || "New"}</p>
-                <p className="text-xs text-emerald-300">
-                  Gmail matches: {c.email ? gmail.filter((m) => `${m.from || ""} ${m.to || ""}`.toLowerCase().includes(String(c.email).toLowerCase())).length : 0}
-                </p>
-              </div>
-              <span className="text-xs text-slate-400">Open</span>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+        {CONTACT_STAGES.map((stage, i) => (
+          <div key={stage} className="crm-card p-3">
+            <h3 className="mb-3 font-semibold text-emerald-300">{stageLabel(stage, i)}</h3>
+            <div className="space-y-2">
+              {filtered
+                .filter((c) => (c.status || "New") === stage)
+                .map((c) => (
+                  <button
+                    key={c.id}
+                    className="crm-card w-full p-3 text-left"
+                    onClick={() => openTray(c)}
+                  >
+                    <p className="font-semibold">{c.firstName} {c.lastName}</p>
+                    <p className="text-xs text-slate-400">{c.email || "No email"}</p>
+                    <p className="text-xs text-slate-500">{c.company || "No company"}</p>
+                    <p className="mt-1 text-[11px] text-emerald-300">
+                      Gmail: {c.email ? gmail.filter((m) => `${m.from || ""} ${m.to || ""}`.toLowerCase().includes(String(c.email).toLowerCase())).length : 0}
+                    </p>
+                  </button>
+                ))}
             </div>
-          </button>
+          </div>
         ))}
       </div>
 
@@ -204,7 +210,7 @@ export default function ContactsPage() {
                 <label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Lead stage</label>
                 {editMode ? (
                   <select className="crm-input" value={draft.status || "New"} onChange={(e) => setDraft({ ...draft, status: e.target.value })}>
-                    {CONTACT_STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    {CONTACT_STAGES.map((s, i) => <option key={s} value={s}>{stageLabel(s, i)}</option>)}
                   </select>
                 ) : (
                   <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.status || "New"}</p>
@@ -221,7 +227,7 @@ export default function ContactsPage() {
               </div>
 
               {trayError && <p className="text-sm text-red-300">{trayError}</p>}
-              <p className="text-xs text-slate-500">Tip: moving a contact to “Discovery meeting booked” auto-creates a deal in the first deal stage if none exists.</p>
+              <p className="text-xs text-slate-500">Tip: moving a contact to “Discovery meeting booked” auto-creates a deal in stage 1 if none exists.</p>
             </div>
           </aside>
         </div>
