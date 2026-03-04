@@ -39,7 +39,7 @@ export default function ActivitiesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-lg sm:text-2xl font-bold inline-flex items-center gap-2 whitespace-nowrap"><Activity size={20} /> Activities ({activities.length})</h1>
-        <button className="crm-btn inline-flex items-center gap-1.5" onClick={() => { setCreateOpen(true); setDraft({ type: "email" }); setError(''); }}><Plus size={14} /> New</button>
+        <button className="crm-btn inline-flex items-center gap-1.5" onClick={() => { setCreateOpen(true); setDraft({ type: "email", occurredAtLocal: "" }); setError(''); }}><Plus size={14} /> New</button>
       </div>
 
       <div className="crm-card overflow-auto">
@@ -94,7 +94,7 @@ export default function ActivitiesPage() {
 
               <div>
                 <label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Occurred at</label>
-                <input type="datetime-local" className="crm-input" value={draft.occurredAt || ""} onChange={(e) => setDraft({ ...draft, occurredAt: e.target.value ? new Date(e.target.value).toISOString() : "" })} />
+                <input type="datetime-local" className="crm-input" value={draft.occurredAtLocal || ""} onChange={(e) => setDraft({ ...draft, occurredAtLocal: e.target.value })} />
               </div>
 
               <div>
@@ -106,7 +106,7 @@ export default function ActivitiesPage() {
 
               <button className="crm-btn inline-flex items-center gap-1.5" onClick={async () => {
                 setError('');
-                const res = await fetch('/api/crm/activities', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(draft) });
+                const res = await fetch('/api/crm/activities', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...draft, occurredAt: draft.occurredAtLocal ? new Date(draft.occurredAtLocal).toISOString() : undefined }) });
                 if (!res.ok) { const j = await res.json().catch(() => ({})); setError(j.error || 'Could not save activity'); return; }
                 setCreateOpen(false);
                 load();

@@ -53,8 +53,8 @@ export default function ContactsPage() {
       .sort((a: any, b: any) => new Date(b.occurredAt || b.createdAt).getTime() - new Date(a.occurredAt || a.createdAt).getTime());
   }, [activities, selected]);
 
-  function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ status: "New" }); setTrayError(""); setActivityDraft({ type: "email" }); setActivityError(""); }
-  function openTray(contact: Contact) { setSelected(contact); setDraft({ ...contact }); setEditMode(false); setCreateMode(false); setTrayError(""); setActivityDraft({ type: "email", contactId: contact.id }); setActivityError(""); }
+  function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ status: "New" }); setTrayError(""); setActivityDraft({ type: "email", occurredAtLocal: "" }); setActivityError(""); }
+  function openTray(contact: Contact) { setSelected(contact); setDraft({ ...contact }); setEditMode(false); setCreateMode(false); setTrayError(""); setActivityDraft({ type: "email", contactId: contact.id, occurredAtLocal: "" }); setActivityError(""); }
   function closeTray() { setSelected(null); setDraft(null); setEditMode(false); setCreateMode(false); setTrayError(""); }
 
   function startInlineEdit(c: any) { setEditingId(c.id); setInlineDraft({ ...c }); }
@@ -255,15 +255,15 @@ export default function ContactsPage() {
                       <option value="in_person">In person</option>
                       <option value="meeting">Meeting</option>
                     </select>
-                    <input type="datetime-local" className="crm-input" onChange={(e) => setActivityDraft({ ...activityDraft, occurredAt: e.target.value ? new Date(e.target.value).toISOString() : "", contactId: selected.id })} />
+                    <input type="datetime-local" className="crm-input" value={activityDraft.occurredAtLocal || ""} onChange={(e) => setActivityDraft({ ...activityDraft, occurredAtLocal: e.target.value, contactId: selected.id })} />
                   </div>
                   <textarea className="crm-input mt-2" placeholder="Activity note" value={activityDraft.note || ""} onChange={(e) => setActivityDraft({ ...activityDraft, note: e.target.value, contactId: selected.id })} />
                   {activityError && <p className="mt-2 text-sm text-red-300">{activityError}</p>}
                   <button className="crm-btn mt-2" onClick={async () => {
                     setActivityError("");
-                    const res = await fetch('/api/crm/activities', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...activityDraft, contactId: selected.id }) });
+                    const res = await fetch('/api/crm/activities', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...activityDraft, contactId: selected.id, occurredAt: activityDraft.occurredAtLocal ? new Date(activityDraft.occurredAtLocal).toISOString() : undefined }) });
                     if (!res.ok) { const j = await res.json().catch(() => ({})); setActivityError(j.error || 'Could not log activity'); return; }
-                    setActivityDraft({ type: "email", contactId: selected.id, note: "" });
+                    setActivityDraft({ type: "email", contactId: selected.id, note: "", occurredAtLocal: "" });
                     setActivities(await (await fetch('/api/crm/activities', { cache: 'no-store' })).json());
                   }}>Save activity</button>
 

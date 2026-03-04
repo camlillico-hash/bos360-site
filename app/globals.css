@@ -96,3 +96,17 @@ body {
 h1, h2, h3, h4, h5, h6, thead th {
   font-family: var(--font-playfair-display), serif;
 }
+
+
+.crm-input[type="date"],
+.crm-input[type="time"],
+.crm-input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
+.crm-input[type="date"]::-webkit-calendar-picker-indicator,
+.crm-input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.crm-input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.2);
+  opacity: 0.9;
+}
