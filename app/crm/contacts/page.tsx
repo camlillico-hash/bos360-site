@@ -95,9 +95,9 @@ export default function ContactsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-2"><Users size={20} /> Contacts</h1>
+        <h1 className="text-2xl font-bold inline-flex items-center gap-2 text-sky-200"><Users size={20} /> Contacts</h1>
         <div className="flex items-center gap-2">
-          <button className="crm-btn inline-flex items-center gap-1.5" onClick={openCreate}><Plus size={14} /> New contact record</button>
+          <button className="inline-flex items-center gap-1.5 rounded-lg bg-sky-700 px-3 py-2 font-semibold text-white hover:bg-sky-600" onClick={openCreate}><Plus size={14} /> New</button>
           <div className="inline-flex rounded-lg border border-neutral-700 p-1">
             <button className={`px-2 py-1 rounded ${view === "bucket" ? "bg-neutral-800 text-white" : "text-slate-400"}`} onClick={() => setView("bucket")}><LayoutGrid size={16} /></button>
             <button className={`px-2 py-1 rounded ${view === "table" ? "bg-neutral-800 text-white" : "text-slate-400"}`} onClick={() => setView("table")}><List size={16} /></button>
@@ -105,11 +105,11 @@ export default function ContactsPage() {
         </div>
       </div>
 
-      <div className="grid gap-2 md:grid-cols-4">
+      <div className="rounded-xl border border-sky-800/40 bg-sky-950/20 p-2"><div className="grid gap-2 md:grid-cols-4">
         <input placeholder="Search contacts..." value={query} onChange={(e) => setQuery(e.target.value)} className="crm-input md:col-span-2" />
         <select className="crm-input" value={sortBy} onChange={(e) => setSortBy(e.target.value as any)}><option value="createdAt">Sort: Created date</option><option value="status">Sort: Stage</option><option value="company">Sort: Company</option></select>
         <select className="crm-input" value={sortDir} onChange={(e) => setSortDir(e.target.value as any)}><option value="desc">Newest / Z-A</option><option value="asc">Oldest / A-Z</option></select>
-      </div>
+      </div></div>
 
       {view === "bucket" ? (
         <div className="overflow-x-auto pb-2">
