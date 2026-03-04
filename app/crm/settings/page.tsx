@@ -1,9 +1,10 @@
-import { getStore } from "@/lib/crm-store";
+import { getStore, storageMode } from "@/lib/crm-store";
 import { gmailReady } from "@/lib/gmail";
 
 export default async function SettingsPage() {
   const store = await getStore();
   const ready = gmailReady();
+  const mode = storageMode();
 
   return (
     <div className="space-y-6">
@@ -26,6 +27,15 @@ export default async function SettingsPage() {
           </form>
         </div>
         <p className="mt-3 text-xs text-slate-500">Synced messages: {store.gmail.messages.length}</p>
+      </section>
+
+
+      <section className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
+        <h2 className="font-semibold">Data storage</h2>
+        <p className="mt-2 text-sm text-slate-400">Current mode: <span className="font-semibold text-emerald-300">{mode}</span></p>
+        {mode === "file" && (
+          <p className="mt-2 text-sm text-amber-300">Set DATABASE_URL to use persistent hosted Postgres (recommended for production).</p>
+        )}
       </section>
 
       <section className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4">

@@ -4,6 +4,7 @@
 
 - `CRM_PASSWORD` - password for `/crm/login`
 - `CRM_SESSION_SECRET` - random string for session cookie
+- `DATABASE_URL` - hosted Postgres connection string (recommended/required in production)
 
 ## Optional Gmail read-only sync
 
@@ -15,4 +16,5 @@ Use scope: `https://www.googleapis.com/auth/gmail.readonly`.
 
 ## Storage
 
-CRM data is stored in `data/crm.json` (contacts, deals, tasks, gmail metadata).
+If `DATABASE_URL` is set, CRM data is stored in Postgres.
+If not set, it falls back to `data/crm.json` (local dev only).
