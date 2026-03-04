@@ -19,7 +19,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
               <span className="text-lg font-bold text-slate-100" style={{ fontFamily: "var(--font-playfair-display), serif" }}>CRM</span>
             </Link>
             <CoachWidget />
-            <div className="mt-2 shrink-0"><Nav /></div>
+            <div className="mt-2 ml-3 shrink-0 sm:ml-4"><Nav /></div>
           </div>
         </header>
       )}
