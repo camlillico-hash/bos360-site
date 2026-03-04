@@ -38,7 +38,7 @@ export default function ActivitiesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-2"><Activity size={20} /> Activities ({activities.length})</h1>
+        <h1 className="text-lg sm:text-2xl font-bold inline-flex items-center gap-2 whitespace-nowrap"><Activity size={20} /> Activities ({activities.length})</h1>
         <button className="crm-btn inline-flex items-center gap-1.5" onClick={() => { setCreateOpen(true); setDraft({ type: "email" }); setError(''); }}><Plus size={14} /> New</button>
       </div>
 

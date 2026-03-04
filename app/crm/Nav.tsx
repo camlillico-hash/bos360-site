@@ -12,11 +12,11 @@ export default function Nav() {
   const pathname = usePathname();
   return (
     <nav className="flex items-center gap-1 text-sm">
-      <Link className={navClass(pathname.startsWith('/crm/contacts'))} href="/crm/contacts"><Users size={14} /> Contacts</Link>
-      <Link className={navClass(pathname.startsWith('/crm/deals'))} href="/crm/deals"><BriefcaseBusiness size={14} /> Deals</Link>
-      <Link className={navClass(pathname.startsWith('/crm/tasks'))} href="/crm/tasks"><CheckSquare size={14} /> Tasks</Link>
-      <Link className={navClass(pathname.startsWith('/crm/activities'))} href="/crm/activities"><Activity size={14} /> Activities</Link>
-      <Link title="Settings" aria-label="Settings" className={navClass(pathname.startsWith('/crm/settings'))} href="/crm/settings"><Settings size={14} /></Link>
+      <Link className={navClass(pathname.startsWith('/crm/contacts'))} href="/crm/contacts"><Users size={14} /><span className="hidden sm:inline"> Contacts</span></Link>
+      <Link className={navClass(pathname.startsWith('/crm/deals'))} href="/crm/deals"><BriefcaseBusiness size={14} /><span className="hidden sm:inline"> Deals</span></Link>
+      <Link className={navClass(pathname.startsWith('/crm/tasks'))} href="/crm/tasks"><CheckSquare size={14} /><span className="hidden sm:inline"> Tasks</span></Link>
+      <Link className={navClass(pathname.startsWith('/crm/activities'))} href="/crm/activities"><Activity size={14} /><span className="hidden sm:inline"> Activities</span></Link>
+      <Link title="Settings" aria-label="Settings" className={navClass(pathname.startsWith('/crm/settings'))} href="/crm/settings"><Settings size={14} /><span className="hidden sm:inline"> Settings</span></Link>
       <button
         type="button"
         className="crm-btn-ghost inline-flex items-center gap-1.5" title="Logout" aria-label="Logout"

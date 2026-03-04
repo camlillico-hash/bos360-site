@@ -96,7 +96,7 @@ export default function ContactsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold inline-flex items-center gap-2 text-sky-200"><Users size={20} /> Contacts ({items.length})</h1>
+        <h1 className="text-lg sm:text-2xl font-bold inline-flex items-center gap-2 text-sky-200 whitespace-nowrap"><Users size={20} /> Contacts ({items.length})</h1>
         <div className="flex items-center gap-2">
           <button className="inline-flex items-center gap-1.5 rounded-lg bg-sky-700 px-3 py-2 font-semibold text-white hover:bg-sky-600" onClick={openCreate}><Plus size={14} /> New</button>
           <button title="Import CSV" aria-label="Import CSV" className="crm-btn-ghost inline-flex items-center gap-1.5" onClick={() => { setImportOpen(true); setImportError(""); setImportResult(null); }}><Upload size={14} /></button>
