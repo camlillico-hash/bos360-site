@@ -5,7 +5,9 @@ const ALLOWED_TYPES = ["Influencer", "Decision maker", "Networker", "Other"];
 const ALLOWED_STAGES = ["New", "Attempting", "Connected", "Discovery meeting booked", "Not right now"];
 
 function norm(v: any) {
-  return String(v ?? "").trim();
+  const out = String(v ?? "").trim();
+  if (out === "?" || out === "N/A" || out === "n/a") return "";
+  return out;
 }
 
 function formatPhone(v: any) {
@@ -37,8 +39,8 @@ export async function POST(req: Request) {
   const errors: Array<{ row: number; reason: string }> = [];
 
   rows.forEach((r: any, idx: number) => {
-    const firstName = norm(r.firstName || r["First name"] || r["first_name"]);
-    const lastName = norm(r.lastName || r["Last name"] || r["last_name"]);
+    const firstName = norm(r.firstName || r.First || r["First name"] || r["first_name"]);
+    const lastName = norm(r.lastName || r.Last || r["Last name"] || r["last_name"]);
     const email = norm(r.email || r.Email).toLowerCase();
     if (!firstName || !lastName) {
       skipped++; errors.push({ row: idx + 1, reason: "Missing firstName/lastName" }); return;
@@ -48,7 +50,7 @@ export async function POST(req: Request) {
     }
 
     const type = norm(r.type || r.Type);
-    const status = norm(r.status || r.Stage || r.stage);
+    const status = norm(r.status || r["Lead Status"] || r.Stage || r.stage);
 
     const contact: any = {
       id: id(),
@@ -60,7 +62,7 @@ export async function POST(req: Request) {
       company: norm(r.company || r.Company),
       title: norm(r.title || r.Title),
       type: ALLOWED_TYPES.includes(type) ? type : "",
-      leadSource: norm(r.leadSource || r["Lead source"] || r.source),
+      leadSource: norm(r.leadSource || r["Lead source"] || r["Lead Source"] || r.source),
       status: ALLOWED_STAGES.includes(status) ? status : "New",
       notes: norm(r.notes || r.Notes),
       createdAt: now(),
