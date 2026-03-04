@@ -10,6 +10,7 @@ const TYPES = [
   { value: "linkedin", label: "LinkedIn" },
   { value: "in_person", label: "In person" },
   { value: "meeting", label: "Meeting" },
+  { value: "task_completed", label: "Task completed" },
 ];
 
 export default function ActivitiesPage() {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getStore, id, now, saveStore } from "@/lib/crm-store";
 
-const TYPES = ["email", "call", "text", "linkedin", "in_person", "meeting"] as const;
+const TYPES = ["email", "call", "text", "linkedin", "in_person", "meeting", "task_completed"] as const;
 
 function normalizeType(v: any) {
   const t = String(v || "").trim().toLowerCase();

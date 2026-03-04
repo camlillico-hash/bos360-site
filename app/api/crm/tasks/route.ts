@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { getStore, id, now, saveStore } from "@/lib/crm-store";
 
-const TASK_STATUSES = ["Not started", "Complete", "Canceled"] as const;
+const TASK_STATUSES = ["Not started", "Completed", "Canceled"] as const;
 
 function normalizeStatus(body: any) {
   const v = String(body.status || "").trim();
   if ((TASK_STATUSES as readonly string[]).includes(v)) return v;
-  if (body.done === true) return "Complete";
+  if (body.done === true) return "Completed";
   return "Not started";
 }
 
@@ -17,6 +17,19 @@ function validateTaskPayload(body: any, store: any) {
   const contactExists = store.contacts.some((c: any) => c.id === body.relatedId);
   if (!contactExists) return "Linked contact not found";
   return null;
+}
+
+function archiveTaskAsActivity(store: any, task: any) {
+  const activity = {
+    id: id(),
+    contactId: task.relatedId,
+    type: "task_completed",
+    note: `Task completed: ${task.title}${task.notes ? ` — ${task.notes}` : ""}`,
+    occurredAt: now(),
+    createdAt: now(),
+    updatedAt: now(),
+  };
+  store.activities = [activity, ...(store.activities || [])];
 }
 
 export async function GET() {
@@ -31,7 +44,14 @@ export async function POST(req: Request) {
   if (error) return NextResponse.json({ error }, { status: 400 });
 
   const status = normalizeStatus(body);
-  const record = { id: id(), createdAt: now(), updatedAt: now(), ...body, status, done: status === "Complete" };
+  const record = { id: id(), createdAt: now(), updatedAt: now(), ...body, status, done: status === "Completed" };
+
+  if (status === "Completed") {
+    archiveTaskAsActivity(store, record);
+    await saveStore(store);
+    return NextResponse.json({ archived: true, record });
+  }
+
   store.tasks.unshift(record);
   await saveStore(store);
   return NextResponse.json(record);
@@ -47,7 +67,16 @@ export async function PUT(req: Request) {
   if (error) return NextResponse.json({ error }, { status: 400 });
 
   const status = normalizeStatus(body);
-  store.tasks[idx] = { ...store.tasks[idx], ...body, status, done: status === "Complete", updatedAt: now() };
+  const updated = { ...store.tasks[idx], ...body, status, done: status === "Completed", updatedAt: now() };
+
+  if (status === "Completed") {
+    archiveTaskAsActivity(store, updated);
+    store.tasks = store.tasks.filter((t) => t.id !== updated.id);
+    await saveStore(store);
+    return NextResponse.json({ archived: true, record: updated });
+  }
+
+  store.tasks[idx] = updated;
   await saveStore(store);
   return NextResponse.json(store.tasks[idx]);
 }

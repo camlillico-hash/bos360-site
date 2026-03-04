@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CheckSquare, Plus, Save, CornerUpLeft, Trash2, LayoutGrid, List, X, Pencil } from "lucide-react";
+import { CheckSquare, Plus, Save, CornerUpLeft, Trash2, LayoutGrid, List, X, Pencil, Circle, CircleCheck } from "lucide-react";
 
-const TASK_STATUSES = ["Not started", "Complete", "Canceled"];
+const TASK_STATUSES = ["Not started", "Completed", "Canceled"];
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -11,6 +11,7 @@ export default function TasksPage() {
   const [error, setError] = useState("");
   const [view, setView] = useState<"bucket" | "table">("table");
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
+  const [fadingIds, setFadingIds] = useState<string[]>([]);
 
   const [selected, setSelected] = useState<any>(null);
   const [draft, setDraft] = useState<any>(null);
@@ -36,10 +37,10 @@ export default function TasksPage() {
   const sorted = useMemo(() => [...tasks], [tasks]);
 
   function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ relatedType: "contact", status: "Not started" }); setError(""); }
-  function openTask(t: any) { setSelected(t); setDraft({ ...t, status: t.status || (t.done ? "Complete" : "Not started") }); setCreateMode(false); setEditMode(false); setError(""); }
+  function openTask(t: any) { setSelected(t); setDraft({ ...t, status: t.status || (t.done ? "Completed" : "Not started") }); setCreateMode(false); setEditMode(false); setError(""); }
   function closeTray() { setSelected(null); setDraft(null); setCreateMode(false); setEditMode(false); setError(""); }
 
-  function startInlineEdit(t: any) { setEditingId(t.id); setInlineDraft({ ...t, status: t.status || (t.done ? "Complete" : "Not started") }); }
+  function startInlineEdit(t: any) { setEditingId(t.id); setInlineDraft({ ...t, status: t.status || (t.done ? "Completed" : "Not started") }); }
   function cancelInlineEdit() { setEditingId(null); setInlineDraft(null); }
   async function saveInlineEdit() {
     if (!inlineDraft) return;
@@ -49,9 +50,24 @@ export default function TasksPage() {
     cancelInlineEdit();
   }
 
+  async function completeTask(task: any) {
+    setFadingIds((ids) => [...ids, task.id]);
+    await fetch('/api/crm/tasks', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ ...task, status: 'Completed', relatedType: 'contact' }),
+    });
+    setTimeout(async () => {
+      setFadingIds((ids) => ids.filter((x) => x !== task.id));
+      await load();
+      if (selected?.id === task.id) closeTray();
+    }, 220);
+  }
+
   async function moveTaskStatus(taskId: string, status: string) {
     const task = tasks.find((t) => t.id === taskId);
     if (!task || (task.status || "Not started") === status) return;
+    if (status === "Completed") return completeTask(task);
     await fetch('/api/crm/tasks', {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
@@ -67,6 +83,7 @@ export default function TasksPage() {
     if (!res.ok) { const j = await res.json().catch(() => ({})); setError(j.error || 'Could not save task'); return; }
     const fresh = await res.json();
     await load();
+    if (fresh?.archived) { closeTray(); return; }
     setSelected(fresh); setDraft(fresh); setCreateMode(false); setEditMode(false);
   }
 
@@ -85,8 +102,6 @@ export default function TasksPage() {
         </div>
       </div>
 
-      
-
       {view === "bucket" ? (
         <div className="overflow-x-auto pb-2">
           <div className="flex gap-4 min-w-max">
@@ -94,8 +109,8 @@ export default function TasksPage() {
               <div key={status} className="crm-card p-3 w-[320px] shrink-0" onDragOver={(e)=>e.preventDefault()} onDrop={async ()=>{ if(!draggingTaskId) return; await moveTaskStatus(draggingTaskId, status); setDraggingTaskId(null); }}>
                 <h3 className="mb-3 font-semibold text-emerald-300">{status}</h3>
                 <div className="space-y-2 min-h-10">
-                  {sorted.filter((t) => (t.status || (t.done ? "Complete" : "Not started")) === status).map((t) => (
-                    <button key={t.id} draggable onDragStart={() => setDraggingTaskId(t.id)} onDragEnd={() => setDraggingTaskId(null)} className="crm-card w-full p-3 text-left cursor-grab" onClick={() => openTask(t)}>
+                  {sorted.filter((t) => (t.status || (t.done ? "Completed" : "Not started")) === status).map((t) => (
+                    <button key={t.id} draggable onDragStart={() => setDraggingTaskId(t.id)} onDragEnd={() => setDraggingTaskId(null)} className={`crm-card w-full p-3 text-left cursor-grab transition-opacity ${fadingIds.includes(t.id) ? 'opacity-0' : 'opacity-100'}`} onClick={() => openTask(t)}>
                       <p className="font-medium">{t.title}</p>
                       <p className="text-xs text-emerald-300">Contact: {contactName(t.relatedId)}</p>
                       <p className="text-xs text-slate-400">Due: {t.dueDate || '—'}</p>
@@ -109,18 +124,23 @@ export default function TasksPage() {
       ) : (
         <div className="crm-card overflow-auto">
           <table className="w-full text-sm">
-            <thead className="border-b border-neutral-800 text-slate-400"><tr><th className="px-3 py-2 text-left">Task</th><th className="px-3 py-2 text-left">Contact</th><th className="px-3 py-2 text-left">Due</th><th className="px-3 py-2 text-left">Created</th><th className="px-3 py-2 text-left">Status</th><th className="px-3 py-2 text-left">Actions</th></tr></thead>
+            <thead className="border-b border-neutral-800 text-slate-400"><tr><th className="px-3 py-2 text-left"></th><th className="px-3 py-2 text-left">Task</th><th className="px-3 py-2 text-left">Contact</th><th className="px-3 py-2 text-left">Due</th><th className="px-3 py-2 text-left">Created</th><th className="px-3 py-2 text-left">Status</th><th className="px-3 py-2 text-left">Actions</th></tr></thead>
             <tbody>
               {sorted.map((t) => {
                 const editing = editingId === t.id;
-                const status = t.status || (t.done ? 'Complete' : 'Not started');
+                const status = t.status || (t.done ? 'Completed' : 'Not started');
                 return (
-                  <tr key={t.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
+                  <tr key={t.id} className={`border-b border-neutral-900 hover:bg-neutral-900/60 transition-opacity ${fadingIds.includes(t.id) ? 'opacity-0' : 'opacity-100'}`}>
+                    <td className="px-3 py-2">
+                      <button onClick={() => completeTask(t)} className="text-slate-400 hover:text-emerald-300" title="Complete task">
+                        {fadingIds.includes(t.id) || status === 'Completed' ? <CircleCheck size={18} className="text-emerald-400" /> : <Circle size={18} />}
+                      </button>
+                    </td>
                     <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <input className="crm-input" value={inlineDraft.title || ''} onChange={(e)=>setInlineDraft({...inlineDraft, title:e.target.value})} /> : t.title}</td>
                     <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.relatedId || ''} onChange={(e)=>setInlineDraft({...inlineDraft, relatedId:e.target.value, relatedType:'contact'})}><option value="">Select linked contact *</option>{contacts.map((c)=> <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</select> : contactName(t.relatedId)}</td>
                     <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <input type="date" className="crm-input" value={inlineDraft.dueDate || ''} onChange={(e)=>setInlineDraft({...inlineDraft, dueDate:e.target.value})} /> : (t.dueDate || '—')}</td>
                     <td className="px-3 py-2 text-slate-400">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}</td>
-                    <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.status || 'Not started'} onChange={(e)=>setInlineDraft({...inlineDraft, status:e.target.value})}>{TASK_STATUSES.map((s)=> <option key={s} value={s}>{s}</option>)}</select> : <span className={status === 'Complete' ? 'text-emerald-300' : status === 'Canceled' ? 'text-rose-300' : 'text-amber-300'}>{status}</span>}</td>
+                    <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.status || 'Not started'} onChange={(e)=>setInlineDraft({...inlineDraft, status:e.target.value})}>{TASK_STATUSES.map((s)=> <option key={s} value={s}>{s}</option>)}</select> : <span className={status === 'Completed' ? 'text-emerald-300' : status === 'Canceled' ? 'text-rose-300' : 'text-amber-300'}>{status}</span>}</td>
                     <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" onClick={saveInlineEdit}>Save</button><button className="crm-btn-ghost" onClick={cancelInlineEdit}>Cancel</button></div> : <button className="crm-btn-ghost" onClick={() => openTask(t)}>Open</button>}</td>
                   </tr>
                 );
