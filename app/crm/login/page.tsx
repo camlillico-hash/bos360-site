@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Lock, Rocket } from "lucide-react";
 
 export default function LoginPage() {
   const [password, setPassword] = useState("");
@@ -8,7 +9,7 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto mt-20 max-w-md crm-card p-6">
-      <h1 className="text-2xl font-semibold">🔐 CRM Login</h1>
+      <h1 className="text-2xl font-semibold inline-flex items-center gap-2"><Lock size={20} /> CRM Login</h1>
       <p className="mt-2 text-sm text-slate-400">Use your CRM password to continue.</p>
       <form
         className="mt-6 space-y-3"
@@ -32,7 +33,7 @@ export default function LoginPage() {
           placeholder="Password"
         />
         {error && <p className="text-sm text-red-300">{error}</p>}
-        <button className="w-full crm-btn font-semibold">🚀 Login</button>
+        <button className="w-full crm-btn font-semibold"><span className="inline-flex items-center gap-1.5"><Rocket size={14} /> Login</span></button>
       </form>
     </div>
   );

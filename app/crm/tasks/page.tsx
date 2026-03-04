@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CheckSquare, Plus, Save, Check, CornerUpLeft, Trash2 } from "lucide-react";
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<any[]>([]);
@@ -22,10 +23,10 @@ export default function TasksPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">✅ Tasks & Reminders</h1>
+      <h1 className="text-2xl font-bold inline-flex items-center gap-2"><CheckSquare size={20} /> Tasks & Reminders</h1>
 
       <div className="crm-card p-4">
-        <h2 className="font-semibold">➕ Add task</h2>
+        <h2 className="font-semibold"><span className="inline-flex items-center gap-1.5"><Plus size={14} /> Add task</span></h2>
         <div className="mt-2 grid gap-2 md:grid-cols-2">
           <input placeholder="Task title" className="crm-input" value={form.title || ''} onChange={(e) => setForm({ ...form, title: e.target.value })} />
           <select className="crm-input" value={form.relatedId || ''} onChange={(e) => setForm({ ...form, relatedId: e.target.value, relatedType: 'contact' })}>
@@ -42,7 +43,7 @@ export default function TasksPage() {
           if (!res.ok) { const j = await res.json().catch(() => ({})); setError(j.error || 'Could not save task'); return; }
           setForm({ relatedType: 'contact' });
           load();
-        }}>💾 Save task</button>
+        }}><span className="inline-flex items-center gap-1.5"><Save size={14} /> Save task</span></button>
       </div>
 
       <div className="space-y-2">
@@ -61,8 +62,8 @@ export default function TasksPage() {
                   body: JSON.stringify({ ...t, done: !t.done, relatedType: 'contact' }),
                 });
                 load();
-              }}>{t.done ? '↩ Undo' : '✅ Done'}</button>
-              <button className="text-xs text-red-300" onClick={async () => { await fetch(`/api/crm/tasks?id=${t.id}`, { method: 'DELETE' }); load(); }}>🗑 Delete</button>
+              }}>{t.done ? <span className='inline-flex items-center gap-1'><CornerUpLeft size={13} /> Undo</span> : <span className='inline-flex items-center gap-1'><Check size={13} /> Done</span>}</button>
+              <button className="text-xs text-red-300" onClick={async () => { await fetch(`/api/crm/tasks?id=${t.id}`, { method: 'DELETE' }); load(); }}><span className="inline-flex items-center gap-1"><Trash2 size={13} /> Delete</span></button>
             </div>
           </div>
         ))}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Users, Plus, Save, Pencil, Trash2, X, CornerUpLeft } from "lucide-react";
 
 type Contact = any;
 
@@ -105,9 +106,9 @@ export default function ContactsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">👥 Contacts</h1>
+      <h1 className="text-2xl font-bold inline-flex items-center gap-2"><Users size={20} /> Contacts</h1>
       <div className="crm-card p-4">
-        <h2 className="font-semibold">➕ Add contact</h2>
+        <h2 className="font-semibold"><span className="inline-flex items-center gap-1.5"><Plus size={14} /> Add contact</span></h2>
         <div className="mt-3 grid gap-2 md:grid-cols-3">
           {contactFields.map(([k, label, type]) => (
             <input
@@ -194,19 +195,19 @@ export default function ContactsPage() {
           <aside className="absolute right-0 top-0 h-full w-full max-w-xl border-l border-neutral-700 bg-neutral-950 p-5 shadow-2xl">
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-xl font-semibold">{selected.firstName} {selected.lastName}</h2>
-              <button className="crm-btn-ghost" onClick={() => setSelected(null)}>✕ Close</button>
+              <button className="crm-btn-ghost" onClick={() => setSelected(null)}><span className="inline-flex items-center gap-1.5"><X size={14} /> Close</span></button>
             </div>
 
             <div className="mt-4 flex gap-2">
               {!editMode ? (
-                <button className="crm-btn" onClick={() => setEditMode(true)}>✏️ Edit</button>
+                <button className="crm-btn" onClick={() => setEditMode(true)}><span className="inline-flex items-center gap-1.5"><Pencil size={14} /> Edit</span></button>
               ) : (
                 <>
-                  <button className="crm-btn" onClick={saveFromTray}>💾 Save</button>
-                  <button className="crm-btn-ghost" onClick={() => { setDraft({ ...selected }); setEditMode(false); setTrayError(""); }}>↩ Cancel</button>
+                  <button className="crm-btn" onClick={saveFromTray}><span className="inline-flex items-center gap-1.5"><Save size={14} /> Save</span></button>
+                  <button className="crm-btn-ghost" onClick={() => { setDraft({ ...selected }); setEditMode(false); setTrayError(""); }}><span className="inline-flex items-center gap-1.5"><CornerUpLeft size={14} /> Cancel</span></button>
                 </>
               )}
-              <button className="crm-btn-ghost text-red-300" onClick={deleteFromTray}>🗑 Delete</button>
+              <button className="crm-btn-ghost text-red-300" onClick={deleteFromTray}><span className="inline-flex items-center gap-1.5"><Trash2 size={14} /> Delete</span></button>
             </div>
 
             <div className="mt-5 space-y-3 overflow-auto pb-10">
