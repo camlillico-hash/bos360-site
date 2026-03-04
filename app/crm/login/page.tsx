@@ -7,7 +7,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   return (
-    <div className="mx-auto mt-20 max-w-md rounded-2xl border border-neutral-800 bg-neutral-900 p-6">
+    <div className="mx-auto mt-20 max-w-md crm-card p-6">
       <h1 className="text-2xl font-semibold">CRM Login</h1>
       <p className="mt-2 text-sm text-slate-400">Use your CRM password to continue.</p>
       <form
@@ -28,11 +28,11 @@ export default function LoginPage() {
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded border border-neutral-700 bg-neutral-950 px-3 py-2"
+          className="w-full crm-input"
           placeholder="Password"
         />
         {error && <p className="text-sm text-red-300">{error}</p>}
-        <button className="w-full rounded bg-[#036734] px-3 py-2 font-semibold">Login</button>
+        <button className="w-full crm-btn font-semibold">Login</button>
       </form>
     </div>
   );

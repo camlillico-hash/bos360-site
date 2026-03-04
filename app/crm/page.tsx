@@ -7,7 +7,8 @@ export default async function CrmHome() {
 
   return (
     <div>
-      <div className="flex items-center gap-3">
+      <span className="crm-kicker">◉ BOS360 Internal</span>
+      <div className="mt-3 flex items-center gap-3">
         <img src="/bos360-logo.svg" alt="BOS360 logo" className="h-12 w-auto rounded-md border border-neutral-800" />
         <h1 className="text-3xl font-bold">Bos360 CRM</h1>
       </div>
@@ -24,7 +25,7 @@ export default async function CrmHome() {
 
 function Card({ label, value, href }: { label: string; value: number; href: string }) {
   return (
-    <Link href={href} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
+    <Link href={href} className="crm-card p-4">
       <p className="text-sm text-slate-400">{label}</p>
       <p className="mt-2 text-3xl font-bold">{value}</p>
     </Link>

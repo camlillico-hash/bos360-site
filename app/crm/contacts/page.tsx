@@ -22,21 +22,21 @@ export default function ContactsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Contacts</h1>
-      <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
+      <div className="crm-card p-4">
         <h2 className="font-semibold">Add contact</h2>
         <div className="mt-3 grid gap-2 md:grid-cols-3">
           {[
             ["firstName", "First name"], ["lastName", "Last name"], ["email", "Email"],
             ["phone", "Phone"], ["company", "Company"], ["title", "Title"], ["leadSource", "Lead source"], ["status", "Status"]
           ].map(([k, label]) => (
-            <input key={k} placeholder={label + ((k === "firstName" || k === "lastName") ? " *" : "")} className="rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5"
+            <input key={k} placeholder={label + ((k === "firstName" || k === "lastName") ? " *" : "")} className="crm-input"
               value={form[k] || ""} onChange={(e) => setForm({ ...form, [k]: e.target.value })} />
           ))}
         </div>
-        <textarea placeholder="Notes" className="mt-2 w-full rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5"
+        <textarea placeholder="Notes" className="mt-2 w-full crm-input"
           value={form.notes || ""} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
         {error && <p className="mt-2 text-sm text-red-300">{error}</p>}
-        <button className="mt-2 rounded bg-[#036734] px-3 py-1.5"
+        <button className="mt-2 crm-btn"
           onClick={async () => {
             setError("");
             const res = await fetch('/api/crm/contacts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(form) });
@@ -47,11 +47,11 @@ export default function ContactsPage() {
         </button>
       </div>
 
-      <input placeholder="Search contacts..." value={query} onChange={(e) => setQuery(e.target.value)} className="w-full rounded border border-neutral-700 bg-neutral-900 px-3 py-2" />
+      <input placeholder="Search contacts..." value={query} onChange={(e) => setQuery(e.target.value)} className="crm-input" />
 
       <div className="space-y-3">
         {filtered.map((c) => (
-          <div key={c.id} className="rounded-2xl border border-neutral-800 bg-neutral-900 p-4">
+          <div key={c.id} className="crm-card p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-semibold">{c.firstName} {c.lastName}</p>
@@ -60,7 +60,7 @@ export default function ContactsPage() {
               </div>
               <button className="text-xs text-red-300" onClick={async () => { await fetch(`/api/crm/contacts?id=${c.id}`, { method: 'DELETE' }); load(); }}>Delete</button>
             </div>
-            <textarea className="mt-2 w-full rounded border border-neutral-700 bg-neutral-950 px-2 py-1.5 text-sm" value={c.notes || ""}
+            <textarea className="mt-2 w-full crm-input text-sm" value={c.notes || ""}
               onChange={(e) => setItems(items.map((x) => x.id === c.id ? { ...x, notes: e.target.value } : x))}
               onBlur={async (e) => { await fetch('/api/crm/contacts', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...c, notes: e.target.value }) }); }} />
           </div>
