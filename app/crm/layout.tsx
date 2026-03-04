@@ -18,8 +18,11 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
               <img src="/bos360-logo.svg" alt="BOS360 logo" className="h-8 w-auto rounded-sm border border-neutral-700" />
               <span className="text-lg font-bold text-slate-100" style={{ fontFamily: "var(--font-playfair-display), serif" }}>CRM</span>
             </Link>
-            <CoachWidget />
+            <CoachWidget mode="desktop-inline" />
             <div className="mt-2 ml-3 shrink-0 sm:ml-4"><Nav /></div>
+          </div>
+          <div className="mx-auto max-w-7xl px-6 pb-3">
+            <CoachWidget mode="mobile-accordion" />
           </div>
         </header>
       )}
