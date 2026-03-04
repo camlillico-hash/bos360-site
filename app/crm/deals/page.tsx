@@ -20,6 +20,8 @@ export default function DealsPage() {
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
   const [trayError, setTrayError] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [inlineDraft, setInlineDraft] = useState<any>(null);
 
   const load = async () => {
     const d = await (await fetch("/api/crm/deals", { cache: "no-store" })).json();
@@ -47,6 +49,17 @@ export default function DealsPage() {
     const c = contacts.find((x) => x.id === id);
     return c ? `${c.firstName || ""} ${c.lastName || ""}`.trim() : "—";
   };
+
+
+  function startInlineEdit(d: any) { setEditingId(d.id); setInlineDraft({ ...d }); }
+  function cancelInlineEdit() { setEditingId(null); setInlineDraft(null); }
+  async function saveInlineEdit() {
+    if (!inlineDraft) return;
+    const res = await fetch('/api/crm/deals', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(inlineDraft) });
+    if (!res.ok) return;
+    await load();
+    cancelInlineEdit();
+  }
 
   function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ stage: STAGES[0] }); setTrayError(""); }
   function openTray(deal: any) { setSelected(deal); setDraft({ ...deal }); setEditMode(false); setCreateMode(false); setTrayError(""); }
@@ -96,9 +109,9 @@ export default function DealsPage() {
       </div>
 
       {view === "bucket" ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="overflow-x-auto pb-2"><div className="flex gap-4 min-w-max">
           {STAGES.map((stage) => (
-            <div key={stage} className="crm-card p-3" onDragOver={(e) => e.preventDefault()} onDrop={async () => { if (!draggingDealId) return; await moveDealStage(draggingDealId, stage); setDraggingDealId(null); }}>
+            <div key={stage} className="crm-card p-3 w-[320px] shrink-0" onDragOver={(e) => e.preventDefault()} onDrop={async () => { if (!draggingDealId) return; await moveDealStage(draggingDealId, stage); setDraggingDealId(null); }}>
               <h3 className="mb-3 font-semibold text-emerald-300">{stageLabel(stage, STAGES.indexOf(stage))}</h3>
               <div className="space-y-2 min-h-10">
                 {sortedDeals.filter((d) => d.stage === stage).map((d) => (
@@ -111,17 +124,25 @@ export default function DealsPage() {
               </div>
             </div>
           ))}
-        </div>
+        </div></div>
       ) : (
         <div className="crm-card overflow-auto">
           <table className="w-full text-sm">
-            <thead className="border-b border-neutral-800 text-slate-400"><tr><th className="px-3 py-2 text-left">Deal</th><th className="px-3 py-2 text-left">Contact</th><th className="px-3 py-2 text-left">Company</th><th className="px-3 py-2 text-left">Stage</th><th className="px-3 py-2 text-left">Created</th></tr></thead>
+            <thead className="border-b border-neutral-800 text-slate-400"><tr><th className="px-3 py-2 text-left">Deal</th><th className="px-3 py-2 text-left">Contact</th><th className="px-3 py-2 text-left">Company</th><th className="px-3 py-2 text-left">Stage</th><th className="px-3 py-2 text-left">Created</th><th className="px-3 py-2 text-left">Actions</th></tr></thead>
             <tbody>
-              {sortedDeals.map((d) => (
-                <tr key={d.id} className="border-b border-neutral-900 hover:bg-neutral-900/60 cursor-pointer" onClick={() => openTray(d)}>
-                  <td className="px-3 py-2">{d.name || "Untitled deal"}</td><td className="px-3 py-2 text-slate-300">{contactName(d.contactId)}</td><td className="px-3 py-2 text-slate-300">{d.company || "—"}</td><td className="px-3 py-2 text-emerald-300">{d.stage}</td><td className="px-3 py-2 text-slate-400">{d.createdAt ? new Date(d.createdAt).toLocaleDateString() : "—"}</td>
-                </tr>
-              ))}
+              {sortedDeals.map((d) => {
+                const editing = editingId === d.id;
+                return (
+                  <tr key={d.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
+                    <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(d)}>{editing ? <input className="crm-input" value={inlineDraft.name || ""} onChange={(e)=>setInlineDraft({...inlineDraft, name:e.target.value})} /> : (d.name || "Untitled deal")}</td>
+                    <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <select className="crm-input" value={inlineDraft.contactId || ""} onChange={(e)=>setInlineDraft({...inlineDraft, contactId:e.target.value})}><option value="">Select linked contact *</option>{contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</select> : contactName(d.contactId)}</td>
+                    <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <input className="crm-input" value={inlineDraft.company || ""} onChange={(e)=>setInlineDraft({...inlineDraft, company:e.target.value})} /> : (d.company || "—")}</td>
+                    <td className="px-3 py-2 text-emerald-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <select className="crm-input" value={inlineDraft.stage || STAGES[0]} onChange={(e)=>setInlineDraft({...inlineDraft, stage:e.target.value})}>{STAGES.map((s)=><option key={s} value={s}>{s}</option>)}</select> : d.stage}</td>
+                    <td className="px-3 py-2 text-slate-400">{d.createdAt ? new Date(d.createdAt).toLocaleDateString() : "—"}</td>
+                    <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" onClick={saveInlineEdit}>Save</button><button className="crm-btn-ghost" onClick={cancelInlineEdit}>Cancel</button></div> : <button className="crm-btn-ghost" onClick={() => openTray(d)}>Open</button>}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

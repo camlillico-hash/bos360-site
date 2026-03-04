@@ -17,6 +17,8 @@ export default function TasksPage() {
   const [draft, setDraft] = useState<any>(null);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [inlineDraft, setInlineDraft] = useState<any>(null);
 
   const load = async () => {
     setTasks(await (await fetch('/api/crm/tasks', { cache: 'no-store' })).json());
@@ -43,6 +45,17 @@ export default function TasksPage() {
     });
     return arr;
   }, [tasks, sortBy, sortDir, contacts]);
+
+
+  function startInlineEdit(t: any) { setEditingId(t.id); setInlineDraft({ ...t }); }
+  function cancelInlineEdit() { setEditingId(null); setInlineDraft(null); }
+  async function saveInlineEdit() {
+    if (!inlineDraft) return;
+    const res = await fetch('/api/crm/tasks', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...inlineDraft, relatedType: 'contact' }) });
+    if (!res.ok) return;
+    await load();
+    cancelInlineEdit();
+  }
 
   function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ relatedType: "contact", done: false }); setError(""); }
   function openTask(t: any) { setSelected(t); setDraft({ ...t }); setCreateMode(false); setEditMode(false); setError(""); }
@@ -97,13 +110,21 @@ export default function TasksPage() {
       ) : (
         <div className="crm-card overflow-auto">
           <table className="w-full text-sm">
-            <thead className="border-b border-neutral-800 text-slate-400"><tr><th className="px-3 py-2 text-left">Task</th><th className="px-3 py-2 text-left">Contact</th><th className="px-3 py-2 text-left">Due</th><th className="px-3 py-2 text-left">Created</th><th className="px-3 py-2 text-left">Status</th></tr></thead>
+            <thead className="border-b border-neutral-800 text-slate-400"><tr><th className="px-3 py-2 text-left">Task</th><th className="px-3 py-2 text-left">Contact</th><th className="px-3 py-2 text-left">Due</th><th className="px-3 py-2 text-left">Created</th><th className="px-3 py-2 text-left">Status</th><th className="px-3 py-2 text-left">Actions</th></tr></thead>
             <tbody>
-              {sorted.map((t) => (
-                <tr key={t.id} className="border-b border-neutral-900 hover:bg-neutral-900/60 cursor-pointer" onClick={() => openTask(t)}>
-                  <td className="px-3 py-2">{t.title}</td><td className="px-3 py-2 text-slate-300">{contactName(t.relatedId)}</td><td className="px-3 py-2 text-slate-300">{t.dueDate || "—"}</td><td className="px-3 py-2 text-slate-400">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}</td><td className="px-3 py-2">{t.done ? <span className="text-emerald-300">Done</span> : <span className="text-amber-300">Open</span>}</td>
-                </tr>
-              ))}
+              {sorted.map((t) => {
+                const editing = editingId === t.id;
+                return (
+                  <tr key={t.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
+                    <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <input className="crm-input" value={inlineDraft.title || ''} onChange={(e)=>setInlineDraft({...inlineDraft, title:e.target.value})} /> : t.title}</td>
+                    <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.relatedId || ''} onChange={(e)=>setInlineDraft({...inlineDraft, relatedId:e.target.value, relatedType:'contact'})}><option value="">Select linked contact *</option>{contacts.map((c)=> <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</select> : contactName(t.relatedId)}</td>
+                    <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <input type="date" className="crm-input" value={inlineDraft.dueDate || ''} onChange={(e)=>setInlineDraft({...inlineDraft, dueDate:e.target.value})} /> : (t.dueDate || '—')}</td>
+                    <td className="px-3 py-2 text-slate-400">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}</td>
+                    <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.done ? 'done':'open'} onChange={(e)=>setInlineDraft({...inlineDraft, done:e.target.value==='done'})}><option value="open">Open</option><option value="done">Done</option></select> : (t.done ? <span className="text-emerald-300">Done</span> : <span className="text-amber-300">Open</span>)}</td>
+                    <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" onClick={saveInlineEdit}>Save</button><button className="crm-btn-ghost" onClick={cancelInlineEdit}>Cancel</button></div> : <button className="crm-btn-ghost" onClick={() => openTask(t)}>Open</button>}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
