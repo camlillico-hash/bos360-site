@@ -48,6 +48,39 @@ const process = [
   },
 ];
 
+const reads = [
+  {
+    title: "Traction",
+    author: "Gino Wickman",
+    rating: "4.1 Goodreads",
+    cover: "https://covers.openlibrary.org/b/isbn/1936661837-L.jpg",
+  },
+  {
+    title: "Scaling Up",
+    author: "Verne Harnish",
+    rating: "4.2 Goodreads",
+    cover: "https://covers.openlibrary.org/b/isbn/0986019526-L.jpg",
+  },
+  {
+    title: "Superabound",
+    author: "Aquin & Haas",
+    rating: "Goodreads rating pending",
+    cover: "https://covers.openlibrary.org/b/title/Superabound-L.jpg",
+  },
+  {
+    title: "The Science of Scaling",
+    author: "Dr. Benjamin Hardy",
+    rating: "Goodreads rating pending",
+    cover: "https://covers.openlibrary.org/b/title/The%20Science%20of%20Scaling-L.jpg",
+  },
+  {
+    title: "The Five Dysfunctions of a Team",
+    author: "Patrick Lencioni",
+    rating: "4.1 Goodreads",
+    cover: "https://covers.openlibrary.org/b/isbn/0787960756-L.jpg",
+  },
+];
+
 export default function Bos360Page() {
   return (
     <main className="min-h-screen bg-neutral-950 text-slate-100">
@@ -253,6 +286,12 @@ export default function Bos360Page() {
         <div className="mx-auto grid max-w-6xl gap-10 px-6 md:grid-cols-2 md:items-center">
           <div>
             <h2 className="flex items-center gap-3 text-3xl font-bold md:text-4xl">
+              <img
+                src="/cam-headshot-circle.png"
+                alt="Cam Lillico"
+                className="h-10 w-10 rounded-full border border-neutral-600 object-cover"
+                loading="lazy"
+              />
               <span aria-hidden className="text-[#ed7d31]">◉</span>
               About Cam Lillico
             </h2>
@@ -272,7 +311,7 @@ export default function Bos360Page() {
               </p>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <a
                 href="https://bos360.ca"
                 target="_blank"
@@ -294,6 +333,15 @@ export default function Bos360Page() {
               <span className="inline-flex items-center gap-2 rounded-lg border border-[#ed7d31]/45 bg-[#ed7d31]/12 px-3 py-2 text-sm font-semibold text-orange-100">
                 10+ years coaching experience
               </span>
+              <a
+                href="https://www.linkedin.com/in/camlillico"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg border border-[#ed7d31]/45 bg-[#ed7d31]/12 px-3 py-2 text-sm font-semibold text-orange-100 transition hover:bg-[#ed7d31]/20"
+              >
+                <img src="https://cdn-icons-png.flaticon.com/512/2496/2496097.png" alt="LinkedIn" className="h-7 w-7 rounded object-cover" />
+                LinkedIn
+              </a>
             </div>
           </div>
 
@@ -323,6 +371,32 @@ export default function Bos360Page() {
               </a>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-16">
+        <h2 className="flex items-center gap-3 text-3xl font-bold md:text-4xl">
+          <span aria-hidden className="text-[#ed7d31]">📚</span>
+          Recommended reads
+        </h2>
+        <p className="mt-3 max-w-4xl text-slate-300">
+          These are frameworks and operating-system books I regularly pull from in planning, leadership alignment,
+          and execution coaching. Great prep if you want to get the most out of a coaching engagement.
+        </p>
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+          {reads.map((book) => (
+            <article key={book.title} className="rounded-2xl border border-neutral-700 bg-neutral-900 p-4">
+              <img
+                src={book.cover}
+                alt={`${book.title} cover`}
+                className="h-52 w-full rounded-lg border border-neutral-700 object-cover bg-neutral-950"
+                loading="lazy"
+              />
+              <h3 className="mt-3 text-sm font-semibold text-slate-100">{book.title}</h3>
+              <p className="mt-1 text-xs text-slate-300">{book.author}</p>
+              <p className="mt-2 text-xs font-semibold text-orange-200">{book.rating}</p>
+            </article>
+          ))}
         </div>
       </section>
     </main>
