@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BriefcaseBusiness, Plus, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List } from "lucide-react";
+import { BriefcaseBusiness, Plus, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Archive } from "lucide-react";
 
 const STAGES = ["Discovery meeting booked", "Discovery meeting completed", "Fit meeting booked", "Fit meeting completed", "Proposal / commitment", "Launch paid (won)", "Lost"];
 const CLIENT_STAGES = ["Launch", "Active rhythm"];
@@ -11,6 +11,7 @@ const stageLabel = (stage: string, idx: number) => `${idx + 1}. ${stage}`;
 export default function DealsPage() {
   const [deals, setDeals] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
+  const [dealStamps, setDealStamps] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [draggingDealId, setDraggingDealId] = useState<string | null>(null);
   const [view, setView] = useState<"bucket" | "table">("table");
@@ -27,6 +28,7 @@ export default function DealsPage() {
     const d = await (await fetch("/api/crm/deals", { cache: "no-store" })).json();
     const c = await (await fetch("/api/crm/contacts", { cache: "no-store" })).json();
     setDeals(d.deals || []);
+    setDealStamps(d.dealStamps || []);
     setContacts(Array.isArray(c) ? c : c.contacts || []);
   };
   useEffect(() => { load(); }, []);
@@ -58,6 +60,12 @@ export default function DealsPage() {
     const deal = deals.find((d) => d.id === dealId);
     if (!deal || deal.stage === stage) return;
     await fetch("/api/crm/deals", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...deal, stage }) });
+    await load();
+  }
+
+  async function removeDealStamp(stampId: string) {
+    if (!confirm("Remove this won-deal placeholder?")) return;
+    await fetch(`/api/crm/deals?stampId=${encodeURIComponent(stampId)}`, { method: "DELETE" });
     await load();
   }
 
@@ -130,6 +138,23 @@ export default function DealsPage() {
               })}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {dealStamps.length > 0 && (
+        <div className="crm-card p-4">
+          <h3 className="mb-3 inline-flex items-center gap-2 font-semibold text-slate-200"><Archive size={16} /> Won placeholders</h3>
+          <div className="space-y-2">
+            {dealStamps.map((s) => (
+              <div key={s.id} className="flex items-center justify-between rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
+                <div>
+                  <p className="text-sm font-medium text-slate-100">{s.name || "Untitled deal"}</p>
+                  <p className="text-xs text-slate-400">{s.company || "—"} · won {s.wonAt ? new Date(s.wonAt).toLocaleDateString() : "—"}</p>
+                </div>
+                <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1" onClick={() => removeDealStamp(s.id)}><Trash2 size={13} /> Remove</button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

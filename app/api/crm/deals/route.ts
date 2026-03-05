@@ -1,6 +1,22 @@
 import { NextResponse } from "next/server";
 import { DEAL_STAGES, getStore, id, now, saveStore } from "@/lib/crm-store";
 
+function upsertDealStamp(store: any, deal: any) {
+  if (deal.stage !== "Launch paid (won)") return;
+  const idx = (store.dealStamps || []).findIndex((s: any) => s.dealId === deal.id);
+  const stamp = {
+    id: idx >= 0 ? store.dealStamps[idx].id : id(),
+    dealId: deal.id,
+    name: deal.name || "Untitled deal",
+    company: deal.company || "",
+    contactId: deal.contactId || "",
+    wonAt: idx >= 0 ? store.dealStamps[idx].wonAt : now(),
+    removedAt: undefined,
+  };
+  if (idx >= 0) store.dealStamps[idx] = stamp;
+  else store.dealStamps = [stamp, ...(store.dealStamps || [])];
+}
+
 function normalizeStage(value: any) {
   const legacyMap: Record<string, string> = {
     "90-minute booked": "Fit meeting booked",
@@ -27,7 +43,7 @@ function normalizeClientStage(stage: string, clientStage: any) {
 
 export async function GET() {
   const store = await getStore();
-  return NextResponse.json({ deals: store.deals, stages: DEAL_STAGES });
+  return NextResponse.json({ deals: store.deals, dealStamps: store.dealStamps || [], stages: DEAL_STAGES });
 }
 
 export async function POST(req: Request) {
@@ -50,6 +66,7 @@ export async function POST(req: Request) {
     clientStage: normalizeClientStage(stage, body.clientStage),
   };
   store.deals.unshift(record);
+  upsertDealStamp(store, record);
   await saveStore(store);
   return NextResponse.json(record);
 }
@@ -74,6 +91,7 @@ export async function PUT(req: Request) {
     clientStage: normalizeClientStage(stage, body.clientStage ?? store.deals[idx].clientStage),
     updatedAt: now(),
   };
+  upsertDealStamp(store, store.deals[idx]);
   await saveStore(store);
   return NextResponse.json(store.deals[idx]);
 }
@@ -81,7 +99,15 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
+  const stampId = searchParams.get("stampId");
   const store = await getStore();
+
+  if (stampId) {
+    store.dealStamps = (store.dealStamps || []).filter((s: any) => s.id !== stampId);
+    await saveStore(store);
+    return NextResponse.json({ ok: true });
+  }
+
   store.deals = store.deals.filter((d) => d.id !== id);
   await saveStore(store);
   return NextResponse.json({ ok: true });
