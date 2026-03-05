@@ -26,6 +26,7 @@ export default function ContactsPage() {
   const [activityDraft, setActivityDraft] = useState<any>({ type: "email" });
   const [activityError, setActivityError] = useState("");
   const [draggingContactId, setDraggingContactId] = useState<string | null>(null);
+  const [hoverStatus, setHoverStatus] = useState<string | null>(null);
   const [view, setView] = useState<"bucket" | "table">("table");
 
   const [selected, setSelected] = useState<Contact | null>(null);
@@ -75,6 +76,7 @@ export default function ContactsPage() {
   async function moveContactStage(contactId: string, status: string) {
     const contact = items.find((c) => c.id === contactId);
     if (!contact || (contact.status || "New") === status) return;
+    setItems((prev) => prev.map((c) => c.id === contactId ? { ...c, status } : c));
     await fetch("/api/crm/contacts", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...contact, status }) });
     await load();
   }
@@ -117,11 +119,11 @@ export default function ContactsPage() {
         <div className="overflow-x-auto pb-2">
           <div className="flex gap-4 min-w-max">
             {CONTACT_STAGES.map((stage, i) => (
-              <div key={stage} className="crm-card p-3 w-[320px] shrink-0" onDragOver={(e) => e.preventDefault()} onDrop={async () => { if (!draggingContactId) return; await moveContactStage(draggingContactId, stage); setDraggingContactId(null); }}>
+              <div key={stage} className={`crm-card p-3 w-[320px] shrink-0 transition-all duration-150 ${hoverStatus === stage ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e) => e.preventDefault()} onDragEnter={() => setHoverStatus(stage)} onDragLeave={() => setHoverStatus((s) => s === stage ? null : s)} onDrop={async () => { if (!draggingContactId) return; await moveContactStage(draggingContactId, stage); setDraggingContactId(null); setHoverStatus(null); }}>
                 <h3 className="mb-3 font-semibold text-emerald-300">{stageLabel(stage, i)}</h3>
                 <div className="space-y-2 min-h-10">
                   {sorted.filter((c) => (c.status || "New") === stage).map((c) => (
-                    <button key={c.id} draggable onDragStart={() => setDraggingContactId(c.id)} onDragEnd={() => setDraggingContactId(null)} className="crm-card w-full p-3 text-left cursor-grab" onClick={() => openTray(c)}>
+                    <button key={c.id} draggable onDragStart={() => setDraggingContactId(c.id)} onDragEnd={() => { setDraggingContactId(null); setHoverStatus(null); }} className={`crm-card w-full p-3 text-left cursor-grab transition-all duration-150 ${draggingContactId === c.id ? "scale-[1.02] opacity-70" : ""}`} onClick={() => openTray(c)}>
                       <p className="font-semibold">{c.firstName} {c.lastName}</p>
                       <p className="text-xs text-slate-400">{c.email || "No email"}</p>
                       {c.linkedin && <p className="text-xs text-slate-400">{c.linkedin}</p>}

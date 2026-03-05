@@ -19,6 +19,7 @@ export default function DealsPage() {
   const [dealStamps, setDealStamps] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [draggingDealId, setDraggingDealId] = useState<string | null>(null);
+  const [hoverStage, setHoverStage] = useState<string | null>(null);
   const [view, setView] = useState<"bucket" | "table">("table");
 
   const [selected, setSelected] = useState<any>(null);
@@ -64,6 +65,10 @@ export default function DealsPage() {
   async function moveDealStage(dealId: string, stage: string) {
     const deal = deals.find((d) => d.id === dealId);
     if (!deal || deal.stage === stage) return;
+
+    // Optimistic move for immediate/smooth drop feedback
+    setDeals((prev) => prev.map((d) => d.id === dealId ? { ...d, stage, probability: stage === "Discovery meeting booked" ? 10 : stage === "Discovery meeting completed" ? 15 : stage === "Fit meeting booked" ? 25 : stage === "Fit meeting completed" ? 35 : stage === "Proposal / commitment" ? 50 : stage === "Launch paid (won)" ? 100 : 0 } : d));
+
     await fetch("/api/crm/deals", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...deal, stage }) });
     await load();
   }
@@ -109,11 +114,11 @@ export default function DealsPage() {
       {view === "bucket" ? (
         <div className="overflow-x-auto pb-2"><div className="flex gap-4 min-w-max">
           {STAGES.map((stage) => (
-            <div key={stage} className="crm-card p-3 w-[320px] shrink-0" onDragOver={(e) => e.preventDefault()} onDrop={async () => { if (!draggingDealId) return; await moveDealStage(draggingDealId, stage); setDraggingDealId(null); }}>
+            <div key={stage} className={`crm-card p-3 w-[320px] shrink-0 transition-all duration-150 ${hoverStage === stage ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e) => e.preventDefault()} onDragEnter={() => setHoverStage(stage)} onDragLeave={() => setHoverStage((s) => s === stage ? null : s)} onDrop={async () => { if (!draggingDealId) return; await moveDealStage(draggingDealId, stage); setDraggingDealId(null); setHoverStage(null); }}>
               <h3 className="mb-3 font-semibold text-emerald-300">{stageLabel(stage, STAGES.indexOf(stage))}</h3>
               <div className="space-y-2 min-h-10">
                 {sortedDeals.filter((d) => d.stage === stage).map((d) => (
-                  <button key={d.id} draggable onDragStart={() => setDraggingDealId(d.id)} onDragEnd={() => setDraggingDealId(null)} className="crm-card bg-neutral-950 w-full p-2 text-left cursor-grab" onClick={() => openTray(d)}>
+                  <button key={d.id} draggable onDragStart={() => setDraggingDealId(d.id)} onDragEnd={() => { setDraggingDealId(null); setHoverStage(null); }} className={`crm-card bg-neutral-950 w-full p-2 text-left cursor-grab transition-all duration-150 ${draggingDealId === d.id ? "scale-[1.02] opacity-70" : ""}`} onClick={() => openTray(d)}>
                     <p className="font-medium">{d.name || "Untitled deal"}</p>
                     <p className="text-xs text-slate-400">{money(d.value)} · {d.probability || 0}%</p>
                     <p className="text-xs text-slate-500">{contactName(d.contactId)}</p>
