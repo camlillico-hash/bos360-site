@@ -7,6 +7,7 @@ const STAGES = ["Discovery meeting booked", "Discovery meeting completed", "Fit 
 const CLIENT_STAGES = ["Launch", "Active rhythm"];
 const PRIMARY_PAIN_OPTIONS = ["Execution", "Strategy", "Culture"];
 const stageLabel = (stage: string, idx: number) => `${idx + 1}. ${stage}`;
+const money = (n?: number) => `$${Math.round(Number(n || 0)).toLocaleString()}`;
 
 export default function DealsPage() {
   const [deals, setDeals] = useState<any[]>([]);
@@ -110,7 +111,7 @@ export default function DealsPage() {
                 {sortedDeals.filter((d) => d.stage === stage).map((d) => (
                   <button key={d.id} draggable onDragStart={() => setDraggingDealId(d.id)} onDragEnd={() => setDraggingDealId(null)} className="crm-card bg-neutral-950 w-full p-2 text-left cursor-grab" onClick={() => openTray(d)}>
                     <p className="font-medium">{d.name || "Untitled deal"}</p>
-                    <p className="text-xs text-slate-400">${d.value || 0} · {d.probability || 0}%</p>
+                    <p className="text-xs text-slate-400">{money(d.value)} · {d.probability || 0}%</p>
                     <p className="text-xs text-slate-500">{contactName(d.contactId)}</p>
                   </button>
                 ))}
@@ -174,8 +175,8 @@ export default function DealsPage() {
               <Field label="Client stage" editMode={editMode || createMode} read={draft.clientStage || "—"}><select className="crm-input" value={draft.clientStage || ""} onChange={(e) => setDraft({ ...draft, clientStage: e.target.value || undefined })}><option value="">Not set</option>{CLIENT_STAGES.map((s) => <option key={s} value={s}>{s}</option>)}</select></Field>
               <Field label="Primary pain" editMode={editMode || createMode} read={draft.primaryPain || "—"}><select className="crm-input" value={draft.primaryPain || ""} onChange={(e) => setDraft({ ...draft, primaryPain: e.target.value || undefined })}><option value="">Not set</option>{PRIMARY_PAIN_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}</select></Field>
               <Field label="Lead source" editMode={editMode || createMode} read={draft.leadSource || "—"}><input className="crm-input" value={draft.leadSource || ""} onChange={(e) => setDraft({ ...draft, leadSource: e.target.value })} /></Field>
-              <Field label="Launch fee" editMode={editMode || createMode} read={draft.value ? `$${draft.value}` : "—"}><input type="number" className="crm-input" value={draft.value || ""} onChange={(e) => setDraft({ ...draft, value: Number(e.target.value || 0) })} /></Field>
-              <Field label="Quarterly fee" editMode={editMode || createMode} read={draft.quarterlyFee ? `$${draft.quarterlyFee}` : "—"}><input type="number" className="crm-input" value={draft.quarterlyFee || ""} onChange={(e) => setDraft({ ...draft, quarterlyFee: Number(e.target.value || 0) })} /></Field>
+              <Field label="Launch fee" editMode={editMode || createMode} read={draft.value ? money(draft.value) : "—"}><input type="number" className="crm-input" value={draft.value || ""} onChange={(e) => setDraft({ ...draft, value: Number(e.target.value || 0) })} /></Field>
+              <Field label="Quarterly fee" editMode={editMode || createMode} read={draft.quarterlyFee ? money(draft.quarterlyFee) : "—"}><input type="number" className="crm-input" value={draft.quarterlyFee || ""} onChange={(e) => setDraft({ ...draft, quarterlyFee: Number(e.target.value || 0) })} /></Field>
               <Field label="Probability" editMode={editMode || createMode} read={draft.probability ? `${draft.probability}%` : "—"}><input type="number" className="crm-input" value={draft.probability || ""} onChange={(e) => setDraft({ ...draft, probability: Number(e.target.value || 0) })} /></Field>
               <Field label="Expected close date" editMode={editMode || createMode} read={draft.expectedCloseDate || "—"}><input type="date" className="crm-input" value={draft.expectedCloseDate || ""} onChange={(e) => setDraft({ ...draft, expectedCloseDate: e.target.value })} /></Field>
               <Field label="Launch Day 1" editMode={editMode || createMode} read={draft.launchDay1Date || "—"}><input type="date" className="crm-input" value={draft.launchDay1Date || ""} onChange={(e) => setDraft({ ...draft, launchDay1Date: e.target.value })} /></Field>

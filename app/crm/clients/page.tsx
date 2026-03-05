@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Handshake, RotateCcw, Trash2 } from "lucide-react";
 
+const money = (n?: number) => `$${Math.round(Number(n || 0)).toLocaleString()}`;
+
 export default function ClientsPage() {
   const [deals, setDeals] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
@@ -60,7 +62,7 @@ export default function ClientsPage() {
               <tr key={d.id} className="border-b border-neutral-900">
                 <td className="px-3 py-2 text-slate-200">{contactName(d.contactId)}</td>
                 <td className="px-3 py-2">{d.name || 'Untitled deal'}</td>
-                <td className="px-3 py-2 text-slate-300">${d.value || 0}</td>
+                <td className="px-3 py-2 text-slate-300">{money(d.value)}</td>
                 <td className="px-3 py-2 text-slate-400">{d.updatedAt ? new Date(d.updatedAt).toLocaleDateString() : '—'}</td>
                 <td className="px-3 py-2 text-slate-300">{d.clientStage || 'Launch'}</td>
                 <td className="px-3 py-2">
