@@ -148,7 +148,7 @@ export default function ContactsPage() {
       {view === "bucket" ? (
         <div className="overflow-x-auto pb-2">
           <div className="flex gap-4 min-w-max">
-            {CONTACT_STAGES.filter((s) => s !== "Discovery meeting booked" && s !== "Not right now").map((stage, i) => (
+            {CONTACT_STAGES.map((stage, i) => (
               <div key={stage} className={`crm-card p-3 w-[240px] shrink-0 transition-all duration-150 ${hoverStatus === stage ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e) => e.preventDefault()} onDragEnter={() => setHoverStatus(stage)} onDragLeave={() => setHoverStatus((s) => s === stage ? null : s)} onDrop={async () => { if (!draggingContactId) return; await moveContactStage(draggingContactId, stage); setDraggingContactId(null); setHoverStatus(null); setHoverDrop(null); }}>
                 <h3 className="mb-3 font-semibold text-emerald-300">{stageLabel(stage, i)}</h3>
                 <div className="min-h-10">
