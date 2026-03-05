@@ -17,6 +17,7 @@ export default function TasksPage() {
   const [view, setView] = useState<"bucket" | "table">("table");
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
   const [hoverTaskStatus, setHoverTaskStatus] = useState<string | null>(null);
+  const [hoverDrop, setHoverDrop] = useState<{ status: string; index: number } | null>(null);
   const [fadingIds, setFadingIds] = useState<string[]>([]);
 
   const [selected, setSelected] = useState<any>(null);
@@ -77,11 +78,32 @@ export default function TasksPage() {
     }, 220);
   }
 
-  async function moveTaskStatus(taskId: string, status: string) {
+  async function moveTaskStatus(taskId: string, status: string, targetIndex?: number) {
     const task = tasks.find((t) => t.id === taskId);
     if (!task || (task.status || "Not started") === status) return;
     if (status === "Completed") return completeTask(task);
-    setTasks((prev) => prev.map((t) => t.id === taskId ? { ...t, status } : t));
+    setTasks((prev) => {
+      const moving = prev.find((t) => t.id === taskId);
+      if (!moving) return prev;
+      const others = prev.filter((t) => t.id !== taskId);
+      const updated = { ...moving, status };
+      if (targetIndex === undefined) return [...others, updated];
+
+      const next: any[] = [];
+      let statusCount = 0;
+      let inserted = false;
+      for (const t of others) {
+        const s = t.status || (t.done ? "Completed" : "Not started");
+        if (s === status && statusCount === targetIndex) {
+          next.push(updated);
+          inserted = true;
+        }
+        next.push(t);
+        if (s === status) statusCount++;
+      }
+      if (!inserted) next.push(updated);
+      return next;
+    });
     await fetch('/api/crm/tasks', {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
@@ -118,16 +140,37 @@ export default function TasksPage() {
         <div className="overflow-x-auto pb-2">
           <div className="flex gap-4 min-w-max">
             {TASK_STATUSES.map((status) => (
-              <div key={status} className={`crm-card p-3 w-[320px] shrink-0 transition-all duration-150 ${hoverTaskStatus === status ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e)=>e.preventDefault()} onDragEnter={() => setHoverTaskStatus(status)} onDragLeave={() => setHoverTaskStatus((s) => s === status ? null : s)} onDrop={async ()=>{ if(!draggingTaskId) return; await moveTaskStatus(draggingTaskId, status); setDraggingTaskId(null); setHoverTaskStatus(null); }}>
+              <div key={status} className={`crm-card p-3 w-[320px] shrink-0 transition-all duration-150 ${hoverTaskStatus === status ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e)=>e.preventDefault()} onDragEnter={() => setHoverTaskStatus(status)} onDragLeave={() => setHoverTaskStatus((s) => s === status ? null : s)} onDrop={async ()=>{ if(!draggingTaskId) return; await moveTaskStatus(draggingTaskId, status); setDraggingTaskId(null); setHoverTaskStatus(null); setHoverDrop(null); }}>
                 <h3 className="mb-3 font-semibold text-emerald-300">{status}</h3>
-                <div className="space-y-2 min-h-10">
-                  {sorted.filter((t) => (t.status || (t.done ? "Completed" : "Not started")) === status).map((t) => (
-                    <button key={t.id} draggable onDragStart={() => setDraggingTaskId(t.id)} onDragEnd={() => { setDraggingTaskId(null); setHoverTaskStatus(null); }} className={`crm-card w-full p-3 text-left cursor-grab transition-all duration-150 ${draggingTaskId === t.id ? 'scale-[1.02] opacity-70' : ''} ${fadingIds.includes(t.id) ? 'opacity-0' : 'opacity-100'}`} onClick={() => openTask(t)}>
-                      <p className="font-medium">{t.title}</p>
-                      <p className="text-xs text-emerald-300">{relatedLabel(t)}</p>
-                      <p className="text-xs text-slate-400">Due: {t.dueDate || '—'}</p>
-                    </button>
-                  ))}
+                <div className="min-h-10">
+                  {(() => {
+                    const stageTasks = sorted.filter((t) => (t.status || (t.done ? "Completed" : "Not started")) === status);
+                    return (
+                      <>
+                        {stageTasks.map((t, idx) => (
+                          <div key={t.id}>
+                            <div
+                              className={`my-1 h-1 rounded-full transition-all ${hoverDrop?.status === status && hoverDrop.index === idx ? "bg-emerald-400" : "bg-transparent"}`}
+                              onDragOver={(e) => e.preventDefault()}
+                              onDragEnter={() => setHoverDrop({ status, index: idx })}
+                              onDrop={async () => { if (!draggingTaskId) return; await moveTaskStatus(draggingTaskId, status, idx); setDraggingTaskId(null); setHoverTaskStatus(null); setHoverDrop(null); }}
+                            />
+                            <button draggable onDragStart={() => setDraggingTaskId(t.id)} onDragEnd={() => { setDraggingTaskId(null); setHoverTaskStatus(null); setHoverDrop(null); }} className={`crm-card w-full p-3 text-left cursor-grab transition-all duration-150 ${draggingTaskId === t.id ? 'scale-[1.02] opacity-70' : ''} ${fadingIds.includes(t.id) ? 'opacity-0' : 'opacity-100'}`} onClick={() => openTask(t)}>
+                              <p className="font-medium">{t.title}</p>
+                              <p className="text-xs text-emerald-300">{relatedLabel(t)}</p>
+                              <p className="text-xs text-slate-400">Due: {t.dueDate || '—'}</p>
+                            </button>
+                          </div>
+                        ))}
+                        <div
+                          className={`mt-1 h-1 rounded-full transition-all ${hoverDrop?.status === status && hoverDrop.index === stageTasks.length ? "bg-emerald-400" : "bg-transparent"}`}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDragEnter={() => setHoverDrop({ status, index: stageTasks.length })}
+                          onDrop={async () => { if (!draggingTaskId) return; await moveTaskStatus(draggingTaskId, status, stageTasks.length); setDraggingTaskId(null); setHoverTaskStatus(null); setHoverDrop(null); }}
+                        />
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
             ))}
