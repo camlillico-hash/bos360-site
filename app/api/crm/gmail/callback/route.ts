@@ -9,7 +9,8 @@ export async function GET(req: Request) {
   try {
     await storeGoogleCode(code);
     return NextResponse.redirect(new URL("/crm/settings?gmail=connected", req.url));
-  } catch {
-    return NextResponse.redirect(new URL("/crm/settings?gmail=error", req.url));
+  } catch (e: any) {
+    const msg = encodeURIComponent(String(e?.message || "unknown"));
+    return NextResponse.redirect(new URL(`/crm/settings?gmail=error&reason=${msg}`, req.url));
   }
 }

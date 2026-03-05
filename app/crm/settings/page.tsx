@@ -2,7 +2,7 @@ import { getStore, storageMode } from "@/lib/crm-store";
 import { gmailReady } from "@/lib/gmail";
 import { Settings, Mail, Database, Shield } from "lucide-react";
 
-export default async function SettingsPage() {
+export default async function SettingsPage({ searchParams }: { searchParams?: { gmail?: string; reason?: string } }) {
   const store = await getStore();
   const ready = gmailReady();
   const mode = storageMode();
@@ -16,6 +16,8 @@ export default async function SettingsPage() {
         <p className="mt-2 text-sm text-slate-400">
           Status: {store.gmail.connectedAt ? `Connected (${new Date(store.gmail.connectedAt).toLocaleString()})` : "Not connected"}
         </p>
+        {searchParams?.gmail === "connected" && <p className="mt-2 text-sm text-emerald-300">Gmail connected successfully.</p>}
+        {searchParams?.gmail === "error" && <p className="mt-2 text-sm text-rose-300">Gmail connect failed{searchParams?.reason ? `: ${decodeURIComponent(searchParams.reason)}` : "."}</p>}
         {!ready && (
           <p className="mt-2 text-sm text-amber-300">
             Add GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI in env to enable connect.
@@ -28,6 +30,7 @@ export default async function SettingsPage() {
           </form>
         </div>
         <p className="mt-3 text-xs text-slate-500">Synced messages: {store.gmail.messages.length}</p>
+        <p className="mt-1 text-xs text-slate-500">Token state: {store.gmail.tokens?.refresh_token ? "refresh token present" : store.gmail.tokens?.access_token ? "access token only" : "no tokens"}</p>
       </section>
 
 
