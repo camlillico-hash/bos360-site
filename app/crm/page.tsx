@@ -117,14 +117,14 @@ export default async function CrmHome() {
             </ul>
           )}
         </div>
-        <div className="crm-card p-4">
-          <Link href="/crm/tasks" className="mb-2 inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200"><CheckSquare size={14} /> Upcoming tasks</Link>
+        <Link href="/crm/tasks" className="crm-card block p-4 hover:-translate-y-0.5">
+          <p className="mb-2 inline-flex items-center gap-1.5 text-sm text-slate-400"><CheckSquare size={14} /> Upcoming tasks</p>
           {upcomingTasks.length === 0 ? <p className="text-sm text-slate-500">No upcoming dated tasks.</p> : (
             <ul className="space-y-2 text-sm">
               {upcomingTasks.slice(0, 8).map((t) => <li key={t.id} className="text-slate-200">• {t.title} <span className="text-slate-400">({contactMap.get(t.relatedId || "") || "Unlinked"}, {t.dueDate})</span></li>)}
             </ul>
           )}
-        </div>
+        </Link>
       </section>
 
       <section>
