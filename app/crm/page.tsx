@@ -99,24 +99,24 @@ export default async function CrmHome() {
 
       <section className="grid gap-4 lg:grid-cols-3">
         <Card icon={<Activity size={16} />} label="Activities this week" value={activitiesThisWeek.length} href="/crm/activities" />
-        <div className="crm-card p-4 lg:col-span-2">
+        <Link href="/crm/activities" className="crm-card block p-4 hover:-translate-y-0.5 lg:col-span-2">
           <p className="text-sm font-semibold text-slate-300">Status report from <span className={glyphMood.nameColor}>Sgt. Glyph</span></p>
           <p className={`mt-2 inline-flex items-center gap-2 ${glyphMood.color}`}>
             <GlyphMoodIcon size={16} />
             <span className="text-slate-100">{glyphMood.text}</span>
           </p>
-        </div>
+        </Link>
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <div className="crm-card p-4">
+        <Link href="/crm/tasks" className="crm-card block p-4 hover:-translate-y-0.5">
           <p className="mb-2 inline-flex items-center gap-1.5 text-sm text-slate-400"><CheckSquare size={14} /> Overdue tasks</p>
           {overdueTasks.length === 0 ? <p className="text-sm text-slate-500">No overdue tasks.</p> : (
             <ul className="space-y-2 text-sm">
               {overdueTasks.slice(0, 8).map((t) => <li key={t.id} className="text-slate-200">• {t.title} <span className="text-slate-400">({contactMap.get(t.relatedId || "") || "Unlinked"}, {t.dueDate})</span></li>)}
             </ul>
           )}
-        </div>
+        </Link>
         <Link href="/crm/tasks" className="crm-card block p-4 hover:-translate-y-0.5">
           <p className="mb-2 inline-flex items-center gap-1.5 text-sm text-slate-400"><CheckSquare size={14} /> Upcoming tasks</p>
           {upcomingTasks.length === 0 ? <p className="text-sm text-slate-500">No upcoming dated tasks.</p> : (
@@ -136,7 +136,7 @@ export default async function CrmHome() {
         </div>
       </section>
 
-      <section className="crm-card p-4">
+      <Link href="/crm/deals" className="crm-card block p-4 hover:-translate-y-0.5">
         <h2 className="mb-3 inline-flex items-center gap-2 text-lg font-semibold"><BarChart3 size={18} /> Open Pipeline</h2>
         <div className="overflow-auto">
           <table className="w-full text-sm">
@@ -166,19 +166,19 @@ export default async function CrmHome() {
             </tbody>
           </table>
         </div>
-      </section>
+      </Link>
 
-      <section className="crm-card p-4">
+      <Link href="/crm/deals" className="crm-card block p-4 hover:-translate-y-0.5">
         <h2 className="mb-3 inline-flex items-center gap-2 text-lg font-semibold"><Percent size={18} /> Conversion rates</h2>
         <ul className="space-y-2 text-sm">
           <li className="flex items-center justify-between"><span>Connected → Discovery booked</span><span className="font-semibold">{conversion.connectedToDiscoveryBooked}%</span></li>
           <li className="flex items-center justify-between"><span>Discovery completed → Fit booked</span><span className="font-semibold">{conversion.discoveryToFitBooked}%</span></li>
           <li className="flex items-center justify-between"><span>Fit completed → Won</span><span className="font-semibold">{conversion.fitCompletedToWon}%</span></li>
         </ul>
-      </section>
+      </Link>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <div className="crm-card p-4">
+        <Link href="/crm/clients" className="crm-card block p-4 hover:-translate-y-0.5">
           <h2 className="mb-3 inline-flex items-center gap-2 text-lg font-semibold"><Trophy size={18} /> Won deals</h2>
           <div className="overflow-auto">
             <table className="w-full text-sm">
@@ -197,9 +197,9 @@ export default async function CrmHome() {
               </tbody>
             </table>
           </div>
-        </div>
+        </Link>
 
-        <div className="crm-card p-4">
+        <Link href="/crm/deals" className="crm-card block p-4 hover:-translate-y-0.5">
           <h2 className="mb-3 inline-flex items-center gap-2 text-lg font-semibold"><CircleX size={18} /> Lost deals</h2>
           <div className="overflow-auto">
             <table className="w-full text-sm">
@@ -218,7 +218,7 @@ export default async function CrmHome() {
               </tbody>
             </table>
           </div>
-        </div>
+        </Link>
       </section>
     </div>
   );
