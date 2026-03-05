@@ -54,10 +54,10 @@ export default function CoachWidget({ mode = "desktop-inline" }: { mode?: "deskt
         <button
           onClick={() => setMobileOpen((v) => !v)}
           className="flex w-full items-center justify-between rounded-xl border border-neutral-700 bg-neutral-900/85 px-3 py-2"
-          aria-label="Toggle Sales Sgt. Glyphy"
+          aria-label="Toggle Sales Sgt. Glyph"
         >
           <span className="inline-flex items-center gap-2">
-            <img src={data.avatar} alt="Glyphy avatar" className="h-10 w-10 rounded-full border border-neutral-700 object-cover" />
+            <img src={data.avatar} alt="Glyph avatar" className="h-10 w-10 rounded-full border border-neutral-700 object-cover" />
             <span>
               <p className="text-base font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }}>
                 {data.name}
@@ -81,7 +81,7 @@ export default function CoachWidget({ mode = "desktop-inline" }: { mode?: "deskt
 
   return (
     <div className="mx-4 hidden min-w-0 flex-1 items-center gap-3 rounded-xl border border-neutral-700 bg-neutral-900/80 px-3 py-2 md:flex">
-      <img src={data.avatar} alt="Glyphy avatar" className="h-[65px] w-[65px] shrink-0 rounded-xl border border-neutral-700 object-cover" />
+      <img src={data.avatar} alt="Glyph avatar" className="h-[65px] w-[65px] shrink-0 rounded-xl border border-neutral-700 object-cover" />
       <div className="min-w-0">
         <div className="flex items-center gap-2">
           <p className="truncate text-lg font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }}>
