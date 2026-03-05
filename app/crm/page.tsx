@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { getStore, now, DEAL_STAGES } from "@/lib/crm-store";
-import { Activity, BriefcaseBusiness, CheckSquare, Handshake, Users } from "lucide-react";
+import { Activity, BriefcaseBusiness, CheckSquare, Handshake, Users, Crosshair } from "lucide-react";
 
 export default async function CrmHome() {
   const store = await getStore();
@@ -73,7 +73,7 @@ export default async function CrmHome() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Command Post</h1>
+        <h1 className="inline-flex items-center gap-2 text-3xl font-bold"><Crosshair size={28} /> Command Post</h1>
         <p className="mt-2 text-slate-400">Plan, direct, control, act, and make decisions.</p>
       </div>
 

@@ -20,6 +20,16 @@ export const CONTACT_STAGES = ["New", "Attempting", "Connected", "Discovery meet
 
 export const DEAL_STAGES = ["Discovery meeting booked", "Discovery meeting completed", "Fit meeting booked", "Fit meeting completed", "Proposal / commitment", "Launch paid (won)", "Lost"] as const;
 
+export const DEAL_STAGE_WEIGHTS: Record<string, number> = {
+  "Discovery meeting booked": 10,
+  "Discovery meeting completed": 15,
+  "Fit meeting booked": 25,
+  "Fit meeting completed": 35,
+  "Proposal / commitment": 50,
+  "Launch paid (won)": 100,
+  "Lost": 0,
+};
+
 const DATABASE_URL = process.env.DATABASE_URL;
 const pool = DATABASE_URL ? new Pool({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } }) : null;
 let schemaReady = false;
@@ -37,7 +47,7 @@ function normalizeStore(store: CrmStore): CrmStore {
   const deals = (store.deals || []).map((d) => {
     const stage = mapLegacyDealStage(d.stage);
     const clientStage = stage === "Launch paid (won)" ? (d.clientStage || "Launch") : d.clientStage;
-    return { ...d, stage, clientStage };
+    return { ...d, stage, clientStage, probability: DEAL_STAGE_WEIGHTS[stage] ?? 0 };
   });
   return { ...store, deals, dealStamps: store.dealStamps || [] };
 }

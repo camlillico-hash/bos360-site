@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { DEAL_STAGES, getStore, id, now, saveStore } from "@/lib/crm-store";
+import { DEAL_STAGES, DEAL_STAGE_WEIGHTS, getStore, id, now, saveStore } from "@/lib/crm-store";
 
 function upsertDealStamp(store: any, deal: any) {
   if (deal.stage !== "Launch paid (won)") return;
@@ -63,6 +63,7 @@ export async function POST(req: Request) {
     updatedAt: now(),
     ...body,
     stage,
+    probability: DEAL_STAGE_WEIGHTS[stage] ?? 0,
     primaryPain: normalizePrimaryPain(body.primaryPain),
     clientStage: normalizeClientStage(stage, body.clientStage),
   };
@@ -88,6 +89,7 @@ export async function PUT(req: Request) {
     ...store.deals[idx],
     ...body,
     stage,
+    probability: DEAL_STAGE_WEIGHTS[stage] ?? 0,
     primaryPain: normalizePrimaryPain(body.primaryPain),
     clientStage: normalizeClientStage(stage, body.clientStage ?? store.deals[idx].clientStage),
     updatedAt: now(),
