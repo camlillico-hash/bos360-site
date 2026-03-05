@@ -112,6 +112,19 @@ export default function Bos360Page() {
         </div>
       </section>
 
+      {/* ACCOLADES */}
+      <section className="mx-auto max-w-6xl px-6 pb-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="inline-flex items-center rounded-full border border-[#ed7d31]/45 bg-[#ed7d31]/12 px-4 py-1.5 text-sm font-semibold text-orange-100">
+            BOS360 Certified Coach
+          </span>
+          <span className="inline-flex items-center rounded-full border border-[#ed7d31]/45 bg-[#ed7d31]/12 px-4 py-1.5 text-sm font-semibold text-orange-100">
+            Expert in Residence · Innovation Cluster
+          </span>
+          <p className="text-sm text-slate-300 md:ml-2">10+ years coaching experience</p>
+        </div>
+      </section>
+
       {/* PILLARS */}
       <section className="mx-auto max-w-6xl px-6 py-10 md:py-12">
         <h2 className="flex items-center gap-3 text-3xl font-bold md:text-4xl">
