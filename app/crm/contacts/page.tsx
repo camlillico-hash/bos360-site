@@ -7,10 +7,11 @@ import Papa from "papaparse";
 type Contact = any;
 const CONTACT_STAGES = ["New", "Attempting", "Connected", "Discovery meeting booked", "Not right now"];
 const CONTACT_TYPES = ["Influencer", "Decision maker", "Networker", "Other"];
+const PRIMARY_PAIN_OPTIONS = ["Execution", "Strategy", "Culture"];
 const contactFields: Array<[string, string, string]> = [
   ["firstName", "First name", "text"], ["lastName", "Last name", "text"], ["email", "Email", "email"],
   ["phone", "Phone", "text"],
-  ["linkedin", "LinkedIn", "text"], ["company", "Company", "text"], ["title", "Title", "text"], ["type", "Type", "select"], ["leadSource", "Lead source", "text"],
+  ["linkedin", "LinkedIn", "text"], ["company", "Company", "text"], ["title", "Title", "text"], ["type", "Type", "select"], ["primaryPain", "Primary pain", "select"], ["leadSource", "Lead source", "text"],
 ];
 const stageLabel = (stage: string, idx: number) => `${idx + 1}. ${stage}`;
 
@@ -167,7 +168,7 @@ export default function ContactsPage() {
               <h2 className="text-xl font-semibold">Import contacts from CSV</h2>
               <button className="crm-btn-ghost inline-flex items-center gap-1.5" onClick={() => setImportOpen(false)}><X size={14} /> Close</button>
             </div>
-            <p className="mt-2 text-sm text-slate-400">Headers supported: firstName,lastName,email,phone,company,title,type,leadSource,status,notes</p>
+            <p className="mt-2 text-sm text-slate-400">Headers supported: firstName,lastName,email,phone,company,title,type,primaryPain,leadSource,status,notes</p>
             <div className="mt-4">
               <input
                 type="file"
@@ -233,6 +234,11 @@ export default function ContactsPage() {
                       <select className="crm-input" value={draft[k] || ""} onChange={(e) => setDraft({ ...draft, [k]: e.target.value })}>
                         <option value="">Select type</option>
                         {CONTACT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    ) : k === "primaryPain" ? (
+                      <select className="crm-input" value={draft[k] || ""} onChange={(e) => setDraft({ ...draft, [k]: e.target.value || undefined })}>
+                        <option value="">Select primary pain</option>
+                        {PRIMARY_PAIN_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}
                       </select>
                     ) : (
                       <input type={type === "select" ? "text" : type} className="crm-input" value={draft[k] || ""} onChange={(e) => setDraft({ ...draft, [k]: e.target.value })} />

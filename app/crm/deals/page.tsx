@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { BriefcaseBusiness, Plus, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List } from "lucide-react";
 
-const STAGES = ["Discovery meeting booked", "90-minute booked", "90-minute complete", "Verbal Yes", "Client signed (won)", "Lost"];
+const STAGES = ["Discovery meeting booked", "Discovery meeting completed", "Fit meeting booked", "Fit meeting completed", "Proposal / commitment", "Launch paid (won)", "Lost"];
+const CLIENT_STAGES = ["Launch", "Active rhythm"];
+const PRIMARY_PAIN_OPTIONS = ["Execution", "Strategy", "Culture"];
 const stageLabel = (stage: string, idx: number) => `${idx + 1}. ${stage}`;
 
 export default function DealsPage() {
@@ -29,7 +31,7 @@ export default function DealsPage() {
   };
   useEffect(() => { load(); }, []);
 
-  const visibleDeals = useMemo(() => deals.filter((d) => d.stage !== "Client signed (won)"), [deals]);
+  const visibleDeals = useMemo(() => deals.filter((d) => d.stage !== "Launch paid (won)"), [deals]);
   const sortedDeals = useMemo(() => [...visibleDeals], [visibleDeals]);
 
   const contactName = (id?: string) => {
@@ -145,6 +147,9 @@ export default function DealsPage() {
               <Field label="Deal name" editMode={editMode || createMode}><input className="crm-input" value={draft.name || ""} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></Field>
               <Field label="Linked contact" editMode={editMode || createMode} read={!(editMode || createMode) ? contactName(draft.contactId) : undefined}><select className="crm-input" value={draft.contactId || ""} onChange={(e) => setDraft({ ...draft, contactId: e.target.value })}><option value="">Select linked contact *</option>{contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName} {c.email ? `(${c.email})` : ""}</option>)}</select></Field>
               <Field label="Stage" editMode={editMode || createMode} read={draft.stage ? stageLabel(draft.stage, STAGES.indexOf(draft.stage)) : "—"}><select className="crm-input" value={draft.stage || STAGES[0]} onChange={(e) => setDraft({ ...draft, stage: e.target.value })}>{STAGES.map((s, i) => <option key={s} value={s}>{stageLabel(s, i)}</option>)}</select></Field>
+              <Field label="Client stage" editMode={editMode || createMode} read={draft.clientStage || "—"}><select className="crm-input" value={draft.clientStage || ""} onChange={(e) => setDraft({ ...draft, clientStage: e.target.value || undefined })}><option value="">Not set</option>{CLIENT_STAGES.map((s) => <option key={s} value={s}>{s}</option>)}</select></Field>
+              <Field label="Primary pain" editMode={editMode || createMode} read={draft.primaryPain || "—"}><select className="crm-input" value={draft.primaryPain || ""} onChange={(e) => setDraft({ ...draft, primaryPain: e.target.value || undefined })}><option value="">Not set</option>{PRIMARY_PAIN_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}</select></Field>
+              <Field label="Lead source" editMode={editMode || createMode} read={draft.leadSource || "—"}><input className="crm-input" value={draft.leadSource || ""} onChange={(e) => setDraft({ ...draft, leadSource: e.target.value })} /></Field>
               <Field label="Value" editMode={editMode || createMode} read={draft.value ? `$${draft.value}` : "—"}><input type="number" className="crm-input" value={draft.value || ""} onChange={(e) => setDraft({ ...draft, value: Number(e.target.value || 0) })} /></Field>
               <Field label="Probability" editMode={editMode || createMode} read={draft.probability ? `${draft.probability}%` : "—"}><input type="number" className="crm-input" value={draft.probability || ""} onChange={(e) => setDraft({ ...draft, probability: Number(e.target.value || 0) })} /></Field>
               <Field label="Expected close date" editMode={editMode || createMode} read={draft.expectedCloseDate || "—"}><input type="date" className="crm-input" value={draft.expectedCloseDate || ""} onChange={(e) => setDraft({ ...draft, expectedCloseDate: e.target.value })} /></Field>

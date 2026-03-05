@@ -7,18 +7,27 @@ function normalizeStatus(value: string | undefined) {
   return (CONTACT_STAGES as readonly string[]).includes(v) ? v : "New";
 }
 
+function normalizePrimaryPain(value: any) {
+  const v = String(value || "").trim();
+  return ["Execution", "Strategy", "Culture"].includes(v) ? v : undefined;
+}
+
 function maybeCreateDealForDiscovery(store: any, contact: any) {
   if (contact.status !== "Discovery meeting booked") return;
-  const exists = store.deals.some((d: any) => d.contactId === contact.id);
+  const exists = store.deals.some((d: any) => d.contactId === contact.id && d.stage !== "Lost");
   if (exists) return;
 
-  const nameBase = `${contact.firstName || ""} ${contact.lastName || ""}`.trim() || "New Contact";
+  const company = String(contact.company || "").trim();
+  const fallback = `${contact.firstName || ""} ${contact.lastName || ""}`.trim() || "New Contact";
+  const nameBase = company || fallback;
   store.deals.unshift({
     id: id(),
-    name: `${nameBase} - Coaching Opportunity`,
+    name: `${nameBase} - BOS360`,
     contactId: contact.id,
-    company: contact.company || "",
+    company: company || "",
     stage: DEAL_STAGES[0],
+    primaryPain: normalizePrimaryPain(contact.primaryPain),
+    leadSource: contact.leadSource || "",
     createdAt: now(),
     updatedAt: now(),
     nextStep: "Run discovery meeting",
@@ -47,7 +56,7 @@ export async function POST(req: Request) {
   }
 
   const store = await getStore();
-  const record = { id: id(), createdAt: now(), updatedAt: now(), status: normalizeStatus(body.status), ...body };
+  const record = { id: id(), createdAt: now(), updatedAt: now(), status: normalizeStatus(body.status), ...body, primaryPain: normalizePrimaryPain(body.primaryPain) };
   maybeCreateDealForDiscovery(store, record);
   store.contacts.unshift(record);
   await saveStore(store);
@@ -64,7 +73,7 @@ export async function PUT(req: Request) {
   const idx = store.contacts.findIndex((c) => c.id === body.id);
   if (idx < 0) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const updated = { ...store.contacts[idx], ...body, status: normalizeStatus(body.status), updatedAt: now() };
+  const updated = { ...store.contacts[idx], ...body, status: normalizeStatus(body.status), primaryPain: normalizePrimaryPain(body.primaryPain), updatedAt: now() };
   maybeCreateDealForDiscovery(store, updated);
   store.contacts[idx] = updated;
 

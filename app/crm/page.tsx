@@ -6,8 +6,8 @@ import { Users, BriefcaseBusiness, BarChart3, CheckSquare, Handshake, Activity }
 
 export default async function CrmHome() {
   const store = await getStore();
-  const openDeals = store.deals.filter((d) => d.stage !== "Client signed (won)" && d.stage !== "Lost");
-  const activeClients = store.deals.filter((d) => d.stage === "Client signed (won)").length;
+  const openDeals = store.deals.filter((d) => d.stage !== "Launch paid (won)" && d.stage !== "Lost");
+  const activeClients = store.deals.filter((d) => d.stage === "Launch paid (won)").length;
   const oneWeekAgo = new Date(now()).getTime() - 7 * 24 * 60 * 60 * 1000;
   const activitiesThisWeek = (store.activities || []).filter((a) => {
     const ts = a.occurredAt || a.createdAt;

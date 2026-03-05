@@ -2,8 +2,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Pool } from "pg";
 
-export type Contact = { id: string; firstName?: string; lastName?: string; email?: string; phone?: string; linkedin?: string; company?: string; title?: string; leadSource?: string; status?: string; tags?: string[]; notes?: string; lastActivityDate?: string; lastActivityType?: string; createdAt: string; updatedAt: string; };
-export type Deal = { id: string; name?: string; contactId?: string; company?: string; stage: string; value?: number; probability?: number; expectedCloseDate?: string; nextStep?: string; lastActivityAt?: string; notes?: string; createdAt: string; updatedAt: string; };
+export type Contact = { id: string; firstName?: string; lastName?: string; email?: string; phone?: string; linkedin?: string; company?: string; title?: string; type?: string; leadSource?: string; primaryPain?: "Execution" | "Strategy" | "Culture"; status?: string; tags?: string[]; notes?: string; lastActivityDate?: string; lastActivityType?: string; createdAt: string; updatedAt: string; };
+export type Deal = { id: string; name?: string; contactId?: string; company?: string; stage: string; clientStage?: "Launch" | "Active rhythm"; primaryPain?: "Execution" | "Strategy" | "Culture"; leadSource?: string; value?: number; probability?: number; expectedCloseDate?: string; nextStep?: string; lastActivityAt?: string; notes?: string; createdAt: string; updatedAt: string; };
 export type Task = { id: string; title: string; relatedType?: "contact" | "deal"; relatedId?: string; dueDate?: string; done: boolean; notes?: string; createdAt: string; updatedAt: string; };
 export type GmailMessage = { id: string; threadId?: string; from?: string; to?: string; subject?: string; date?: string; snippet?: string; };
 export type Activity = { id: string; contactId: string; type: "email" | "call" | "text" | "linkedin" | "in_person" | "meeting" | "task_completed"; note?: string; occurredAt: string; createdAt: string; updatedAt: string; };
@@ -16,11 +16,29 @@ const initialStore: CrmStore = { contacts: [], deals: [], tasks: [], activities:
 
 export const CONTACT_STAGES = ["New", "Attempting", "Connected", "Discovery meeting booked", "Not right now"] as const;
 
-export const DEAL_STAGES = ["Discovery meeting booked", "90-minute booked", "90-minute complete", "Verbal Yes", "Client signed (won)", "Lost"] as const;
+export const DEAL_STAGES = ["Discovery meeting booked", "Discovery meeting completed", "Fit meeting booked", "Fit meeting completed", "Proposal / commitment", "Launch paid (won)", "Lost"] as const;
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const pool = DATABASE_URL ? new Pool({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } }) : null;
 let schemaReady = false;
+
+function mapLegacyDealStage(stage: string | undefined) {
+  const s = String(stage || "").trim();
+  if (s === "90-minute booked") return "Fit meeting booked";
+  if (s === "90-minute complete") return "Fit meeting completed";
+  if (s === "Verbal Yes") return "Proposal / commitment";
+  if (s === "Client signed (won)") return "Launch paid (won)";
+  return s || DEAL_STAGES[0];
+}
+
+function normalizeStore(store: CrmStore): CrmStore {
+  const deals = (store.deals || []).map((d) => {
+    const stage = mapLegacyDealStage(d.stage);
+    const clientStage = stage === "Launch paid (won)" ? (d.clientStage || "Launch") : d.clientStage;
+    return { ...d, stage, clientStage };
+  });
+  return { ...store, deals };
+}
 
 async function ensureSchema() {
   if (!pool || schemaReady) return;
@@ -70,13 +88,13 @@ async function getStorePg(): Promise<CrmStore> {
     pool.query("select data from crm_meta where key='gmail' limit 1"),
   ]);
   const gmailData = gmailQ.rows[0]?.data || { messages: [] };
-  return {
+  return normalizeStore({
     contacts: contactsQ.rows.map((r: any) => r.data),
     deals: dealsQ.rows.map((r: any) => r.data),
     tasks: tasksQ.rows.map((r: any) => r.data),
     activities: activitiesQ.rows.map((r: any) => r.data),
     gmail: { ...gmailData, messages: gmailData.messages || [] },
-  };
+  });
 }
 
 async function saveStorePg(store: CrmStore) {
@@ -115,7 +133,7 @@ async function getStoreFile(): Promise<CrmStore> {
   await mkdir(dataDir, { recursive: true });
   try {
     const parsed = JSON.parse(await readFile(dbPath, "utf8")) as CrmStore;
-    return { ...initialStore, ...parsed, gmail: { ...initialStore.gmail, ...(parsed.gmail || {}), messages: parsed.gmail?.messages || [] } };
+    return normalizeStore({ ...initialStore, ...parsed, gmail: { ...initialStore.gmail, ...(parsed.gmail || {}), messages: parsed.gmail?.messages || [] } });
   } catch {
     await writeFile(dbPath, JSON.stringify(initialStore, null, 2));
     return initialStore;

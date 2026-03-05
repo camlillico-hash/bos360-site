@@ -15,7 +15,7 @@ export default function ClientsPage() {
   };
   useEffect(() => { load(); }, []);
 
-  const clients = useMemo(() => deals.filter((d) => d.stage === 'Client signed (won)'), [deals]);
+  const clients = useMemo(() => deals.filter((d) => d.stage === 'Launch paid (won)'), [deals]);
 
   const contactName = (id?: string) => {
     const c = contacts.find((x) => x.id === id);
@@ -26,7 +26,7 @@ export default function ClientsPage() {
     await fetch('/api/crm/deals', {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ...deal, stage: 'Verbal Yes' }),
+      body: JSON.stringify({ ...deal, stage: 'Proposal / commitment' }),
     });
     load();
   }
@@ -51,6 +51,7 @@ export default function ClientsPage() {
               <th className="px-3 py-2 text-left">Deal</th>
               <th className="px-3 py-2 text-left">Value</th>
               <th className="px-3 py-2 text-left">Signed</th>
+              <th className="px-3 py-2 text-left">Client stage</th>
               <th className="px-3 py-2 text-left">Actions</th>
             </tr>
           </thead>
@@ -61,6 +62,7 @@ export default function ClientsPage() {
                 <td className="px-3 py-2">{d.name || 'Untitled deal'}</td>
                 <td className="px-3 py-2 text-slate-300">${d.value || 0}</td>
                 <td className="px-3 py-2 text-slate-400">{d.updatedAt ? new Date(d.updatedAt).toLocaleDateString() : '—'}</td>
+                <td className="px-3 py-2 text-slate-300">{d.clientStage || 'Launch'}</td>
                 <td className="px-3 py-2">
                   <div className="flex gap-2">
                     <button className="crm-btn-ghost inline-flex items-center gap-1 text-xs" onClick={() => moveBack(d)}><RotateCcw size={13} /> Move back</button>
@@ -70,7 +72,7 @@ export default function ClientsPage() {
               </tr>
             ))}
             {clients.length === 0 && (
-              <tr><td className="px-3 py-6 text-slate-500" colSpan={5}>No clients yet. Move a deal to "Client signed (won)" to graduate it here.</td></tr>
+              <tr><td className="px-3 py-6 text-slate-500" colSpan={6}>No clients yet. Move a deal to "Launch paid (won)" to graduate it here.</td></tr>
             )}
           </tbody>
         </table>

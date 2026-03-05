@@ -3,6 +3,7 @@ import { getStore, id, now, saveStore } from "@/lib/crm-store";
 
 const ALLOWED_TYPES = ["Influencer", "Decision maker", "Networker", "Other"];
 const ALLOWED_STAGES = ["New", "Attempting", "Connected", "Discovery meeting booked", "Not right now"];
+const ALLOWED_PRIMARY_PAIN = ["Execution", "Strategy", "Culture"];
 
 function norm(v: any) {
   const out = String(v ?? "").trim();
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
 
     const type = norm(r.type || r.Type);
     const status = norm(r.status || r["Lead Status"] || r.Stage || r.stage);
+    const primaryPain = norm(r.primaryPain || r["Primary pain"] || r["Primary Pain"]);
 
     const contact: any = {
       id: id(),
@@ -63,6 +65,7 @@ export async function POST(req: Request) {
       title: norm(r.title || r.Title),
       type: ALLOWED_TYPES.includes(type) ? type : "",
       leadSource: norm(r.leadSource || r["Lead source"] || r["Lead Source"] || r.source),
+      primaryPain: ALLOWED_PRIMARY_PAIN.includes(primaryPain) ? primaryPain : undefined,
       status: ALLOWED_STAGES.includes(status) ? status : "New",
       notes: norm(r.notes || r.Notes),
       createdAt: now(),
