@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckSquare, Plus, Save, CornerUpLeft, Trash2, LayoutGrid, List, X, Pencil, Circle, CircleCheck } from "lucide-react";
 
-const TASK_STATUSES = ["Not started", "Completed", "Canceled"];
+const TASK_STATUSES = ["Overdue", "Not started", "Completed", "Canceled"];
 const openPicker = (e: React.MouseEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => {
   const el = e.currentTarget as HTMLInputElement & { showPicker?: () => void };
   el.showPicker?.();
@@ -48,6 +48,16 @@ export default function TasksPage() {
   };
   const relatedLabel = (task: any) => task.relatedType === 'deal' ? `Deal: ${dealName(task.relatedId)}` : `Contact: ${contactName(task.relatedId)}`;
 
+  const getTaskStatus = (t: any) => {
+    const base = t.status || (t.done ? "Completed" : "Not started");
+    if (base === "Completed" || base === "Canceled") return base;
+    if (t.dueDate) {
+      const due = new Date(`${t.dueDate}T23:59:59`).getTime();
+      if (!Number.isNaN(due) && due < Date.now()) return "Overdue";
+    }
+    return "Not started";
+  };
+
   const sorted = useMemo(() => [...tasks], [tasks]);
 
   function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ relatedType: "contact", status: "Not started" }); setError(""); }
@@ -80,7 +90,8 @@ export default function TasksPage() {
 
   async function moveTaskStatus(taskId: string, status: string, targetIndex?: number) {
     const task = tasks.find((t) => t.id === taskId);
-    if (!task || (task.status || "Not started") === status) return;
+    if (!task || getTaskStatus(task) === status) return;
+    if (status === "Overdue") return;
     if (status === "Completed") return completeTask(task);
     setTasks((prev) => {
       const moving = prev.find((t) => t.id === taskId);
@@ -93,7 +104,7 @@ export default function TasksPage() {
       let statusCount = 0;
       let inserted = false;
       for (const t of others) {
-        const s = t.status || (t.done ? "Completed" : "Not started");
+        const s = getTaskStatus(t);
         if (s === status && statusCount === targetIndex) {
           next.push(updated);
           inserted = true;
@@ -144,7 +155,7 @@ export default function TasksPage() {
                 <h3 className="mb-3 font-semibold text-emerald-300">{status}</h3>
                 <div className="min-h-10">
                   {(() => {
-                    const stageTasks = sorted.filter((t) => (t.status || (t.done ? "Completed" : "Not started")) === status);
+                    const stageTasks = sorted.filter((t) => getTaskStatus(t) === status);
                     return (
                       <>
                         {stageTasks.map((t, idx) => (
@@ -183,7 +194,7 @@ export default function TasksPage() {
             <tbody>
               {sorted.map((t) => {
                 const editing = editingId === t.id;
-                const status = t.status || (t.done ? 'Completed' : 'Not started');
+                const status = getTaskStatus(t);
                 return (
                   <tr key={t.id} className={`border-b border-neutral-900 hover:bg-neutral-900/60 transition-opacity ${fadingIds.includes(t.id) ? 'opacity-0' : 'opacity-100'}`}>
                     <td className="px-3 py-2">
@@ -195,7 +206,7 @@ export default function TasksPage() {
                     <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.relatedId || ''} onChange={(e)=>setInlineDraft({...inlineDraft, relatedId:e.target.value})}>{inlineDraft.relatedType === 'deal' ? <><option value="">Select linked deal *</option>{deals.map((d)=> <option key={d.id} value={d.id}>{d.name || 'Untitled deal'}</option>)}</> : <><option value="">Select linked contact *</option>{contacts.map((c)=> <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</>}</select> : relatedLabel(t)}</td>
                     <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <input type="date" className="crm-input" value={inlineDraft.dueDate || ''} onClick={openPicker} onFocus={openPicker} onChange={(e)=>setInlineDraft({...inlineDraft, dueDate:e.target.value})} /> : (t.dueDate || '—')}</td>
                     <td className="px-3 py-2 text-slate-400">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}</td>
-                    <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.status || 'Not started'} onChange={(e)=>setInlineDraft({...inlineDraft, status:e.target.value})}>{TASK_STATUSES.map((s)=> <option key={s} value={s}>{s}</option>)}</select> : <span className={status === 'Completed' ? 'text-emerald-300' : status === 'Canceled' ? 'text-rose-300' : 'text-amber-300'}>{status}</span>}</td>
+                    <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.status || 'Not started'} onChange={(e)=>setInlineDraft({...inlineDraft, status:e.target.value})}>{TASK_STATUSES.map((s)=> <option key={s} value={s} disabled={s === 'Overdue'}>{s}</option>)}</select> : <span className={status === 'Completed' ? 'text-emerald-300' : status === 'Canceled' ? 'text-rose-300' : status === 'Overdue' ? 'text-rose-300' : 'text-amber-300'}>{status}</span>}</td>
                     <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" onClick={saveInlineEdit}>Save</button><button className="crm-btn-ghost" onClick={cancelInlineEdit}>Cancel</button></div> : <button className="crm-btn-ghost" onClick={() => openTask(t)}>Open</button>}</td>
                   </tr>
                 );
@@ -218,7 +229,7 @@ export default function TasksPage() {
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Task title</label>{(editMode || createMode) ? <input className="crm-input" value={draft.title || ''} onChange={(e) => setDraft({ ...draft, title: e.target.value })} /> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.title || '—'}</p>}</div>
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Related type</label>{(editMode || createMode) ? <select className="crm-input" value={draft.relatedType || 'contact'} onChange={(e) => setDraft({ ...draft, relatedType: e.target.value, relatedId: '' })}><option value="contact">Contact</option><option value="deal">Deal</option></select> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.relatedType || 'contact'}</p>}</div>
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Linked record</label>{(editMode || createMode) ? <select className="crm-input" value={draft.relatedId || ''} onChange={(e) => setDraft({ ...draft, relatedId: e.target.value })}>{(draft.relatedType || 'contact') === 'deal' ? <><option value="">Select linked deal *</option>{deals.map((d) => <option key={d.id} value={d.id}>{d.name || 'Untitled deal'}</option>)}</> : <><option value="">Select linked contact *</option>{contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</>}</select> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{(draft.relatedType || 'contact') === 'deal' ? dealName(draft.relatedId) : contactName(draft.relatedId)}</p>}</div>
-              <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Task status</label>{(editMode || createMode) ? <select className="crm-input" value={draft.status || 'Not started'} onChange={(e)=>setDraft({...draft, status:e.target.value})}>{TASK_STATUSES.map((s)=> <option key={s} value={s}>{s}</option>)}</select> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.status || 'Not started'}</p>}</div>
+              <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Task status</label>{(editMode || createMode) ? <select className="crm-input" value={draft.status || 'Not started'} onChange={(e)=>setDraft({...draft, status:e.target.value})}>{TASK_STATUSES.map((s)=> <option key={s} value={s} disabled={s === 'Overdue'}>{s}</option>)}</select> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.status || 'Not started'}</p>}</div>
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Due date</label>{(editMode || createMode) ? <input type="date" className="crm-input" value={draft.dueDate || ''} onClick={openPicker} onFocus={openPicker} onChange={(e) => setDraft({ ...draft, dueDate: e.target.value })} /> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.dueDate || '—'}</p>}</div>
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Notes</label>{(editMode || createMode) ? <textarea className="crm-input min-h-28" value={draft.notes || ''} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} /> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm whitespace-pre-wrap">{draft.notes || '—'}</p>}</div>
               {error && <p className="text-sm text-red-300">{error}</p>}
