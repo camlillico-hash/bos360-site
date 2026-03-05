@@ -47,6 +47,7 @@ export default function CoachWidget({ mode = "desktop-inline" }: { mode?: "deskt
       : data.iconColor === "green"
         ? "bg-emerald-600/20 text-emerald-300 border-emerald-500/40"
         : "bg-sky-600/20 text-sky-300 border-sky-500/40";
+  const nameClass = data.iconColor === "red" ? "text-rose-300" : data.iconColor === "green" ? "text-emerald-300" : "text-sky-300";
 
   if (mode === "mobile-accordion") {
     return (
@@ -59,7 +60,7 @@ export default function CoachWidget({ mode = "desktop-inline" }: { mode?: "deskt
           <span className="inline-flex items-center gap-2">
             <img src={data.avatar} alt="Glyph avatar" className="h-10 w-10 rounded-full border border-neutral-700 object-cover" />
             <span>
-              <p className="text-base font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }}>
+              <p className={`text-base font-bold ${nameClass}`} style={{ fontFamily: "var(--font-playfair-display), serif" }}>
                 {data.name}
               </p>
               <p className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${iconClass}`}>
@@ -84,7 +85,7 @@ export default function CoachWidget({ mode = "desktop-inline" }: { mode?: "deskt
       <img src={data.avatar} alt="Glyph avatar" className="h-[65px] w-[65px] shrink-0 rounded-xl border border-neutral-700 object-cover" />
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <p className="truncate text-lg font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }}>
+          <p className={`truncate text-lg font-bold ${nameClass}`} style={{ fontFamily: "var(--font-playfair-display), serif" }}>
             {data.name}
           </p>
           <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold ${iconClass}`}>

@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { getStore, now, DEAL_STAGES } from "@/lib/crm-store";
-import { Activity, BriefcaseBusiness, CheckSquare, Handshake, Users, Crosshair, Funnel, BarChart3, Percent, Trophy, CircleX } from "lucide-react";
+import { Activity, BriefcaseBusiness, CheckSquare, Handshake, Users, Crosshair, Funnel, BarChart3, Percent, Trophy, CircleX, Flame, Hammer, Heart } from "lucide-react";
 
 export default async function CrmHome() {
   const store = await getStore();
@@ -35,11 +35,12 @@ export default async function CrmHome() {
     return Number.isFinite(t) && t < currentMs - 7 * 24 * 60 * 60 * 1000;
   }).length;
 
-  const glyphStatus = overdueTasks.length > 0 || staleDeals > 0
-    ? `Pressure rising: ${overdueTasks.length} overdue task(s), ${staleDeals} stale deal(s). Prioritize movement today.`
+  const glyphMood = overdueTasks.length > 0 || staleDeals > 0
+    ? { icon: Flame, color: "text-rose-300", nameColor: "text-rose-300", text: `Pressure rising: ${overdueTasks.length} overdue task(s), ${staleDeals} stale deal(s). Prioritize movement today.` }
     : activeClients > 0
-      ? `Strong posture. ${activeClients} active client(s) in delivery. Keep filling top-of-funnel while momentum is high.`
-      : "Pipeline is clean. Push top-of-funnel and convert Discovery to Fit meetings this week.";
+      ? { icon: Heart, color: "text-emerald-300", nameColor: "text-emerald-300", text: `Strong posture. ${activeClients} active client(s) in delivery. Keep filling top-of-funnel while momentum is high.` }
+      : { icon: Hammer, color: "text-sky-300", nameColor: "text-sky-300", text: "Pipeline is clean. Push top-of-funnel and convert Discovery to Fit meetings this week." };
+  const GlyphMoodIcon = glyphMood.icon;
 
   const openStageSet = new Set(["Discovery meeting booked", "Discovery meeting completed", "Fit meeting booked", "Fit meeting completed", "Proposal / commitment"]);
   const weightedByStage = DEAL_STAGES.filter((stage) => openStageSet.has(stage)).map((stage) => {
@@ -83,8 +84,11 @@ export default async function CrmHome() {
       <section className="grid gap-4 lg:grid-cols-3">
         <Card icon={<Activity size={16} />} label="Activities this week" value={activitiesThisWeek.length} href="/crm/activities" />
         <div className="crm-card p-4 lg:col-span-2">
-          <p className="text-sm text-slate-400">Status report from Sgt. Glyph</p>
-          <p className="mt-2 text-slate-100">{glyphStatus}</p>
+          <p className="text-sm font-semibold text-slate-300">Status report from <span className={glyphMood.nameColor}>Sgt. Glyph</span></p>
+          <p className={`mt-2 inline-flex items-center gap-2 ${glyphMood.color}`}>
+            <GlyphMoodIcon size={16} />
+            <span className="text-slate-100">{glyphMood.text}</span>
+          </p>
         </div>
       </section>
 
