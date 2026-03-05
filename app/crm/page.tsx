@@ -90,7 +90,7 @@ export default async function CrmHome() {
           <p className="mb-2 inline-flex items-center gap-1.5 text-sm text-slate-400"><CheckSquare size={14} /> Overdue tasks</p>
           {overdueTasks.length === 0 ? <p className="text-sm text-slate-500">No overdue tasks.</p> : (
             <ul className="space-y-2 text-sm">
-              {overdueTasks.slice(0, 8).map((t) => <li key={t.id} className="text-slate-200">• {t.title} <span className="text-slate-400">({contactMap.get(t.relatedId) || "Unlinked"}, {t.dueDate})</span></li>)}
+              {overdueTasks.slice(0, 8).map((t) => <li key={t.id} className="text-slate-200">• {t.title} <span className="text-slate-400">({contactMap.get(t.relatedId || "") || "Unlinked"}, {t.dueDate})</span></li>)}
             </ul>
           )}
         </div>
@@ -98,7 +98,7 @@ export default async function CrmHome() {
           <p className="mb-2 inline-flex items-center gap-1.5 text-sm text-slate-400"><CheckSquare size={14} /> Upcoming tasks</p>
           {upcomingTasks.length === 0 ? <p className="text-sm text-slate-500">No upcoming dated tasks.</p> : (
             <ul className="space-y-2 text-sm">
-              {upcomingTasks.slice(0, 8).map((t) => <li key={t.id} className="text-slate-200">• {t.title} <span className="text-slate-400">({contactMap.get(t.relatedId) || "Unlinked"}, {t.dueDate})</span></li>)}
+              {upcomingTasks.slice(0, 8).map((t) => <li key={t.id} className="text-slate-200">• {t.title} <span className="text-slate-400">({contactMap.get(t.relatedId || "") || "Unlinked"}, {t.dueDate})</span></li>)}
             </ul>
           )}
         </div>
