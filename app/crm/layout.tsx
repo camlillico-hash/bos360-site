@@ -10,7 +10,7 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
   const isLogin = pathname === "/crm/login";
 
   return (
-    <main className="min-h-screen crm-shell text-slate-100">
+    <main className="crm-shell flex min-h-screen flex-col text-slate-100">
       {!isLogin && (
         <header className="border-b border-neutral-800/80 bg-neutral-900/75 backdrop-blur">
           <div className="mx-auto flex max-w-7xl items-start justify-between px-6 pt-4 pb-5">
@@ -25,7 +25,15 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
       )}
-      <div className="mx-auto max-w-7xl px-6 py-6">{children}</div>
+      <div className="mx-auto w-full max-w-7xl flex-1 px-6 py-6">{children}</div>
+      {!isLogin && (
+        <footer className="border-t border-neutral-800/80 bg-neutral-900/45">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3 text-xs text-slate-400">
+            <p>Glyph CRM</p>
+            <p className="text-slate-500">Built for focus, clarity, and execution.</p>
+          </div>
+        </footer>
+      )}
     </main>
   );
 }
