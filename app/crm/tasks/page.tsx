@@ -140,7 +140,7 @@ export default function TasksPage() {
         <div className="overflow-x-auto pb-2">
           <div className="flex gap-4 min-w-max">
             {TASK_STATUSES.map((status) => (
-              <div key={status} className={`crm-card p-3 w-[320px] shrink-0 transition-all duration-150 ${hoverTaskStatus === status ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e)=>e.preventDefault()} onDragEnter={() => setHoverTaskStatus(status)} onDragLeave={() => setHoverTaskStatus((s) => s === status ? null : s)} onDrop={async ()=>{ if(!draggingTaskId) return; await moveTaskStatus(draggingTaskId, status); setDraggingTaskId(null); setHoverTaskStatus(null); setHoverDrop(null); }}>
+              <div key={status} className={`crm-card p-3 w-[240px] shrink-0 transition-all duration-150 ${hoverTaskStatus === status ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e)=>e.preventDefault()} onDragEnter={() => setHoverTaskStatus(status)} onDragLeave={() => setHoverTaskStatus((s) => s === status ? null : s)} onDrop={async ()=>{ if(!draggingTaskId) return; await moveTaskStatus(draggingTaskId, status); setDraggingTaskId(null); setHoverTaskStatus(null); setHoverDrop(null); }}>
                 <h3 className="mb-3 font-semibold text-emerald-300">{status}</h3>
                 <div className="min-h-10">
                   {(() => {
@@ -155,10 +155,10 @@ export default function TasksPage() {
                               onDragEnter={() => setHoverDrop({ status, index: idx })}
                               onDrop={async () => { if (!draggingTaskId) return; await moveTaskStatus(draggingTaskId, status, idx); setDraggingTaskId(null); setHoverTaskStatus(null); setHoverDrop(null); }}
                             />
-                            <button draggable onDragStart={() => setDraggingTaskId(t.id)} onDragEnd={() => { setDraggingTaskId(null); setHoverTaskStatus(null); setHoverDrop(null); }} className={`crm-card w-full p-3 text-left cursor-grab transition-all duration-150 ${draggingTaskId === t.id ? 'scale-[1.02] opacity-70' : ''} ${fadingIds.includes(t.id) ? 'opacity-0' : 'opacity-100'}`} onClick={() => openTask(t)}>
-                              <p className="font-medium">{t.title}</p>
-                              <p className="text-xs text-emerald-300">{relatedLabel(t)}</p>
-                              <p className="text-xs text-slate-400">Due: {t.dueDate || '—'}</p>
+                            <button draggable onDragStart={() => setDraggingTaskId(t.id)} onDragEnd={() => { setDraggingTaskId(null); setHoverTaskStatus(null); setHoverDrop(null); }} className={`crm-card w-full min-w-0 p-3 text-left cursor-grab transition-all duration-150 ${draggingTaskId === t.id ? 'scale-[1.02] opacity-70' : ''} ${fadingIds.includes(t.id) ? 'opacity-0' : 'opacity-100'}`} onClick={() => openTask(t)}>
+                              <p className="truncate font-medium">{t.title}</p>
+                              <p className="truncate text-xs text-emerald-300">{relatedLabel(t)}</p>
+                              <p className="truncate text-xs text-slate-400">Due: {t.dueDate || '—'}</p>
                             </button>
                           </div>
                         ))}

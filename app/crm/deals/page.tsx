@@ -137,7 +137,7 @@ export default function DealsPage() {
       {view === "bucket" ? (
         <div className="overflow-x-auto pb-2"><div className="flex gap-4 min-w-max">
           {STAGES.map((stage) => (
-            <div key={stage} className={`crm-card p-3 w-[320px] shrink-0 transition-all duration-150 ${hoverStage === stage ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e) => e.preventDefault()} onDragEnter={() => setHoverStage(stage)} onDragLeave={() => setHoverStage((s) => s === stage ? null : s)} onDrop={async () => { if (!draggingDealId) return; await moveDealStage(draggingDealId, stage); setDraggingDealId(null); setHoverStage(null); setHoverDrop(null); }}>
+            <div key={stage} className={`crm-card p-3 w-[240px] shrink-0 transition-all duration-150 ${hoverStage === stage ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e) => e.preventDefault()} onDragEnter={() => setHoverStage(stage)} onDragLeave={() => setHoverStage((s) => s === stage ? null : s)} onDrop={async () => { if (!draggingDealId) return; await moveDealStage(draggingDealId, stage); setDraggingDealId(null); setHoverStage(null); setHoverDrop(null); }}>
               <h3 className="mb-3 font-semibold text-emerald-300">{stageLabel(stage, STAGES.indexOf(stage))}</h3>
               <div className="min-h-10">
                 {(() => {
@@ -152,10 +152,10 @@ export default function DealsPage() {
                             onDragEnter={() => setHoverDrop({ stage, index: idx })}
                             onDrop={async () => { if (!draggingDealId) return; await moveDealStage(draggingDealId, stage, idx); setDraggingDealId(null); setHoverStage(null); setHoverDrop(null); }}
                           />
-                          <button draggable onDragStart={() => setDraggingDealId(d.id)} onDragEnd={() => { setDraggingDealId(null); setHoverStage(null); setHoverDrop(null); }} className={`crm-card bg-neutral-950 w-full p-2 text-left cursor-grab transition-all duration-150 ${draggingDealId === d.id ? "scale-[1.02] opacity-70" : ""}`} onClick={() => openTray(d)}>
-                            <p className="font-medium">{d.name || "Untitled deal"}</p>
-                            <p className="text-xs text-slate-400">Amount: {money(d.value)} · {d.probability || 0}%</p>
-                            <p className="text-xs text-slate-500">{contactName(d.contactId)}</p>
+                          <button draggable onDragStart={() => setDraggingDealId(d.id)} onDragEnd={() => { setDraggingDealId(null); setHoverStage(null); setHoverDrop(null); }} className={`crm-card bg-neutral-950 w-full min-w-0 p-2 text-left cursor-grab transition-all duration-150 ${draggingDealId === d.id ? "scale-[1.02] opacity-70" : ""}`} onClick={() => openTray(d)}>
+                            <p className="truncate font-medium">{d.name || "Untitled deal"}</p>
+                            <p className="truncate text-xs text-slate-400">Amount: {money(d.value)} · {d.probability || 0}%</p>
+                            <p className="truncate text-xs text-slate-500">{contactName(d.contactId)}</p>
                           </button>
                         </div>
                       ))}

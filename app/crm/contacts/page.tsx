@@ -140,7 +140,7 @@ export default function ContactsPage() {
         <div className="overflow-x-auto pb-2">
           <div className="flex gap-4 min-w-max">
             {CONTACT_STAGES.map((stage, i) => (
-              <div key={stage} className={`crm-card p-3 w-[320px] shrink-0 transition-all duration-150 ${hoverStatus === stage ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e) => e.preventDefault()} onDragEnter={() => setHoverStatus(stage)} onDragLeave={() => setHoverStatus((s) => s === stage ? null : s)} onDrop={async () => { if (!draggingContactId) return; await moveContactStage(draggingContactId, stage); setDraggingContactId(null); setHoverStatus(null); setHoverDrop(null); }}>
+              <div key={stage} className={`crm-card p-3 w-[240px] shrink-0 transition-all duration-150 ${hoverStatus === stage ? "ring-2 ring-emerald-500/80 border-emerald-500/70" : ""}`} onDragOver={(e) => e.preventDefault()} onDragEnter={() => setHoverStatus(stage)} onDragLeave={() => setHoverStatus((s) => s === stage ? null : s)} onDrop={async () => { if (!draggingContactId) return; await moveContactStage(draggingContactId, stage); setDraggingContactId(null); setHoverStatus(null); setHoverDrop(null); }}>
                 <h3 className="mb-3 font-semibold text-emerald-300">{stageLabel(stage, i)}</h3>
                 <div className="min-h-10">
                   {(() => {
@@ -155,13 +155,13 @@ export default function ContactsPage() {
                               onDragEnter={() => setHoverDrop({ status: stage, index: idx })}
                               onDrop={async () => { if (!draggingContactId) return; await moveContactStage(draggingContactId, stage, idx); setDraggingContactId(null); setHoverStatus(null); setHoverDrop(null); }}
                             />
-                            <button draggable onDragStart={() => setDraggingContactId(c.id)} onDragEnd={() => { setDraggingContactId(null); setHoverStatus(null); setHoverDrop(null); }} className={`crm-card w-full p-3 text-left cursor-grab transition-all duration-150 ${draggingContactId === c.id ? "scale-[1.02] opacity-70" : ""}`} onClick={() => openTray(c)}>
-                              <p className="font-semibold">{c.firstName} {c.lastName}</p>
-                              <p className="text-xs text-slate-400">{c.email || "No email"}</p>
-                              {c.linkedin && <p className="text-xs text-slate-400">{c.linkedin}</p>}
-                              <p className="text-xs text-slate-500">{c.company || "No company"}</p>
-                              <p className="text-xs text-slate-500">Type: {c.type || "—"}</p>
-                              <p className="mt-1 text-[11px] text-emerald-300">Gmail: {c.email ? gmail.filter((m) => `${m.from || ""} ${m.to || ""}`.toLowerCase().includes(String(c.email).toLowerCase())).length : 0}</p>
+                            <button draggable onDragStart={() => setDraggingContactId(c.id)} onDragEnd={() => { setDraggingContactId(null); setHoverStatus(null); setHoverDrop(null); }} className={`crm-card w-full min-w-0 p-3 text-left cursor-grab transition-all duration-150 ${draggingContactId === c.id ? "scale-[1.02] opacity-70" : ""}`} onClick={() => openTray(c)}>
+                              <p className="truncate font-semibold">{c.firstName} {c.lastName}</p>
+                              <p className="truncate text-xs text-slate-400">{c.email || "No email"}</p>
+                              {c.linkedin && <p className="truncate text-xs text-slate-400">{c.linkedin}</p>}
+                              <p className="truncate text-xs text-slate-500">{c.company || "No company"}</p>
+                              <p className="truncate text-xs text-slate-500">Type: {c.type || "—"}</p>
+                              <p className="mt-1 truncate text-[11px] text-emerald-300">Gmail: {c.email ? gmail.filter((m) => `${m.from || ""} ${m.to || ""}`.toLowerCase().includes(String(c.email).toLowerCase())).length : 0}</p>
                             </button>
                           </div>
                         ))}
