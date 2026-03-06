@@ -74,6 +74,7 @@ export async function syncGmailMessages() {
     });
   }
   store.gmail.messages = messages;
+  store.gmail.lastSyncedAt = now();
 
   // Auto-log email activities against matched contacts (by email address)
   const contacts = store.contacts || [];

@@ -11,7 +11,7 @@ export type Activity = { id: string; contactId: string; type: "email" | "call" |
 export type DealStamp = { id: string; dealId: string; name?: string; company?: string; contactId?: string; value?: number; wonAt: string; removedAt?: string };
 export type ContactStamp = { id: string; contactId: string; name?: string; company?: string; email?: string; wonAt: string; removedAt?: string };
 
-type CrmStore = { contacts: Contact[]; contactStamps: ContactStamp[]; deals: Deal[]; dealStamps: DealStamp[]; tasks: Task[]; activities: Activity[]; gmail: { connectedAt?: string; messages: GmailMessage[]; tokens?: { access_token?: string; refresh_token?: string; expiry_date?: number; }; }; };
+type CrmStore = { contacts: Contact[]; contactStamps: ContactStamp[]; deals: Deal[]; dealStamps: DealStamp[]; tasks: Task[]; activities: Activity[]; gmail: { connectedAt?: string; lastSyncedAt?: string; messages: GmailMessage[]; tokens?: { access_token?: string; refresh_token?: string; expiry_date?: number; }; }; };
 
 const dataDir = path.join(process.cwd(), "data");
 const dbPath = path.join(dataDir, "crm.json");

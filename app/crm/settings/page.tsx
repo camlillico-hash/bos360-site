@@ -1,6 +1,6 @@
 import { getStore, storageMode } from "@/lib/crm-store";
 import { gmailReady } from "@/lib/gmail";
-import { Settings, Mail, Database, Shield } from "lucide-react";
+import { Settings, Mail, Database } from "lucide-react";
 
 export default async function SettingsPage({ searchParams }: { searchParams?: { gmail?: string; reason?: string; count?: string; activities?: string } }) {
   const store = await getStore();
@@ -26,12 +26,17 @@ export default async function SettingsPage({ searchParams }: { searchParams?: { 
           </p>
         )}
         <div className="mt-3 flex gap-3">
-          <a href="/api/crm/gmail/connect" className="rounded border border-neutral-700 px-3 py-1.5 text-sm">Connect Gmail</a>
+          {store.gmail.connectedAt ? (
+            <span className="rounded border border-emerald-700/60 bg-emerald-900/25 px-3 py-1.5 text-sm text-emerald-300">Connected</span>
+          ) : (
+            <a href="/api/crm/gmail/connect" className="rounded border border-neutral-700 px-3 py-1.5 text-sm">Connect Gmail</a>
+          )}
           <form action="/api/crm/gmail/sync" method="post">
             <button className="crm-btn text-sm">Sync latest emails</button>
           </form>
         </div>
         <p className="mt-3 text-xs text-slate-500">Synced messages: {store.gmail.messages.length}</p>
+        <p className="mt-1 text-xs text-slate-500">Last sync: {store.gmail.lastSyncedAt ? new Date(store.gmail.lastSyncedAt).toLocaleString() : "Never"}</p>
         <p className="mt-1 text-xs text-slate-500">Token state: {store.gmail.tokens?.refresh_token ? "refresh token present" : store.gmail.tokens?.access_token ? "access token only" : "no tokens"}</p>
       </section>
 
@@ -42,11 +47,6 @@ export default async function SettingsPage({ searchParams }: { searchParams?: { 
         {mode === "file" && (
           <p className="mt-2 text-sm text-amber-300">Set DATABASE_URL to use persistent hosted Postgres (recommended for production).</p>
         )}
-      </section>
-
-      <section className="crm-card p-4">
-        <h2 className="font-semibold"><span className="inline-flex items-center gap-1.5"><Shield size={15} /> CRM Access</span></h2>
-        <p className="mt-2 text-sm text-slate-400">Set CRM_PASSWORD and CRM_SESSION_SECRET in your environment for production.</p>
       </section>
     </div>
   );
