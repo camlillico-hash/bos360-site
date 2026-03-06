@@ -48,7 +48,14 @@ function archiveTaskAsActivity(store: any, task: any) {
   store.activities = [activity, ...(store.activities || [])];
   const cidx = (store.contacts || []).findIndex((c: any) => c.id === contactId);
   if (cidx >= 0) {
-    store.contacts[cidx] = { ...store.contacts[cidx], lastActivityDate: activity.occurredAt, lastActivityType: "task_completed", updatedAt: now() };
+    const currentStatus = store.contacts[cidx].status || "New";
+    store.contacts[cidx] = {
+      ...store.contacts[cidx],
+      status: currentStatus === "New" ? "Attempting" : currentStatus,
+      lastActivityDate: activity.occurredAt,
+      lastActivityType: activity.type,
+      updatedAt: now(),
+    };
   }
 }
 

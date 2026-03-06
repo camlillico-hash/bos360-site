@@ -39,7 +39,14 @@ export async function POST(req: Request) {
   store.activities = [record as any, ...((store.activities as any) || [])] as any;
   const cidx = store.contacts.findIndex((c: any) => c.id === record.contactId);
   if (cidx >= 0) {
-    store.contacts[cidx] = { ...store.contacts[cidx], lastActivityDate: record.occurredAt, lastActivityType: record.type, updatedAt: now() };
+    const currentStatus = store.contacts[cidx].status || "New";
+    store.contacts[cidx] = {
+      ...store.contacts[cidx],
+      status: currentStatus === "New" ? "Attempting" : currentStatus,
+      lastActivityDate: record.occurredAt,
+      lastActivityType: record.type,
+      updatedAt: now(),
+    };
   }
   await saveStore(store);
   return NextResponse.json(record);
@@ -62,7 +69,14 @@ export async function PUT(req: Request) {
   };
   const cidx2 = store.contacts.findIndex((c: any) => c.id === (store.activities as any)[idx].contactId);
   if (cidx2 >= 0) {
-    store.contacts[cidx2] = { ...store.contacts[cidx2], lastActivityDate: (store.activities as any)[idx].occurredAt, lastActivityType: (store.activities as any)[idx].type, updatedAt: now() };
+    const currentStatus = store.contacts[cidx2].status || "New";
+    store.contacts[cidx2] = {
+      ...store.contacts[cidx2],
+      status: currentStatus === "New" ? "Attempting" : currentStatus,
+      lastActivityDate: (store.activities as any)[idx].occurredAt,
+      lastActivityType: (store.activities as any)[idx].type,
+      updatedAt: now(),
+    };
   }
   await saveStore(store);
   return NextResponse.json((store.activities as any)[idx]);
