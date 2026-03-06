@@ -340,10 +340,15 @@ export default function Bos360Page() {
                 <img src="/badge-innovation-cluster.jpg" alt="Innovation Cluster" className="h-8 w-8 rounded object-cover" />
                 Expert in Residence
               </a>
-              <span className="flex w-full items-center justify-center gap-3 rounded-lg border border-[#ed7d31]/45 bg-[#ed7d31]/12 px-4 py-3 text-sm font-semibold text-orange-100">
+              <a
+                href="https://www.eosworldwide.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center justify-center gap-3 rounded-lg border border-[#ed7d31]/45 bg-[#ed7d31]/12 px-4 py-3 text-sm font-semibold text-orange-100 transition hover:bg-[#ed7d31]/20"
+              >
                 <img src="/badge-eos.jpg" alt="EOS" className="h-8 w-8 rounded object-cover" />
                 EOS expert past 6 years
-              </span>
+              </a>
             </div>
           </div>
 
