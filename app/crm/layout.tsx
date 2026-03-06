@@ -41,9 +41,12 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
       <div className="mx-auto w-full max-w-7xl flex-1 px-6 py-6">{children}</div>
       {!isLogin && (
         <footer className="border-t border-neutral-700 bg-neutral-900/90 shadow-[0_-8px_28px_rgba(0,0,0,.35)]">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-[11px] sm:text-sm text-slate-300">
-            <p className="inline-flex items-center gap-2">© {new Date().getFullYear()} Glyph CRM <img src="/glyph-crm-logo.png" alt="Glyph CRM logo" className="h-4 w-auto" /></p>
-            <p className="text-slate-400">Sgt. Glyph says: if your pipeline is empty, your excuses are full. Fix it.</p>
+          <div className="mx-auto flex max-w-7xl items-center px-6 py-4 text-[11px] sm:text-sm text-slate-300">
+            <div className="inline-flex items-center gap-2 whitespace-nowrap">
+              <img src="/glyph-crm-logo.png" alt="Glyph CRM logo" className="h-5 w-auto" />
+              <p>© {new Date().getFullYear()} Glyph CRM</p>
+            </div>
+            <p className="ml-auto max-w-[45%] pl-4 text-right text-[10px] leading-tight text-slate-400 sm:max-w-none sm:text-sm">Sgt. Glyph says: if your pipeline is empty, your excuses are full. Fix it.</p>
           </div>
         </footer>
       )}
