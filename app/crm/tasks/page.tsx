@@ -27,6 +27,7 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
   const [deals, setDeals] = useState<any[]>([]);
+  const [activities, setActivities] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [view, setView] = useState<"bucket" | "table">("table");
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
@@ -49,8 +50,10 @@ export default function TasksPage() {
     setTasks(Array.isArray(tasksRes) ? tasksRes : tasksRes.tasks || []);
     const contactsRes = await (await fetch('/api/crm/contacts', { cache: 'no-store' })).json();
     const dealsRes = await (await fetch('/api/crm/deals', { cache: 'no-store' })).json();
+    const activitiesRes = await (await fetch('/api/crm/activities', { cache: 'no-store' })).json();
     setContacts(Array.isArray(contactsRes) ? contactsRes : contactsRes.contacts || []);
     setDeals(Array.isArray(dealsRes) ? dealsRes : dealsRes.deals || []);
+    setActivities(Array.isArray(activitiesRes) ? activitiesRes : []);
   };
   useEffect(() => { load(); }, []);
 
@@ -75,6 +78,17 @@ export default function TasksPage() {
   };
 
   const sorted = useMemo(() => [...tasks], [tasks]);
+  const completedTasks = useMemo(() => {
+    return [...activities]
+      .filter((a) => String(a.note || "").startsWith("Task completed:"))
+      .sort((a, b) => new Date(b.occurredAt || b.createdAt).getTime() - new Date(a.occurredAt || a.createdAt).getTime())
+      .slice(0, 30)
+      .map((a) => {
+        const raw = String(a.note || "").replace(/^Task completed:\s*/, "");
+        const title = raw.split(" — ")[0] || raw;
+        return { ...a, completedTitle: title };
+      });
+  }, [activities]);
 
   function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ relatedType: "contact", type: "meeting", status: "Not started" }); setError(""); }
   function openTask(t: any) { setSelected(t); setDraft({ ...t, type: t.type || "meeting", status: t.status || (t.done ? "Completed" : "Not started") }); setCreateMode(false); setEditMode(false); setError(""); }
@@ -275,6 +289,34 @@ export default function TasksPage() {
           </div>
         </div>
       )}
+
+      <section className="crm-card p-4">
+        <h2 className="mb-3 text-base font-semibold text-emerald-300">Completed Tasks ({completedTasks.length})</h2>
+        {completedTasks.length === 0 ? (
+          <p className="text-sm text-slate-500">No completed tasks yet.</p>
+        ) : (
+          <div className="overflow-auto">
+            <table className="w-full text-sm">
+              <thead className="border-b border-neutral-800 text-slate-400">
+                <tr>
+                  <th className="px-2 py-2 text-left">Task</th>
+                  <th className="px-2 py-2 text-left">Contact</th>
+                  <th className="px-2 py-2 text-left">Completed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {completedTasks.map((a) => (
+                  <tr key={a.id} className="border-b border-neutral-900">
+                    <td className="px-2 py-2 text-slate-200">{a.completedTitle}</td>
+                    <td className="px-2 py-2 text-slate-300">{contactName(a.contactId)}</td>
+                    <td className="px-2 py-2 text-slate-400">{new Date(a.occurredAt || a.createdAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
 
       <ConfirmDialog
         open={confirmState.open}
