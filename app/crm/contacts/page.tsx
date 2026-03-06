@@ -65,6 +65,9 @@ export default function ContactsPage() {
   const [showOpenContacts, setShowOpenContacts] = useState(true);
   const [showConverted, setShowConverted] = useState(true);
   const [showDisqualified, setShowDisqualified] = useState(true);
+  const [showDetailSection, setShowDetailSection] = useState(true);
+  const [showActivitiesSection, setShowActivitiesSection] = useState(true);
+  const [showDealsSection, setShowDealsSection] = useState(true);
 
   const load = async () => {
     const contactsRes = await (await fetch("/api/crm/contacts", { cache: "no-store" })).json();
@@ -89,8 +92,8 @@ export default function ContactsPage() {
       .sort((a: any, b: any) => new Date(b.occurredAt || b.createdAt).getTime() - new Date(a.occurredAt || a.createdAt).getTime());
   }, [activities, selected]);
 
-  function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ status: "New" }); setTrayError(""); setActivityDraft({ type: "email", occurredAtLocal: "" }); setActivityError(""); }
-  function openTray(contact: Contact) { setSelected(contact); setDraft({ ...contact }); setEditMode(false); setCreateMode(false); setTrayError(""); setActivityDraft({ type: "email", contactId: contact.id, occurredAtLocal: "" }); setActivityError(""); }
+  function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ status: "New" }); setTrayError(""); setActivityDraft({ type: "email", occurredAtLocal: "" }); setActivityError(""); setShowDetailSection(true); setShowActivitiesSection(true); setShowDealsSection(true); }
+  function openTray(contact: Contact) { setSelected(contact); setDraft({ ...contact }); setEditMode(false); setCreateMode(false); setTrayError(""); setActivityDraft({ type: "email", contactId: contact.id, occurredAtLocal: "" }); setActivityError(""); setShowDetailSection(true); setShowActivitiesSection(true); setShowDealsSection(true); }
   function closeTray() { setSelected(null); setDraft(null); setEditMode(false); setCreateMode(false); setTrayError(""); }
 
   function startInlineEdit(c: any) { setEditingId(c.id); setInlineDraft({ ...c }); }
@@ -375,8 +378,11 @@ export default function ContactsPage() {
               {!createMode && <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1.5" title="Delete" aria-label="Delete" onClick={() => askConfirm("Are you sure you want to delete this record?", () => { deleteFromTray(); })}><Trash2 size={14} /></button>}
             </div>
             <div className="mt-5 min-h-0 flex-1 space-y-3 overflow-auto pb-10">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300">Contact details</h3>
-              {contactFields.map(([k, label, type]) => (
+              <button className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-slate-300" onClick={() => setShowDetailSection((v) => !v)}>
+                {showDetailSection ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                Contact details
+              </button>
+              {showDetailSection && contactFields.map(([k, label, type]) => (
                 <div key={k}>
                   <label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">{label}</label>
                   {(editMode || createMode) ? (
@@ -393,18 +399,25 @@ export default function ContactsPage() {
                     ) : (
                       <input type={type === "select" ? "text" : type} className="crm-input" value={draft[k] || ""} onChange={(e) => setDraft({ ...draft, [k]: e.target.value })} />
                     )
-                  ) : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft[k] || "—"}</p>}
+                  ) : <p onDoubleClick={() => setEditMode(true)} className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm cursor-text">{draft[k] || "—"}</p>}
                 </div>
               ))}
-              <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Lead stage</label>{(editMode || createMode) ? <select className="crm-input" value={draft.status || "New"} onChange={(e) => setDraft({ ...draft, status: e.target.value })}>{CONTACT_STAGES.map((s, i) => <option key={s} value={s}>{stageLabel(s, i)}</option>)}</select> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.status || "New"}</p>}</div>
-              <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Disqualification reason{(editMode || createMode) && (draft.status === "Not right now") ? " *" : ""}</label>{(editMode || createMode) ? <select className="crm-input" value={draft.disqualificationReason || ""} onChange={(e) => setDraft({ ...draft, disqualificationReason: e.target.value || undefined })}><option value="">Select reason</option>{DISQUALIFICATION_REASONS.map((s) => <option key={s} value={s}>{s}</option>)}</select> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.disqualificationReason || "—"}</p>}</div>
-              <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">What now?{(editMode || createMode) && (draft.status === "Not right now") ? " *" : ""}</label>{(editMode || createMode) ? <select className="crm-input" value={draft.whatNow || ""} onChange={(e) => setDraft({ ...draft, whatNow: e.target.value || undefined })}><option value="">Select next path</option>{WHAT_NOW_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}</select> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.whatNow || "—"}</p>}</div>
-              <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Notes</label>{(editMode || createMode) ? <textarea className="crm-input min-h-28" value={draft.notes || ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} /> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm whitespace-pre-wrap">{draft.notes || "—"}</p>}</div>
+              {showDetailSection && (
+                <>
+                  <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Lead stage</label>{(editMode || createMode) ? <select className="crm-input" value={draft.status || "New"} onChange={(e) => setDraft({ ...draft, status: e.target.value })}>{CONTACT_STAGES.map((s, i) => <option key={s} value={s}>{stageLabel(s, i)}</option>)}</select> : <p onDoubleClick={() => setEditMode(true)} className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm cursor-text">{draft.status || "New"}</p>}</div>
+                  <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Disqualification reason{(editMode || createMode) && (draft.status === "Not right now") ? " *" : ""}</label>{(editMode || createMode) ? <select className="crm-input" value={draft.disqualificationReason || ""} onChange={(e) => setDraft({ ...draft, disqualificationReason: e.target.value || undefined })}><option value="">Select reason</option>{DISQUALIFICATION_REASONS.map((s) => <option key={s} value={s}>{s}</option>)}</select> : <p onDoubleClick={() => setEditMode(true)} className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm cursor-text">{draft.disqualificationReason || "—"}</p>}</div>
+                  <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">What now?{(editMode || createMode) && (draft.status === "Not right now") ? " *" : ""}</label>{(editMode || createMode) ? <select className="crm-input" value={draft.whatNow || ""} onChange={(e) => setDraft({ ...draft, whatNow: e.target.value || undefined })}><option value="">Select next path</option>{WHAT_NOW_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}</select> : <p onDoubleClick={() => setEditMode(true)} className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm cursor-text">{draft.whatNow || "—"}</p>}</div>
+                  <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Notes</label>{(editMode || createMode) ? <textarea className="crm-input min-h-28" value={draft.notes || ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} /> : <p onDoubleClick={() => setEditMode(true)} className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm whitespace-pre-wrap cursor-text">{draft.notes || "—"}</p>}</div>
+                </>
+              )}
 
               {!createMode && (
                 <>
-                  <h3 className="pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300">Activities</h3>
-                  <div className="rounded-xl border border-neutral-800 p-3">
+                  <button className="inline-flex items-center gap-2 pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300" onClick={() => setShowActivitiesSection((v) => !v)}>
+                    {showActivitiesSection ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                    Activities
+                  </button>
+                  {showActivitiesSection && <div className="rounded-xl border border-neutral-800 p-3">
                   <h3 className="mb-2 text-sm font-semibold text-slate-200">Log activity</h3>
                   <div className="grid gap-2 md:grid-cols-2">
                     <select className="crm-input" value={activityDraft.type || "email"} onChange={(e) => setActivityDraft({ ...activityDraft, type: e.target.value, contactId: selected.id })}>
@@ -439,10 +452,13 @@ export default function ContactsPage() {
                     ))}
                     {selectedActivities.length === 0 && <p className="text-xs text-slate-500">No activities yet.</p>}
                   </div>
-                </div>
+                </div>}
 
-                <h3 className="pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300">Associated deals</h3>
-                <div className="rounded-xl border border-neutral-800 p-3">
+                <button className="inline-flex items-center gap-2 pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300" onClick={() => setShowDealsSection((v) => !v)}>
+                  {showDealsSection ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                  Associated deals
+                </button>
+                {showDealsSection && <div className="rounded-xl border border-neutral-800 p-3">
                   {deals.filter((d:any) => d.contactId === selected?.id).length > 0 ? (
                     <div className="space-y-2">
                       {deals.filter((d:any) => d.contactId === selected?.id).map((d:any) => (
@@ -453,7 +469,7 @@ export default function ContactsPage() {
                       ))}
                     </div>
                   ) : <p className="text-xs text-slate-500">No associated deals.</p>}
-                </div>
+                </div>}
 
                 <h3 className="pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300">Completed tasks</h3>
                 <div className="rounded-xl border border-neutral-800 p-3">
