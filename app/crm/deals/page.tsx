@@ -144,7 +144,7 @@ export default function DealsPage() {
             return (
               <tr key={d.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
                 <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(d)}>{editing ? <input className="crm-input" value={inlineDraft.name || ""} onChange={(e)=>setInlineDraft({...inlineDraft, name:e.target.value})} /> : <button className="font-medium text-sky-300 hover:text-sky-200" onClick={(e)=>{e.stopPropagation(); openTray(d);}}>{d.name || "Untitled deal"}</button>}</td>
-                <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <select className="crm-input" value={inlineDraft.contactId || ""} onChange={(e)=>setInlineDraft({...inlineDraft, contactId:e.target.value})}><option value="">Select linked contact *</option>{contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</select> : contactName(d.contactId)}</td>
+                <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <select className="crm-input" value={inlineDraft.contactId || ""} onChange={(e)=>setInlineDraft({...inlineDraft, contactId:e.target.value})}><option value="">Select linked contact *</option>{contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</select> : (d.contactId ? <a className="text-sky-300 hover:text-sky-200" onClick={(e)=>e.stopPropagation()} href={`/crm/contacts?contactId=${d.contactId}`}>{contactName(d.contactId)}</a> : "—")}</td>
                 <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <input className="crm-input" value={inlineDraft.company || ""} onChange={(e)=>setInlineDraft({...inlineDraft, company:e.target.value})} /> : (d.company || "—")}</td>
                 <td className="px-3 py-2 text-slate-300">{money(d.value)}</td>
                 <td className="px-3 py-2 text-emerald-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <select className="crm-input" value={inlineDraft.stage || STAGES[0]} onChange={(e)=>setInlineDraft({...inlineDraft, stage:e.target.value})}>{STAGES.map((s)=><option key={s} value={s}>{s}</option>)}</select> : d.stage}</td>
@@ -193,7 +193,7 @@ export default function DealsPage() {
                           <button draggable onDragStart={() => setDraggingDealId(d.id)} onDragEnd={() => { setDraggingDealId(null); setHoverStage(null); setHoverDrop(null); }} className={`crm-card bg-neutral-950 w-full min-w-0 p-2 text-left cursor-grab transition-all duration-150 ${draggingDealId === d.id ? "scale-[1.02] opacity-70" : ""}`} onClick={() => openTray(d)}>
                             <p className="truncate font-medium">{d.name || "Untitled deal"}</p>
                             <p className="truncate text-xs text-slate-400">Amount: {money(d.value)} · {d.probability || 0}%</p>
-                            <p className="truncate text-xs text-slate-500">{contactName(d.contactId)}</p>
+                            <p className="truncate text-xs text-slate-500">{d.contactId ? <a className="text-sky-300 hover:text-sky-200" onClick={(e)=>e.stopPropagation()} href={`/crm/contacts?contactId=${d.contactId}`}>{contactName(d.contactId)}</a> : "—"}</p>
                             <button type="button" className="mt-2 inline-flex md:hidden rounded border border-neutral-700 px-2 py-1 text-[11px] text-slate-300" onClick={(e) => { e.stopPropagation(); setMovePicker({ open: true, dealId: d.id }); }}>
                               Move
                             </button>
@@ -241,7 +241,7 @@ export default function DealsPage() {
                         return (
                           <tr key={s.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
                             <td className="px-3 py-2">{s.name || "Untitled deal"}</td>
-                            <td className="px-3 py-2 text-slate-300">{linkedDeal ? contactName(linkedDeal.contactId) : "—"}</td>
+                            <td className="px-3 py-2 text-slate-300">{linkedDeal?.contactId ? <a className="text-sky-300 hover:text-sky-200" href={`/crm/contacts?contactId=${linkedDeal.contactId}`}>{contactName(linkedDeal.contactId)}</a> : "—"}</td>
                             <td className="px-3 py-2 text-slate-300">{s.company || "—"}</td>
                             <td className="px-3 py-2 text-slate-300">{money(s.value)}</td>
                             <td className="px-3 py-2 text-emerald-300">Launch paid (won)</td>
@@ -282,7 +282,7 @@ export default function DealsPage() {
               <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300">Contact details</h3>
               <Field label="Deal name" editMode={editMode || createMode}><input className="crm-input" value={draft.name || ""} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></Field>
               <Field label="Company" editMode={editMode || createMode} read={!(editMode || createMode) ? (draft.company || "—") : undefined}><input className="crm-input" value={draft.company || ""} onChange={(e) => setDraft({ ...draft, company: e.target.value })} /></Field>
-              <Field label="Linked contact" editMode={editMode || createMode} read={!(editMode || createMode) ? contactName(draft.contactId) : undefined}><select className="crm-input" value={draft.contactId || ""} onChange={(e) => setDraft({ ...draft, contactId: e.target.value })}><option value="">Select linked contact *</option>{contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName} {c.email ? `(${c.email})` : ""}</option>)}</select></Field>
+              <Field label="Linked contact" editMode={editMode || createMode} read={!(editMode || createMode) ? (draft.contactId ? <a className="text-sky-300 hover:text-sky-200" href={`/crm/contacts?contactId=${draft.contactId}`}>{contactName(draft.contactId)}</a> : "—") : undefined}><select className="crm-input" value={draft.contactId || ""} onChange={(e) => setDraft({ ...draft, contactId: e.target.value })}><option value="">Select linked contact *</option>{contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName} {c.email ? `(${c.email})` : ""}</option>)}</select></Field>
               <Field label="Stage" editMode={editMode || createMode} read={draft.stage ? stageLabel(draft.stage, STAGES.indexOf(draft.stage)) : "—"}><select className="crm-input" value={draft.stage || STAGES[0]} onChange={(e) => setDraft({ ...draft, stage: e.target.value })}>{STAGES.map((s, i) => <option key={s} value={s}>{stageLabel(s, i)}</option>)}</select></Field>
               <Field label="Client stage" editMode={editMode || createMode} read={draft.clientStage || "—"}><select className="crm-input" value={draft.clientStage || ""} onChange={(e) => setDraft({ ...draft, clientStage: e.target.value || undefined })}><option value="">Not set</option>{CLIENT_STAGES.map((s) => <option key={s} value={s}>{s}</option>)}</select></Field>
               <Field label="Primary pain" editMode={editMode || createMode} read={draft.primaryPain || "—"}><select className="crm-input" value={draft.primaryPain || ""} onChange={(e) => setDraft({ ...draft, primaryPain: e.target.value || undefined })}><option value="">Not set</option>{PRIMARY_PAIN_OPTIONS.map((p) => <option key={p} value={p}>{p}</option>)}</select></Field>
@@ -387,6 +387,6 @@ export default function DealsPage() {
   );
 }
 
-function Field({ label, editMode, read, children }: { label: string; editMode: boolean; read?: string; children: React.ReactNode; }) {
+function Field({ label, editMode, read, children }: { label: string; editMode: boolean; read?: React.ReactNode; children: React.ReactNode; }) {
   return <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">{label}</label>{editMode ? children : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm whitespace-pre-wrap">{read || "—"}</p>}</div>;
 }

@@ -85,6 +85,14 @@ export default function ContactsPage() {
   const disqualifiedItems = useMemo(() => items.filter((c) => (c.status || "New") === "Not right now"), [items]);
 
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const targetId = new URLSearchParams(window.location.search).get("contactId");
+    if (!targetId || selected?.id === targetId || items.length === 0) return;
+    const target = items.find((c) => c.id === targetId);
+    if (target) openTray(target);
+  }, [items, selected?.id]);
+
   const selectedActivities = useMemo(() => {
     if (!selected?.id) return [];
     return (activities || [])

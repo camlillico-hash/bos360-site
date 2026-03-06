@@ -87,7 +87,7 @@ export default function ClientsPage() {
           <tbody>
             {clients.map((d) => (
               <tr key={d.id} className="border-b border-neutral-900">
-                <td className="px-3 py-2 text-slate-200">{contactName(d.contactId)}</td>
+                <td className="px-3 py-2 text-slate-200">{d.contactId ? <a className="text-sky-300 hover:text-sky-200" href={`/crm/contacts?contactId=${d.contactId}`}>{contactName(d.contactId)}</a> : 'Unknown contact'}</td>
                 <td className="px-3 py-2">{d.name || 'Untitled deal'}</td>
                 <td className="px-3 py-2 text-slate-300">{money(d.value)}</td>
                 <td className="px-3 py-2 text-slate-400">{d.updatedAt ? new Date(d.updatedAt).toLocaleDateString() : '—'}</td>

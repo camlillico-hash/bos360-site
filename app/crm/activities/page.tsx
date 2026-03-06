@@ -91,7 +91,7 @@ export default function ActivitiesPage() {
             {sorted.map((a) => (
               <tr key={a.id} className="border-b border-neutral-900">
                 <td className="px-3 py-2"><span className="inline-flex items-center gap-1.5">{(() => { const I = typeIcon(a.type); return <I size={13} />; })()}{TYPES.find((t) => t.value === a.type)?.label || a.type}</span></td>
-                <td className="px-3 py-2 text-slate-300">{contactName(a.contactId)}</td>
+                <td className="px-3 py-2 text-slate-300">{a.contactId ? <a className="text-sky-300 hover:text-sky-200" href={`/crm/contacts?contactId=${a.contactId}`}>{contactName(a.contactId)}</a> : "—"}</td>
                 <td className="px-3 py-2 text-slate-300">{new Date(a.occurredAt || a.createdAt).toLocaleString()}</td>
                 <td className="px-3 py-2 text-slate-300">{a.note || "—"}</td>
                 <td className="px-3 py-2"><button className="text-xs text-red-300 inline-flex items-center gap-1" onClick={() => deleteActivity(a.id)}><Trash2 size={13} /> Delete</button></td>
