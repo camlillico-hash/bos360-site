@@ -14,7 +14,7 @@ export default async function SettingsPage({ searchParams }: { searchParams?: { 
       <section className="crm-card p-4">
         <h2 className="font-semibold"><span className="inline-flex items-center gap-1.5"><Mail size={15} /> Gmail (read-only)</span></h2>
         <p className="mt-2 text-sm text-slate-400">
-          Status: {store.gmail.connectedAt ? `Connected (${new Date(store.gmail.connectedAt).toLocaleString()})` : "Not connected"}
+          Status: {store.gmail.connectedAt ? `Connected (${new Date(store.gmail.connectedAt).toLocaleString("en-CA", { timeZone: "America/Toronto" })} ET)` : "Not connected"}
         </p>
         {searchParams?.gmail === "connected" && <p className="mt-2 text-sm text-emerald-300">Gmail connected successfully.</p>}
         {searchParams?.gmail === "synced" && <p className="mt-2 text-sm text-emerald-300">Sync complete: {searchParams?.count || 0} messages checked, {searchParams?.activities || 0} activities created.</p>}
@@ -36,7 +36,7 @@ export default async function SettingsPage({ searchParams }: { searchParams?: { 
           </form>
         </div>
         <p className="mt-3 text-xs text-slate-500">Synced messages: {store.gmail.messages.length}</p>
-        <p className="mt-1 text-xs text-slate-500">Last sync: {store.gmail.lastSyncedAt ? new Date(store.gmail.lastSyncedAt).toLocaleString() : "Never"}</p>
+        <p className="mt-1 text-xs text-slate-500">Last sync: {store.gmail.lastSyncedAt ? `${new Date(store.gmail.lastSyncedAt).toLocaleString("en-CA", { timeZone: "America/Toronto" })} ET` : "Never"}</p>
         <p className="mt-1 text-xs text-slate-500">Token state: {store.gmail.tokens?.refresh_token ? "refresh token present" : store.gmail.tokens?.access_token ? "access token only" : "no tokens"}</p>
       </section>
 
