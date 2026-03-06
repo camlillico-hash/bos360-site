@@ -62,6 +62,7 @@ export default function ContactsPage() {
   const [importOpen, setImportOpen] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
   const [importError, setImportError] = useState("");
+  const [showOpenContacts, setShowOpenContacts] = useState(true);
   const [showConverted, setShowConverted] = useState(true);
   const [showDisqualified, setShowDisqualified] = useState(true);
 
@@ -189,7 +190,7 @@ export default function ContactsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-lg sm:text-2xl font-bold inline-flex items-center gap-2 text-sky-200 whitespace-nowrap"><Users size={20} /> Open Contacts ({sorted.length})</h1>
+        <h1 className="text-lg sm:text-2xl font-bold inline-flex items-center gap-2 text-sky-200 whitespace-nowrap" style={{ fontFamily: "var(--font-playfair-display), serif" }}><Users size={20} /> Contacts</h1>
         <div className="flex items-center gap-2">
           <button className="inline-flex items-center gap-1.5 rounded-lg bg-sky-700 px-3 py-2 font-semibold text-white hover:bg-sky-600" onClick={openCreate}><Plus size={14} /> New</button>
           <button title="Import CSV" aria-label="Import CSV" className="crm-btn-ghost inline-flex items-center gap-1.5" onClick={() => { setImportOpen(true); setImportError(""); setImportResult(null); }}><Upload size={14} /></button>
@@ -249,14 +250,20 @@ export default function ContactsPage() {
           </div>
         </div>
       ) : (
-        renderContactsTable(sorted)
+        <div className="space-y-2">
+          <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-sky-200" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowOpenContacts((v) => !v)}>
+            {showOpenContacts ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+            Open contacts ({sorted.length})
+          </button>
+          {showOpenContacts && renderContactsTable(sorted)}
+        </div>
       )}
 
       {(contactStamps.length > 0 || items.some((c) => (c.status || "New") === "Not right now")) && (
         <div className="space-y-4">
           {contactStamps.length > 0 && (
             <div className="space-y-2">
-              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-emerald-300" onClick={() => setShowConverted((v) => !v)}>
+              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowConverted((v) => !v)}>
                 {showConverted ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                 Converted ({contactStamps.length})
               </button>
@@ -288,7 +295,7 @@ export default function ContactsPage() {
 
           {disqualifiedItems.length > 0 && (
             <div className="space-y-2">
-              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-amber-300" onClick={() => setShowDisqualified((v) => !v)}>
+              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-amber-300" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowDisqualified((v) => !v)}>
                 {showDisqualified ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                 Disqualified (for now) ({disqualifiedItems.length})
               </button>

@@ -35,6 +35,7 @@ export default function DealsPage() {
   const [movePicker, setMovePicker] = useState<{ open: boolean; dealId?: string }>({ open: false });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [inlineDraft, setInlineDraft] = useState<any>(null);
+  const [showOpenDeals, setShowOpenDeals] = useState(true);
   const [showWon, setShowWon] = useState(true);
   const [showLost, setShowLost] = useState(true);
 
@@ -160,7 +161,7 @@ export default function DealsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-lg sm:text-2xl font-bold inline-flex items-center gap-2 text-amber-200 whitespace-nowrap"><BriefcaseBusiness size={20} /> Open Deals ({visibleDeals.length})</h1>
+        <h1 className="text-lg sm:text-2xl font-bold inline-flex items-center gap-2 text-amber-200 whitespace-nowrap" style={{ fontFamily: "var(--font-playfair-display), serif" }}><BriefcaseBusiness size={20} /> Deals</h1>
         <div className="flex items-center gap-2">
           <div className="inline-flex rounded-lg border border-neutral-700 p-1">
             <button className={`px-2 py-1 rounded ${view === "bucket" ? "bg-neutral-800 text-white" : "text-slate-400"}`} onClick={() => setView("bucket")}><LayoutGrid size={16} /></button>
@@ -213,14 +214,20 @@ export default function DealsPage() {
           ))}
         </div></div>
       ) : (
-        renderDealsTable(sortedDeals)
+        <div className="space-y-2">
+          <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-amber-200" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowOpenDeals((v) => !v)}>
+            {showOpenDeals ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+            Open deals ({visibleDeals.length})
+          </button>
+          {showOpenDeals && renderDealsTable(sortedDeals)}
+        </div>
       )}
 
       {(dealStamps.length > 0 || deals.some((d) => d.stage === "Lost")) && (
         <div className="space-y-4">
           {dealStamps.length > 0 && (
             <div className="space-y-2">
-              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-emerald-300" onClick={() => setShowWon((v) => !v)}>
+              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowWon((v) => !v)}>
                 {showWon ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                 Won ({dealStamps.length})
               </button>
@@ -252,7 +259,7 @@ export default function DealsPage() {
 
           {lostDeals.length > 0 && (
             <div className="space-y-2">
-              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-amber-300" onClick={() => setShowLost((v) => !v)}>
+              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-amber-300" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowLost((v) => !v)}>
                 {showLost ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                 Lost ({lostDeals.length})
               </button>
