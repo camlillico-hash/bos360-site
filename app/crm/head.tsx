@@ -1,7 +1,7 @@
 export default function Head() {
   return (
     <>
-      <title>Glyph CRM</title>
+      <title>Glyph Labs | CRM</title>
     </>
   );
 }

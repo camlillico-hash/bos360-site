@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Glyph Labs Coaching | Cam Lillico",
+  title: "Glyph Labs | Cam Lillico Coaching",
   robots: { index: false, follow: false },
 };
 
