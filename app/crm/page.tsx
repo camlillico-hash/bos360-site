@@ -100,11 +100,8 @@ export default async function CrmHome() {
       <section className="grid gap-4 lg:grid-cols-3">
         <Card icon={<Activity size={16} />} label="Activities this week" value={activitiesThisWeek.length} href="/crm/activities" />
         <Link href="/crm/activities" className="crm-card block p-4 hover:-translate-y-0.5 lg:col-span-2">
-          <p className="text-sm font-semibold text-slate-300">Status report from <span className={glyphMood.nameColor}>Sgt. Glyph</span></p>
-          <p className={`mt-2 inline-flex items-center gap-2 ${glyphMood.color}`}>
-            <GlyphMoodIcon size={16} />
-            <span className="text-slate-100">{glyphMood.text}</span>
-          </p>
+          <p className="text-sm font-semibold text-slate-300 inline-flex items-center gap-1.5">Status report from <span className={`${glyphMood.nameColor} inline-flex items-center gap-1`}>Sgt. Glyph <GlyphMoodIcon size={14} /></span></p>
+          <p className="mt-2 text-slate-100">{glyphMood.text}</p>
         </Link>
       </section>
 
