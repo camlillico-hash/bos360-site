@@ -208,7 +208,7 @@ export default function DealsPage() {
         <div className="space-y-4">
           {dealStamps.length > 0 && (
             <div className="crm-card p-4">
-              <h3 className="mb-3 inline-flex items-center gap-2 font-semibold text-slate-200"><Archive size={16} /> Past Wins</h3>
+              <h3 className="mb-3 inline-flex items-center gap-2 font-semibold text-slate-200"><Archive size={16} /> Won</h3>
               <div className="space-y-2">
                 {dealStamps.map((s) => (
                   <div key={s.id} className="flex items-center justify-between rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
@@ -228,7 +228,7 @@ export default function DealsPage() {
 
           {deals.some((d) => d.stage === "Lost") && (
             <div className="crm-card p-4">
-              <h3 className="mb-3 inline-flex items-center gap-2 font-semibold text-slate-200"><Archive size={16} /> Past Loses</h3>
+              <h3 className="mb-3 inline-flex items-center gap-2 font-semibold text-slate-200"><Archive size={16} /> Lost</h3>
               <div className="space-y-2">
                 {deals.filter((d) => d.stage === "Lost").map((d) => (
                   <div key={d.id} className="flex items-center justify-between rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
