@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Handshake, RotateCcw, Trash2, X, Save, Pencil } from "lucide-react";
+import { Handshake, RotateCcw, Trash2, X, Save, Pencil, SquareArrowOutUpRight } from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
 
 const money = (n?: number) => `$${Math.round(Number(n || 0)).toLocaleString()}`;
@@ -94,7 +94,7 @@ export default function ClientsPage() {
                 <td className="px-3 py-2 text-slate-300">{d.clientStage || 'Launch'}</td>
                 <td className="px-3 py-2">
                   <div className="flex gap-2">
-                    <button className="crm-btn-ghost inline-flex items-center gap-1 text-xs" title="Open" aria-label="Open" onClick={() => openTray(d)}><Pencil size={14} /></button>
+                    <button className="crm-btn-ghost inline-flex items-center gap-1 text-xs" title="Open tray" aria-label="Open tray" onClick={() => openTray(d)}><SquareArrowOutUpRight size={14} /></button>
                     <button className="crm-btn-ghost inline-flex items-center gap-1 text-xs" onClick={() => moveBack(d)}><RotateCcw size={13} /> Move back</button>
                     <button className="crm-btn-ghost inline-flex items-center gap-1 text-xs text-red-300" title="Remove" aria-label="Remove" onClick={() => removeClient(d)}><Trash2 size={13} /></button>
                   </div>

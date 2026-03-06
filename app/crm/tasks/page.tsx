@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CheckSquare, Plus, Save, CornerUpLeft, Trash2, LayoutGrid, List, X, Pencil, Circle, CircleCheck, Mail, Phone, MessageSquare, Linkedin, Users, CalendarCheck2, CheckCheck } from "lucide-react";
+import { CheckSquare, Plus, Save, Trash2, LayoutGrid, List, X, Pencil, Circle, CircleCheck, Mail, Phone, MessageSquare, Linkedin, Users, CalendarCheck2, CheckCheck, SquareArrowOutUpRight } from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
 
 const TASK_STATUSES = ["Overdue", "Not started", "Completed", "Canceled"];
@@ -242,7 +242,7 @@ export default function TasksPage() {
                     <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <input type="date" className="crm-input" value={inlineDraft.dueDate || ''} onClick={openPicker} onFocus={openPicker} onChange={(e)=>setInlineDraft({...inlineDraft, dueDate:e.target.value})} /> : (t.dueDate || '—')}</td>
                     <td className="px-3 py-2 text-slate-400">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}</td>
                     <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.status || 'Not started'} onChange={(e)=>setInlineDraft({...inlineDraft, status:e.target.value})}>{TASK_STATUSES.map((s)=> <option key={s} value={s} disabled={s === 'Overdue'}>{s}</option>)}</select> : <span className={status === 'Completed' ? 'text-emerald-300' : status === 'Canceled' ? 'text-rose-300' : status === 'Overdue' ? 'text-rose-300' : 'text-amber-300'}>{status}</span>}</td>
-                    <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" title="Save" aria-label="Save" onClick={saveInlineEdit}><Save size={14} className="text-emerald-300" /></button><button className="crm-btn-ghost" title="Cancel" aria-label="Cancel" onClick={cancelInlineEdit}><X size={14} className="text-rose-300" /></button></div> : <button className="crm-btn-ghost" title="Open" aria-label="Open" onClick={() => openTask(t)}><Pencil size={14} /></button>}</td>
+                    <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" title="Save" aria-label="Save" onClick={saveInlineEdit}><Save size={14} className="text-emerald-300" /></button><button className="crm-btn-ghost" title="Cancel" aria-label="Cancel" onClick={cancelInlineEdit}><X size={14} className="text-rose-300" /></button></div> : <button className="crm-btn-ghost" title="Open tray" aria-label="Open tray" onClick={() => openTask(t)}><SquareArrowOutUpRight size={14} /></button>}</td>
                   </tr>
                 );
               })}

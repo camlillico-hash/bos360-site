@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BriefcaseBusiness, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Archive, ChevronDown, ChevronRight } from "lucide-react";
+import { BriefcaseBusiness, Save, Pencil, Trash2, X, SquareArrowOutUpRight, LayoutGrid, List, Archive, ChevronDown, ChevronRight } from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
 
 const STAGES = ["Discovery meeting booked", "Discovery meeting completed", "Fit meeting booked", "Fit meeting completed", "Proposal / commitment", "Launch paid (won)", "Lost"];
@@ -149,7 +149,7 @@ export default function DealsPage() {
                 <td className="px-3 py-2 text-slate-300">{money(d.value)}</td>
                 <td className="px-3 py-2 text-emerald-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <select className="crm-input" value={inlineDraft.stage || STAGES[0]} onChange={(e)=>setInlineDraft({...inlineDraft, stage:e.target.value})}>{STAGES.map((s)=><option key={s} value={s}>{s}</option>)}</select> : d.stage}</td>
                 <td className="px-3 py-2 text-slate-400">{d.createdAt ? new Date(d.createdAt).toLocaleDateString() : "—"}</td>
-                <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" title="Save" aria-label="Save" onClick={saveInlineEdit}><Save size={14} className="text-emerald-300" /></button><button className="crm-btn-ghost" title="Cancel" aria-label="Cancel" onClick={cancelInlineEdit}><X size={14} className="text-rose-300" /></button></div> : <button className="crm-btn-ghost" title="Open tray" aria-label="Open tray" onClick={() => openTray(d)}><CornerUpLeft size={14} /></button>}</td>
+                <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" title="Save" aria-label="Save" onClick={saveInlineEdit}><Save size={14} className="text-emerald-300" /></button><button className="crm-btn-ghost" title="Cancel" aria-label="Cancel" onClick={cancelInlineEdit}><X size={14} className="text-rose-300" /></button></div> : <button className="crm-btn-ghost" title="Open tray" aria-label="Open tray" onClick={() => openTray(d)}><SquareArrowOutUpRight size={14} /></button>}</td>
               </tr>
             );
           })}
@@ -246,7 +246,7 @@ export default function DealsPage() {
                             <td className="px-3 py-2 text-slate-300">{money(s.value)}</td>
                             <td className="px-3 py-2 text-emerald-300">Launch paid (won)</td>
                             <td className="px-3 py-2 text-slate-400">{s.wonAt ? new Date(s.wonAt).toLocaleDateString() : "—"}</td>
-                            <td className="px-3 py-2"><div className="flex gap-2"><button className="crm-btn-ghost inline-flex items-center gap-1" title="Open" aria-label="Open" onClick={() => { if (linkedDeal) openTray(linkedDeal); }}><Pencil size={14} /></button><button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1" title="Remove" aria-label="Remove" onClick={() => removeDealStamp(s.id)}><Trash2 size={13} /></button></div></td>
+                            <td className="px-3 py-2"><div className="flex gap-2"><button className="crm-btn-ghost inline-flex items-center gap-1" title="Open tray" aria-label="Open tray" onClick={() => { if (linkedDeal) openTray(linkedDeal); }}><SquareArrowOutUpRight size={14} /></button><button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1" title="Remove" aria-label="Remove" onClick={() => removeDealStamp(s.id)}><Trash2 size={13} /></button></div></td>
                           </tr>
                         );
                       })}
