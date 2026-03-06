@@ -247,7 +247,7 @@ export default function ContactsPage() {
         <div className="space-y-4">
           {contactStamps.length > 0 && (
             <div className="crm-card p-4">
-              <h3 className="mb-3 inline-flex items-center gap-2 font-semibold text-slate-200"><Archive size={16} /> Past Wins</h3>
+              <h3 className="mb-3 inline-flex items-center gap-2 font-semibold text-slate-200"><Archive size={16} /> Converted</h3>
               <div className="space-y-2">
                 {contactStamps.map((s) => (
                   <div key={s.id} className="flex items-center justify-between rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
@@ -264,7 +264,7 @@ export default function ContactsPage() {
 
           {items.some((c) => (c.status || "New") === "Not right now") && (
             <div className="crm-card p-4">
-              <h3 className="mb-3 inline-flex items-center gap-2 font-semibold text-slate-200"><Archive size={16} /> Past Leads</h3>
+              <h3 className="mb-3 inline-flex items-center gap-2 font-semibold text-slate-200"><Archive size={16} /> Disqualified (for now)</h3>
               <div className="space-y-2">
                 {items.filter((c) => (c.status || "New") === "Not right now").map((c) => (
                   <div key={c.id} className="flex items-start justify-between gap-3 rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
