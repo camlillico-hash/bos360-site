@@ -386,7 +386,7 @@ export default function ContactsPage() {
               {!createMode && <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1.5" title="Delete" aria-label="Delete" onClick={() => askConfirm("Are you sure you want to delete this record?", () => { deleteFromTray(); })}><Trash2 size={14} /></button>}
             </div>
             <div className="mt-5 min-h-0 flex-1 space-y-3 overflow-auto pb-10">
-              <button className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-slate-300" onClick={() => setShowDetailSection((v) => !v)}>
+              <button className="flex w-full items-center gap-2 pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300" onClick={() => setShowDetailSection((v) => !v)}>
                 {showDetailSection ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                 Contact details
               </button>
@@ -421,7 +421,7 @@ export default function ContactsPage() {
 
               {!createMode && (
                 <>
-                  <button className="inline-flex items-center gap-2 pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300" onClick={() => setShowActivitiesSection((v) => !v)}>
+                  <button className="mt-3 flex w-full items-center gap-2 text-sm font-semibold uppercase tracking-wider text-slate-300" onClick={() => setShowActivitiesSection((v) => !v)}>
                     {showActivitiesSection ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                     Activities
                   </button>
@@ -462,7 +462,7 @@ export default function ContactsPage() {
                   </div>
                 </div>}
 
-                <button className="inline-flex items-center gap-2 pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300" onClick={() => setShowDealsSection((v) => !v)}>
+                <button className="mt-3 flex w-full items-center gap-2 text-sm font-semibold uppercase tracking-wider text-slate-300" onClick={() => setShowDealsSection((v) => !v)}>
                   {showDealsSection ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                   Associated deals
                 </button>
