@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { CheckSquare, Plus, Save, CornerUpLeft, Trash2, LayoutGrid, List, X, Pencil, Circle, CircleCheck } from "lucide-react";
+import ConfirmDialog from "../ConfirmDialog";
 
 const TASK_STATUSES = ["Overdue", "Not started", "Completed", "Canceled"];
 const TASK_TYPES = ["email", "call", "text", "linkedin", "in_person", "meeting", "task_completed"];
@@ -21,6 +22,7 @@ export default function TasksPage() {
   const [hoverTaskStatus, setHoverTaskStatus] = useState<string | null>(null);
   const [hoverDrop, setHoverDrop] = useState<{ status: string; index: number } | null>(null);
   const [fadingIds, setFadingIds] = useState<string[]>([]);
+  const [confirmState, setConfirmState] = useState<{ open: boolean; message: string; action: (() => void) | null }>({ open: false, message: "", action: null });
 
   const [selected, setSelected] = useState<any>(null);
   const [draft, setDraft] = useState<any>(null);
@@ -230,7 +232,7 @@ export default function TasksPage() {
             <div className="flex items-center justify-between gap-3"><h2 className="text-xl font-semibold">{createMode ? "New task" : draft.title || "Task"}</h2><button className="crm-btn-ghost inline-flex items-center gap-1.5" onClick={closeTray}><X size={14} /> Close</button></div>
             <div className="mt-4 flex gap-2">
               {!createMode && !editMode ? <button className="crm-btn inline-flex items-center gap-1.5" title="Open" aria-label="Open" onClick={() => setEditMode(true)}><Pencil size={14} /></button> : <><button className="crm-btn inline-flex items-center gap-1.5" title="Save" aria-label="Save" onClick={saveTask}><Save size={14} className="text-emerald-300" /></button>{!createMode && <button className="crm-btn-ghost inline-flex items-center gap-1.5" title="Cancel" aria-label="Cancel" onClick={() => { setDraft({ ...selected }); setEditMode(false); setError(""); }}><X size={14} className="text-rose-300" /></button>}</>}
-              {!createMode && <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1.5" title="Delete" aria-label="Delete" onClick={() => { if (!confirm("Are you sure you want to delete this record?")) return; deleteTask(selected.id); }}><Trash2 size={14} /></button>}
+              {!createMode && <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1.5" title="Delete" aria-label="Delete" onClick={() => setConfirmState({ open: true, message: "Are you sure you want to delete this record?", action: () => deleteTask(selected.id) })}><Trash2 size={14} /></button>}
             </div>
             <div className="mt-5 min-h-0 flex-1 space-y-3 overflow-auto pb-10">
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Task title</label>{(editMode || createMode) ? <input className="crm-input" value={draft.title || ''} onChange={(e) => setDraft({ ...draft, title: e.target.value })} /> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm">{draft.title || '—'}</p>}</div>
@@ -245,6 +247,18 @@ export default function TasksPage() {
           </aside>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmState.open}
+        message={confirmState.message}
+        confirmLabel="Delete"
+        onCancel={() => setConfirmState({ open: false, message: "", action: null })}
+        onConfirm={() => {
+          const action = confirmState.action;
+          setConfirmState({ open: false, message: "", action: null });
+          action?.();
+        }}
+      />
     </div>
   );
 }

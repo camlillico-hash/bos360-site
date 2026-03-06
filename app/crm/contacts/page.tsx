@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Users, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Plus, Upload, Archive } from "lucide-react";
+import ConfirmDialog from "../ConfirmDialog";
 import Papa from "papaparse";
 
 type Contact = any;
@@ -37,6 +38,7 @@ export default function ContactsPage() {
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
   const [trayError, setTrayError] = useState("");
+  const [confirmState, setConfirmState] = useState<{ open: boolean; message: string; action: (() => void) | null }>({ open: false, message: "", action: null });
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [inlineDraft, setInlineDraft] = useState<any>(null);
@@ -124,10 +126,15 @@ export default function ContactsPage() {
     await load();
   }
 
+  function askConfirm(message: string, action: () => void) {
+    setConfirmState({ open: true, message, action });
+  }
+
   async function removeContactStamp(stampId: string) {
-    if (!confirm("Remove this won-contact placeholder?")) return;
-    await fetch(`/api/crm/contacts?stampId=${encodeURIComponent(stampId)}`, { method: "DELETE" });
-    await load();
+    askConfirm("Remove this won-contact placeholder?", async () => {
+      await fetch(`/api/crm/contacts?stampId=${encodeURIComponent(stampId)}`, { method: "DELETE" });
+      await load();
+    });
   }
 
   return (
@@ -317,7 +324,7 @@ export default function ContactsPage() {
             <div className="flex items-center justify-between gap-3"><h2 className="text-xl font-semibold">{createMode ? "New contact" : `${selected?.firstName || ""} ${selected?.lastName || ""}`}</h2><button className="crm-btn-ghost inline-flex items-center gap-1.5" onClick={closeTray}><X size={14} /> Close</button></div>
             <div className="mt-4 flex gap-2">
               {!createMode && !editMode ? <button className="crm-btn inline-flex items-center gap-1.5" title="Open" aria-label="Open" onClick={() => setEditMode(true)}><Pencil size={14} /></button> : <><button className="crm-btn inline-flex items-center gap-1.5" title="Save" aria-label="Save" onClick={() => saveContact(false)}><Save size={14} className="text-emerald-300" /></button>{createMode && <button className="crm-btn-ghost inline-flex items-center gap-1.5" title="Save" aria-label="Save" onClick={() => saveContact(true)}><Save size={14} className="text-emerald-300" /></button>}{!createMode && <button className="crm-btn-ghost inline-flex items-center gap-1.5" title="Cancel" aria-label="Cancel" onClick={() => { setDraft({ ...selected }); setEditMode(false); setTrayError(""); }}><X size={14} className="text-rose-300" /></button>}</>}
-              {!createMode && <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1.5" title="Delete" aria-label="Delete" onClick={() => { if (!confirm("Are you sure you want to delete this record?")) return; deleteFromTray(); }}><Trash2 size={14} /></button>}
+              {!createMode && <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1.5" title="Delete" aria-label="Delete" onClick={() => askConfirm("Are you sure you want to delete this record?", () => { deleteFromTray(); })}><Trash2 size={14} /></button>}
             </div>
             <div className="mt-5 min-h-0 flex-1 space-y-3 overflow-auto pb-10">
               {contactFields.map(([k, label, type]) => (
@@ -387,6 +394,18 @@ export default function ContactsPage() {
           </aside>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmState.open}
+        message={confirmState.message}
+        confirmLabel="Delete"
+        onCancel={() => setConfirmState({ open: false, message: "", action: null })}
+        onConfirm={() => {
+          const action = confirmState.action;
+          setConfirmState({ open: false, message: "", action: null });
+          action?.();
+        }}
+      />
     </div>
   );
 }

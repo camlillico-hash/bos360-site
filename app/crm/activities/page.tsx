@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Activity, Plus, Save, Trash2, X } from "lucide-react";
+import ConfirmDialog from "../ConfirmDialog";
 
 const TYPES = [
   { value: "email", label: "Email" },
@@ -24,6 +25,7 @@ export default function ActivitiesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [draft, setDraft] = useState<any>({ type: "email" });
   const [error, setError] = useState("");
+  const [confirmState, setConfirmState] = useState<{ open: boolean; message: string; action: (() => void) | null }>({ open: false, message: "", action: null });
 
   const load = async () => {
     const c = await (await fetch('/api/crm/contacts', { cache: 'no-store' })).json();
@@ -40,14 +42,19 @@ export default function ActivitiesPage() {
 
   const sorted = useMemo(() => [...activities].sort((a, b) => new Date(b.occurredAt || b.createdAt).getTime() - new Date(a.occurredAt || a.createdAt).getTime()), [activities]);
 
+  function askConfirm(message: string, action: () => void) {
+    setConfirmState({ open: true, message, action });
+  }
+
   async function deleteActivity(activityId: string) {
-    if (!confirm("Are you sure you want to delete this record?")) return;
-    const res = await fetch(`/api/crm/activities?id=${encodeURIComponent(activityId)}`, { method: 'DELETE' });
-    if (!res.ok) {
-      setError('Could not delete activity');
-      return;
-    }
-    setActivities((prev) => prev.filter((a) => a.id !== activityId));
+    askConfirm("Are you sure you want to delete this record?", async () => {
+      const res = await fetch(`/api/crm/activities?id=${encodeURIComponent(activityId)}`, { method: 'DELETE' });
+      if (!res.ok) {
+        setError('Could not delete activity');
+        return;
+      }
+      setActivities((prev) => prev.filter((a) => a.id !== activityId));
+    });
   }
 
   return (
@@ -130,6 +137,18 @@ export default function ActivitiesPage() {
           </aside>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmState.open}
+        message={confirmState.message}
+        confirmLabel="Delete"
+        onCancel={() => setConfirmState({ open: false, message: "", action: null })}
+        onConfirm={() => {
+          const action = confirmState.action;
+          setConfirmState({ open: false, message: "", action: null });
+          action?.();
+        }}
+      />
     </div>
   );
 }

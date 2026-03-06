@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Handshake, RotateCcw, Trash2, X, Save, Pencil } from "lucide-react";
+import ConfirmDialog from "../ConfirmDialog";
 
 const money = (n?: number) => `$${Math.round(Number(n || 0)).toLocaleString()}`;
 
@@ -12,6 +13,7 @@ export default function ClientsPage() {
   const [draft, setDraft] = useState<any>(null);
   const [editMode, setEditMode] = useState(false);
   const [error, setError] = useState("");
+  const [confirmState, setConfirmState] = useState<{ open: boolean; message: string; action: (() => void) | null }>({ open: false, message: "", action: null });
 
   const load = async () => {
     const d = await (await fetch('/api/crm/deals', { cache: 'no-store' })).json();
@@ -54,9 +56,14 @@ export default function ClientsPage() {
   }
 
   async function removeClient(deal: any) {
-    if (!confirm('Are you sure you want to remove this client record?')) return;
-    await fetch(`/api/crm/deals?id=${deal.id}`, { method: 'DELETE' });
-    load();
+    setConfirmState({
+      open: true,
+      message: 'Are you sure you want to remove this client record?',
+      action: async () => {
+        await fetch(`/api/crm/deals?id=${deal.id}`, { method: 'DELETE' });
+        load();
+      },
+    });
   }
 
   return (
@@ -100,6 +107,18 @@ export default function ClientsPage() {
           </tbody>
         </table>
       </div>
+
+      <ConfirmDialog
+        open={confirmState.open}
+        message={confirmState.message}
+        confirmLabel="Remove"
+        onCancel={() => setConfirmState({ open: false, message: "", action: null })}
+        onConfirm={() => {
+          const action = confirmState.action;
+          setConfirmState({ open: false, message: "", action: null });
+          action?.();
+        }}
+      />
 
       {draft && (
         <div className="fixed inset-0 z-40">

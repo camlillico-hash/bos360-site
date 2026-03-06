@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { BriefcaseBusiness, Plus, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Archive } from "lucide-react";
+import ConfirmDialog from "../ConfirmDialog";
 
 const STAGES = ["Discovery meeting booked", "Discovery meeting completed", "Fit meeting booked", "Fit meeting completed", "Proposal / commitment", "Launch paid (won)", "Lost"];
 const CLIENT_STAGES = ["Launch", "Active rhythm"];
@@ -28,6 +29,7 @@ export default function DealsPage() {
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
   const [trayError, setTrayError] = useState("");
+  const [confirmState, setConfirmState] = useState<{ open: boolean; message: string; action: (() => void) | null }>({ open: false, message: "", action: null });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [inlineDraft, setInlineDraft] = useState<any>(null);
 
@@ -97,9 +99,10 @@ export default function DealsPage() {
   }
 
   async function removeDealStamp(stampId: string) {
-    if (!confirm("Remove this won-deal placeholder?")) return;
-    await fetch(`/api/crm/deals?stampId=${encodeURIComponent(stampId)}`, { method: "DELETE" });
-    await load();
+    askConfirm("Remove this won-deal placeholder?", async () => {
+      await fetch(`/api/crm/deals?stampId=${encodeURIComponent(stampId)}`, { method: "DELETE" });
+      await load();
+    });
   }
 
   async function saveDeal() {
@@ -110,6 +113,10 @@ export default function DealsPage() {
     if (!res.ok) { const j = await res.json().catch(() => ({})); setTrayError(j.error || "Could not save deal"); return; }
     await load();
     closeTray();
+  }
+
+  function askConfirm(message: string, action: () => void) {
+    setConfirmState({ open: true, message, action });
   }
 
   async function deleteFromTray() {
@@ -246,7 +253,7 @@ export default function DealsPage() {
             <div className="flex items-center justify-between gap-3"><h2 className="text-xl font-semibold">{createMode ? "New deal" : selected?.name || "Untitled deal"}</h2><button className="crm-btn-ghost inline-flex items-center gap-1.5" onClick={closeTray}><X size={14} /> Close</button></div>
             <div className="mt-4 flex gap-2">
               {!createMode && !editMode ? <button className="crm-btn inline-flex items-center gap-1.5" title="Open" aria-label="Open" onClick={() => setEditMode(true)}><Pencil size={14} /></button> : <><button className="crm-btn inline-flex items-center gap-1.5" title="Save" aria-label="Save" onClick={saveDeal}><Save size={14} className="text-emerald-300" /></button>{!createMode && <button className="crm-btn-ghost inline-flex items-center gap-1.5" title="Cancel" aria-label="Cancel" onClick={() => { setDraft({ ...selected }); setEditMode(false); setTrayError(""); }}><X size={14} className="text-rose-300" /></button>}</>}
-              {!createMode && <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1.5" title="Delete" aria-label="Delete" onClick={() => { if (!confirm("Are you sure you want to delete this record?")) return; deleteFromTray(); }}><Trash2 size={14} /></button>}
+              {!createMode && <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1.5" title="Delete" aria-label="Delete" onClick={() => askConfirm("Are you sure you want to delete this record?", () => { deleteFromTray(); })}><Trash2 size={14} /></button>}
             </div>
             <div className="mt-5 min-h-0 flex-1 space-y-3 overflow-auto pb-10">
               <Field label="Deal name" editMode={editMode || createMode}><input className="crm-input" value={draft.name || ""} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></Field>
@@ -277,6 +284,18 @@ export default function DealsPage() {
           </aside>
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmState.open}
+        message={confirmState.message}
+        confirmLabel="Delete"
+        onCancel={() => setConfirmState({ open: false, message: "", action: null })}
+        onConfirm={() => {
+          const action = confirmState.action;
+          setConfirmState({ open: false, message: "", action: null });
+          action?.();
+        }}
+      />
     </div>
   );
 }
