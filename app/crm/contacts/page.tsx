@@ -254,7 +254,7 @@ export default function ContactsPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-sky-200" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowOpenContacts((v) => !v)}>
+          <button className="inline-flex items-center gap-2 text-left text-base sm:text-xl font-bold text-sky-200" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowOpenContacts((v) => !v)}>
             {showOpenContacts ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
             Open contacts ({sorted.length})
           </button>
@@ -266,7 +266,7 @@ export default function ContactsPage() {
         <div className="space-y-4">
           {contactStamps.length > 0 && (
             <div className="space-y-2">
-              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowConverted((v) => !v)}>
+              <button className="inline-flex items-center gap-2 text-left text-base sm:text-xl font-bold text-emerald-300" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowConverted((v) => !v)}>
                 {showConverted ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                 Converted ({contactStamps.length})
               </button>
@@ -298,9 +298,9 @@ export default function ContactsPage() {
 
           {disqualifiedItems.length > 0 && (
             <div className="space-y-2">
-              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-amber-300" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowDisqualified((v) => !v)}>
+              <button className="inline-flex items-center gap-2 text-left text-base sm:text-xl font-bold text-amber-300" style={{ fontFamily: "var(--font-playfair-display), serif" }} onClick={() => setShowDisqualified((v) => !v)}>
                 {showDisqualified ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
-                Disqualified (for now) ({disqualifiedItems.length})
+                Disqualified ({disqualifiedItems.length})
               </button>
               {showDisqualified && renderContactsTable(disqualifiedItems)}
             </div>
