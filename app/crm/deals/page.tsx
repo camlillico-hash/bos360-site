@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BriefcaseBusiness, Plus, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Archive } from "lucide-react";
+import { BriefcaseBusiness, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Archive } from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
 
 const STAGES = ["Discovery meeting booked", "Discovery meeting completed", "Fit meeting booked", "Fit meeting completed", "Proposal / commitment", "Launch paid (won)", "Lost"];
@@ -61,7 +61,6 @@ export default function DealsPage() {
     cancelInlineEdit();
   }
 
-  function openCreate() { setCreateMode(true); setEditMode(true); setSelected(null); setDraft({ stage: STAGES[0], dailyRate: 5000, launchIncluded: "Yes" }); setTrayError(""); }
   function openTray(deal: any) { setSelected(deal); setDraft({ ...deal }); setEditMode(false); setCreateMode(false); setTrayError(""); }
   function closeTray() { setSelected(null); setDraft(null); setEditMode(false); setCreateMode(false); setTrayError(""); }
 
@@ -131,7 +130,6 @@ export default function DealsPage() {
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-lg sm:text-2xl font-bold inline-flex items-center gap-2 text-amber-200 whitespace-nowrap"><BriefcaseBusiness size={20} /> Deals ({visibleDeals.length})</h1>
         <div className="flex items-center gap-2">
-          <button className="inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-3 py-2 font-semibold text-white hover:bg-amber-600" onClick={openCreate}><Plus size={14} /> New</button>
           <div className="inline-flex rounded-lg border border-neutral-700 p-1">
             <button className={`px-2 py-1 rounded ${view === "bucket" ? "bg-neutral-800 text-white" : "text-slate-400"}`} onClick={() => setView("bucket")}><LayoutGrid size={16} /></button>
             <button className={`px-2 py-1 rounded ${view === "table" ? "bg-neutral-800 text-white" : "text-slate-400"}`} onClick={() => setView("table")}><List size={16} /></button>

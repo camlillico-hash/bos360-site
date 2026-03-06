@@ -56,32 +56,8 @@ export async function GET() {
   return NextResponse.json({ deals: store.deals, dealStamps: store.dealStamps || [], stages: DEAL_STAGES });
 }
 
-export async function POST(req: Request) {
-  const body = await req.json().catch(() => ({}));
-  if (!String(body.name || "").trim()) {
-    return NextResponse.json({ error: "Deal name is required" }, { status: 400 });
-  }
-  if (!String(body.contactId || "").trim()) {
-    return NextResponse.json({ error: "Linked contact is required" }, { status: 400 });
-  }
-  const store = await getStore();
-  const stage = normalizeStage(body.stage || DEAL_STAGES[0]);
-  const financials = computeFinancials(body);
-  const record = {
-    id: id(),
-    createdAt: now(),
-    updatedAt: now(),
-    ...body,
-    ...financials,
-    stage,
-    probability: DEAL_STAGE_WEIGHTS[stage] ?? 0,
-    primaryPain: normalizePrimaryPain(body.primaryPain),
-    clientStage: normalizeClientStage(stage, body.clientStage),
-  };
-  store.deals.unshift(record);
-  upsertDealStamp(store, record);
-  await saveStore(store);
-  return NextResponse.json(record);
+export async function POST() {
+  return NextResponse.json({ error: "Direct deal creation is disabled. Move a contact to Discovery meeting booked to create a deal." }, { status: 403 });
 }
 
 export async function PUT(req: Request) {
