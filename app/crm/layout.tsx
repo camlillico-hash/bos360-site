@@ -21,12 +21,14 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
       {!isLogin && (
         <header className="border-b border-neutral-800/80 bg-neutral-900/75 backdrop-blur">
           <div className="mx-auto flex max-w-7xl items-start justify-between px-6 pt-3 pb-2">
-            <Link href="/crm" className="mt-1 flex shrink-0 items-center leading-tight">
-              <img src="/glyph-crm-logo.png" alt="Glyph CRM logo" className="h-14 w-auto sm:h-16" />
-            </Link>
+            <div className="mt-1 flex shrink-0 flex-col items-start leading-tight">
+              <Link href="/crm" className="flex items-center">
+                <img src="/glyph-crm-logo.png" alt="Glyph CRM logo" className="h-12 w-auto sm:h-14" />
+              </Link>
+              {role === "guest" && <span className="mt-1 rounded border border-amber-500/50 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-300">Guest</span>}
+            </div>
             <CoachWidget mode="desktop-inline" />
             <div className="mt-2 ml-auto flex shrink-0 items-center gap-2 sm:ml-4">
-              {role === "guest" && <span className="rounded-md border border-amber-500/60 bg-amber-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-amber-300">Guest mode</span>}
               <Nav />
             </div>
           </div>
