@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BriefcaseBusiness, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Archive } from "lucide-react";
+import { BriefcaseBusiness, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Archive, ChevronDown, ChevronRight } from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
 
 const STAGES = ["Discovery meeting booked", "Discovery meeting completed", "Fit meeting booked", "Fit meeting completed", "Proposal / commitment", "Launch paid (won)", "Lost"];
@@ -33,6 +33,8 @@ export default function DealsPage() {
   const [movePicker, setMovePicker] = useState<{ open: boolean; dealId?: string }>({ open: false });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [inlineDraft, setInlineDraft] = useState<any>(null);
+  const [showWon, setShowWon] = useState(true);
+  const [showLost, setShowLost] = useState(true);
 
   const load = async () => {
     const d = await (await fetch("/api/crm/deals", { cache: "no-store" })).json();
@@ -214,35 +216,43 @@ export default function DealsPage() {
         <div className="space-y-4">
           {dealStamps.length > 0 && (
             <div className="space-y-2">
-              <h3 className="inline-flex items-center gap-2 font-semibold text-emerald-300"><Archive size={16} /> Won</h3>
-              <div className="crm-card overflow-auto">
-                <table className="w-full text-sm">
-                  <thead className="border-b border-neutral-800 text-slate-400"><tr><th className="px-3 py-2 text-left">Deal</th><th className="px-3 py-2 text-left">Contact</th><th className="px-3 py-2 text-left">Company</th><th className="px-3 py-2 text-left">Amount</th><th className="px-3 py-2 text-left">Stage</th><th className="px-3 py-2 text-left">Created</th><th className="px-3 py-2 text-left">Actions</th></tr></thead>
-                  <tbody>
-                    {dealStamps.map((s) => {
-                      const linkedDeal = deals.find((d) => d.id === s.dealId);
-                      return (
-                        <tr key={s.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
-                          <td className="px-3 py-2">{s.name || "Untitled deal"}</td>
-                          <td className="px-3 py-2 text-slate-300">{linkedDeal ? contactName(linkedDeal.contactId) : "—"}</td>
-                          <td className="px-3 py-2 text-slate-300">{s.company || "—"}</td>
-                          <td className="px-3 py-2 text-slate-300">{money(s.value)}</td>
-                          <td className="px-3 py-2 text-emerald-300">Launch paid (won)</td>
-                          <td className="px-3 py-2 text-slate-400">{s.wonAt ? new Date(s.wonAt).toLocaleDateString() : "—"}</td>
-                          <td className="px-3 py-2"><div className="flex gap-2"><button className="crm-btn-ghost inline-flex items-center gap-1" title="Open" aria-label="Open" onClick={() => { if (linkedDeal) openTray(linkedDeal); }}><Pencil size={14} /></button><button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1" title="Remove" aria-label="Remove" onClick={() => removeDealStamp(s.id)}><Trash2 size={13} /></button></div></td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-emerald-300" onClick={() => setShowWon((v) => !v)}>
+                {showWon ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                Won ({dealStamps.length})
+              </button>
+              {showWon && (
+                <div className="crm-card overflow-auto">
+                  <table className="w-full text-sm">
+                    <thead className="border-b border-neutral-800 text-slate-400"><tr><th className="px-3 py-2 text-left">Deal</th><th className="px-3 py-2 text-left">Contact</th><th className="px-3 py-2 text-left">Company</th><th className="px-3 py-2 text-left">Amount</th><th className="px-3 py-2 text-left">Stage</th><th className="px-3 py-2 text-left">Created</th><th className="px-3 py-2 text-left">Actions</th></tr></thead>
+                    <tbody>
+                      {dealStamps.map((s) => {
+                        const linkedDeal = deals.find((d) => d.id === s.dealId);
+                        return (
+                          <tr key={s.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
+                            <td className="px-3 py-2">{s.name || "Untitled deal"}</td>
+                            <td className="px-3 py-2 text-slate-300">{linkedDeal ? contactName(linkedDeal.contactId) : "—"}</td>
+                            <td className="px-3 py-2 text-slate-300">{s.company || "—"}</td>
+                            <td className="px-3 py-2 text-slate-300">{money(s.value)}</td>
+                            <td className="px-3 py-2 text-emerald-300">Launch paid (won)</td>
+                            <td className="px-3 py-2 text-slate-400">{s.wonAt ? new Date(s.wonAt).toLocaleDateString() : "—"}</td>
+                            <td className="px-3 py-2"><div className="flex gap-2"><button className="crm-btn-ghost inline-flex items-center gap-1" title="Open" aria-label="Open" onClick={() => { if (linkedDeal) openTray(linkedDeal); }}><Pencil size={14} /></button><button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1" title="Remove" aria-label="Remove" onClick={() => removeDealStamp(s.id)}><Trash2 size={13} /></button></div></td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
           {lostDeals.length > 0 && (
             <div className="space-y-2">
-              <h3 className="inline-flex items-center gap-2 font-semibold text-amber-300"><Archive size={16} /> Lost</h3>
-              {renderDealsTable(lostDeals)}
+              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-amber-300" onClick={() => setShowLost((v) => !v)}>
+                {showLost ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                Lost ({lostDeals.length})
+              </button>
+              {showLost && renderDealsTable(lostDeals)}
             </div>
           )}
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Users, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Plus, Upload, Archive, Mail, Phone, MessageSquare, Linkedin, CalendarCheck2, CheckCheck } from "lucide-react";
+import { Users, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Plus, Upload, Archive, Mail, Phone, MessageSquare, Linkedin, CalendarCheck2, CheckCheck, ChevronDown, ChevronRight } from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
 import Papa from "papaparse";
 
@@ -60,6 +60,8 @@ export default function ContactsPage() {
   const [importOpen, setImportOpen] = useState(false);
   const [importResult, setImportResult] = useState<any>(null);
   const [importError, setImportError] = useState("");
+  const [showConverted, setShowConverted] = useState(true);
+  const [showDisqualified, setShowDisqualified] = useState(true);
 
   const load = async () => {
     const contactsRes = await (await fetch("/api/crm/contacts", { cache: "no-store" })).json();
@@ -250,35 +252,43 @@ export default function ContactsPage() {
         <div className="space-y-4">
           {contactStamps.length > 0 && (
             <div className="space-y-2">
-              <h3 className="inline-flex items-center gap-2 font-semibold text-emerald-300"><Archive size={16} /> Converted</h3>
-              <div className="crm-card overflow-auto">
-                <table className="w-full text-sm">
-                  <thead className="border-b border-neutral-800 text-slate-400"><tr><th className="px-3 py-2 text-left">Name</th><th className="px-3 py-2 text-left">Email</th><th className="px-3 py-2 text-left">LinkedIn</th><th className="px-3 py-2 text-left">Company</th><th className="px-3 py-2 text-left">Type</th><th className="px-3 py-2 text-left">Stage</th><th className="px-3 py-2 text-left">Last Activity Date</th><th className="px-3 py-2 text-left">Last Activity Type</th><th className="px-3 py-2 text-left">Created</th><th className="px-3 py-2 text-left">Actions</th></tr></thead>
-                  <tbody>
-                    {contactStamps.map((s) => (
-                      <tr key={s.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
-                        <td className="px-3 py-2">{s.name || "Unnamed contact"}</td>
-                        <td className="px-3 py-2 text-slate-300">{s.email || "—"}</td>
-                        <td className="px-3 py-2 text-slate-300">—</td>
-                        <td className="px-3 py-2 text-slate-300">{s.company || "—"}</td>
-                        <td className="px-3 py-2 text-slate-300">—</td>
-                        <td className="px-3 py-2 text-emerald-300">Discovery meeting booked</td>
-                        <td className="px-3 py-2 text-slate-300">{s.wonAt ? new Date(s.wonAt).toLocaleDateString() : "—"}</td>
-                        <td className="px-3 py-2 text-slate-300">task completed</td>
-                        <td className="px-3 py-2 text-slate-400">—</td>
-                        <td className="px-3 py-2"><button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1" onClick={() => removeContactStamp(s.id)}><Trash2 size={13} /> Remove</button></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-emerald-300" onClick={() => setShowConverted((v) => !v)}>
+                {showConverted ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                Converted ({contactStamps.length})
+              </button>
+              {showConverted && (
+                <div className="crm-card overflow-auto">
+                  <table className="w-full text-sm">
+                    <thead className="border-b border-neutral-800 text-slate-400"><tr><th className="px-3 py-2 text-left">Name</th><th className="px-3 py-2 text-left">Email</th><th className="px-3 py-2 text-left">LinkedIn</th><th className="px-3 py-2 text-left">Company</th><th className="px-3 py-2 text-left">Type</th><th className="px-3 py-2 text-left">Stage</th><th className="px-3 py-2 text-left">Last Activity Date</th><th className="px-3 py-2 text-left">Last Activity Type</th><th className="px-3 py-2 text-left">Created</th><th className="px-3 py-2 text-left">Actions</th></tr></thead>
+                    <tbody>
+                      {contactStamps.map((s) => (
+                        <tr key={s.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
+                          <td className="px-3 py-2">{s.name || "Unnamed contact"}</td>
+                          <td className="px-3 py-2 text-slate-300">{s.email || "—"}</td>
+                          <td className="px-3 py-2 text-slate-300">—</td>
+                          <td className="px-3 py-2 text-slate-300">{s.company || "—"}</td>
+                          <td className="px-3 py-2 text-slate-300">—</td>
+                          <td className="px-3 py-2 text-emerald-300">Discovery meeting booked</td>
+                          <td className="px-3 py-2 text-slate-300">{s.wonAt ? new Date(s.wonAt).toLocaleDateString() : "—"}</td>
+                          <td className="px-3 py-2 text-slate-300">task completed</td>
+                          <td className="px-3 py-2 text-slate-400">—</td>
+                          <td className="px-3 py-2"><button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1" onClick={() => removeContactStamp(s.id)}><Trash2 size={13} /> Remove</button></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
           {disqualifiedItems.length > 0 && (
             <div className="space-y-2">
-              <h3 className="inline-flex items-center gap-2 font-semibold text-amber-300"><Archive size={16} /> Disqualified (for now)</h3>
-              {renderContactsTable(disqualifiedItems)}
+              <button className="inline-flex items-center gap-2 text-left text-lg sm:text-2xl font-bold text-amber-300" onClick={() => setShowDisqualified((v) => !v)}>
+                {showDisqualified ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+                Disqualified (for now) ({disqualifiedItems.length})
+              </button>
+              {showDisqualified && renderContactsTable(disqualifiedItems)}
             </div>
           )}
         </div>
