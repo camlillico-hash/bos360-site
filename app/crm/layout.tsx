@@ -10,10 +10,21 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isLogin = pathname === "/crm/login";
   const [role, setRole] = useState<string>("");
+  const [sgtColor, setSgtColor] = useState<string>("text-sky-300");
 
   useEffect(() => {
     const match = document.cookie.match(/(?:^|; )crm_role=([^;]+)/);
     setRole(match ? decodeURIComponent(match[1]) : "");
+  }, [pathname]);
+
+  useEffect(() => {
+    fetch("/api/crm/coach", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        const c = d?.iconColor;
+        setSgtColor(c === "red" ? "text-rose-300" : c === "green" ? "text-emerald-300" : "text-sky-300");
+      })
+      .catch(() => {});
   }, [pathname]);
 
   return (
@@ -46,7 +57,9 @@ export default function CrmLayout({ children }: { children: React.ReactNode }) {
               <img src="/glyph-crm-logo.png" alt="Glyph CRM logo" className="h-5 w-auto" />
               <p>© {new Date().getFullYear()} Glyph CRM</p>
             </div>
-            <p className="ml-auto max-w-[45%] pl-4 text-right text-[10px] leading-tight text-slate-400 sm:max-w-none sm:text-sm">Sgt. Glyph says: if your pipeline is empty, your excuses are full. Fix it.</p>
+            <p className="ml-auto max-w-[58%] pl-3 text-left text-[10px] leading-tight text-slate-400 sm:max-w-none sm:pl-6 sm:text-sm">
+              <span className={`font-semibold ${sgtColor}`}>Sgt. Glyph</span> says: if your pipeline is empty, your excuses are full. Fix it.
+            </p>
           </div>
         </footer>
       )}
