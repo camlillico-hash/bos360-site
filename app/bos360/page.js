@@ -103,7 +103,7 @@ export default function Bos360Page() {
       <section className="mx-auto max-w-6xl px-6 pb-8 pt-24 md:pb-10 md:pt-32">
         <p className="inline-flex items-center gap-2 rounded-full border border-neutral-600 bg-neutral-800/85 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-orange-200">
           <span aria-hidden>◉</span>
-          BOS360 Business Coaching
+          Glyph Labs Business Coaching
         </p>
 
         <h1 className="mt-6 max-w-5xl text-4xl font-bold leading-tight tracking-tight md:text-6xl">
@@ -172,7 +172,7 @@ export default function Bos360Page() {
         <div className="mx-auto max-w-6xl px-6">
           <h2 className="flex items-center gap-3 text-3xl font-bold md:text-4xl">
             <span aria-hidden className="text-[#ed7d31]">◇</span>
-            My BOS360 Coaching Approach
+            My Glyph Labs Coaching Approach
           </h2>
           <ol className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {process.map((step, i) => (
@@ -192,7 +192,7 @@ export default function Bos360Page() {
           <div className="mt-8 max-w-4xl rounded-2xl border border-neutral-600 bg-neutral-900/85 p-5 shadow-lg shadow-black/30">
             <p className="text-base font-medium leading-relaxed text-slate-100 md:text-lg">
               <span className="mr-2 text-[#ed7d31]">◉</span>
-              BOS360 is a practical operating system for leadership teams who want
+              Glyph Labs is a practical operating system for leadership teams who want
               <span className="font-semibold text-orange-200"> traction</span>
               <span className="text-slate-400"> — not </span>
               <span className="font-semibold text-orange-200">theory</span>.
@@ -220,7 +220,7 @@ export default function Bos360Page() {
             </p>
           </div>
           <div className="rounded-2xl border border-neutral-700 bg-neutral-900 p-6">
-            <p className="text-2xl font-bold text-[#ed7d31]">BOS360 Framework</p>
+            <p className="text-2xl font-bold text-[#ed7d31]">Glyph Labs Framework</p>
             <p className="mt-2 text-slate-300">
               Proven methodology built around alignment, discipline, and accountability
             </p>
@@ -296,7 +296,7 @@ export default function Bos360Page() {
             </h2>
             <div className="mt-5 space-y-4 text-slate-300">
               <p>
-                Cam is a certified BOS360 facilitator and seasoned revenue leader who helps
+                Cam is a certified Glyph Labs facilitator and seasoned revenue leader who helps
                 CEOs and leadership teams turn vision into disciplined execution. With nearly
                 a decade of hands-on experience running annual and quarterly planning sessions,
                 he combines structured frameworks with calm, unbiased facilitation to drive
@@ -317,8 +317,8 @@ export default function Bos360Page() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-lg border border-[#ed7d31]/45 bg-[#ed7d31]/12 px-3 py-2 text-sm font-semibold text-orange-100 transition hover:bg-[#ed7d31]/20"
               >
-                <img src="/badge-bos360.jpg" alt="BOS360" className="h-7 w-7 rounded object-cover" />
-                BOS360 Certified Coach
+                <img src="/badge-bos360.jpg" alt="Glyph Labs" className="h-7 w-7 rounded object-cover" />
+                Glyph Labs Certified Coach
               </a>
               <a
                 href="https://innovationcluster.ca/programs/mentors-advisors"

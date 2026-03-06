@@ -98,7 +98,7 @@ function maybeCreateDealForDiscovery(store: any, contact: any) {
   const nameBase = company || fallback;
   store.deals.unshift({
     id: id(),
-    name: `${nameBase} - BOS360`,
+    name: `${nameBase} - Glyph Labs`,
     contactId: contact.id,
     company: company || "",
     stage: DEAL_STAGES[0],

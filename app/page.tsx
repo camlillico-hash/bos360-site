@@ -27,8 +27,8 @@ export default function Home() {
     <main className="min-h-screen bg-[#06090f] text-slate-100">
       <a
         href="/bos360"
-        aria-label="Navigate to BOS360"
-        title="BOS360"
+        aria-label="Navigate to Glyph Labs"
+        title="Glyph Labs"
         className="fixed bottom-3 right-3 z-20 text-[10px] tracking-[0.25em] uppercase text-slate-500/35 transition hover:text-cyan-300/70"
       >
         ◌
