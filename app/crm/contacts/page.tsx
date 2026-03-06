@@ -254,12 +254,15 @@ export default function ContactsPage() {
               <h3 className="mb-3 inline-flex items-center gap-2 font-semibold text-slate-200"><Archive size={16} /> Past Leads</h3>
               <div className="space-y-2">
                 {items.filter((c) => (c.status || "New") === "Not right now").map((c) => (
-                  <div key={c.id} className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
-                    <p className="text-sm font-medium text-slate-100">{c.firstName} {c.lastName}</p>
-                    <p className="text-xs text-slate-400">{c.email || "—"} · {c.company || "—"}</p>
-                    <p className="mt-1 text-xs text-slate-300">Reason: {c.disqualificationReason || "—"}</p>
-                    <p className="text-xs text-slate-300">What now: {c.whatNow || "—"}</p>
-                    <p className="text-xs text-slate-300">Nurture due: {tasks.find((t) => t.followUpKind === "nurture_reactivate" && t.followUpForContactId === c.id && t.status !== "Completed" && t.status !== "Canceled")?.dueDate || "—"}</p>
+                  <div key={c.id} className="flex items-start justify-between gap-3 rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2">
+                    <div>
+                      <p className="text-sm font-medium text-slate-100">{c.firstName} {c.lastName}</p>
+                      <p className="text-xs text-slate-400">{c.email || "—"} · {c.company || "—"}</p>
+                      <p className="mt-1 text-xs text-slate-300">Reason: {c.disqualificationReason || "—"}</p>
+                      <p className="text-xs text-slate-300">What now: {c.whatNow || "—"}</p>
+                      <p className="text-xs text-slate-300">Nurture due: {tasks.find((t) => t.followUpKind === "nurture_reactivate" && t.followUpForContactId === c.id && t.status !== "Completed" && t.status !== "Canceled")?.dueDate || "—"}</p>
+                    </div>
+                    <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1" title="Delete" aria-label="Delete" onClick={() => askConfirm("Delete this past lead contact?", async () => { await fetch(`/api/crm/contacts?id=${c.id}`, { method: "DELETE" }); await load(); })}><Trash2 size={13} /></button>
                   </div>
                 ))}
               </div>
