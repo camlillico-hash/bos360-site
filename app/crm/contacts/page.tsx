@@ -40,6 +40,8 @@ export default function ContactsPage() {
   const [gmail, setGmail] = useState<any[]>([]);
   const [contactStamps, setContactStamps] = useState<any[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [deals, setDeals] = useState<any[]>([]);
   const [activityDraft, setActivityDraft] = useState<any>({ type: "email" });
   const [activityError, setActivityError] = useState("");
   const [draggingContactId, setDraggingContactId] = useState<string | null>(null);
@@ -69,6 +71,8 @@ export default function ContactsPage() {
     setContactStamps(Array.isArray(contactsRes) ? [] : contactsRes.contactStamps || []);
     setGmail(await (await fetch("/api/crm/gmail/messages", { cache: "no-store" })).json());
     setActivities(await (await fetch("/api/crm/activities", { cache: "no-store" })).json());
+    setTasks((await (await fetch("/api/crm/tasks", { cache: "no-store" })).json()).tasks || []);
+    setDeals((await (await fetch("/api/crm/deals", { cache: "no-store" })).json()).deals || []);
   };
   useEffect(() => { load(); }, []);
 
@@ -164,7 +168,7 @@ export default function ContactsPage() {
             const editing = editingId === c.id;
             return (
               <tr key={c.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
-                <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(c)}>{editing ? <div className="grid grid-cols-2 gap-1"><input className="crm-input" value={inlineDraft.firstName || ""} onChange={(e)=>setInlineDraft({...inlineDraft, firstName:e.target.value})} /><input className="crm-input" value={inlineDraft.lastName || ""} onChange={(e)=>setInlineDraft({...inlineDraft, lastName:e.target.value})} /></div> : `${c.firstName} ${c.lastName}`}</td>
+                <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(c)}>{editing ? <div className="grid grid-cols-2 gap-1"><input className="crm-input" value={inlineDraft.firstName || ""} onChange={(e)=>setInlineDraft({...inlineDraft, firstName:e.target.value})} /><input className="crm-input" value={inlineDraft.lastName || ""} onChange={(e)=>setInlineDraft({...inlineDraft, lastName:e.target.value})} /></div> : <button className="font-medium text-sky-300 hover:text-sky-200" onClick={(e)=>{e.stopPropagation(); openTray(c);}}>{`${c.firstName} ${c.lastName}`}</button>}</td>
                 <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(c)}>{editing ? <input className="crm-input" value={inlineDraft.email || ""} onChange={(e)=>setInlineDraft({...inlineDraft, email:e.target.value})} /> : (c.email ? <span className="inline-flex items-center gap-1.5">{c.email}<a href={gmailComposeUrl(c.email)} target="_blank" rel="noopener noreferrer" className="text-sky-300 hover:text-sky-200" onClick={(e)=>e.stopPropagation()} title="Compose email"><Mail size={13} /></a></span> : "—")}</td>
                 <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(c)}>{editing ? <input className="crm-input" value={inlineDraft.linkedin || ""} onChange={(e)=>setInlineDraft({...inlineDraft, linkedin:e.target.value})} /> : (c.linkedin ? <a href={c.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center" onClick={(e)=>e.stopPropagation()}><img src="https://cdn-icons-png.flaticon.com/512/2496/2496097.png" alt="LinkedIn" className="h-4 w-4" /></a> : "—")}</td>
                 <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(c)}>{editing ? <input className="crm-input" value={inlineDraft.company || ""} onChange={(e)=>setInlineDraft({...inlineDraft, company:e.target.value})} /> : (c.company || "—")}</td>
@@ -173,7 +177,7 @@ export default function ContactsPage() {
                 <td className="px-3 py-2 text-slate-300">{c.lastActivityDate ? new Date(c.lastActivityDate).toLocaleDateString() : "—"}</td>
                 <td className="px-3 py-2 text-slate-300">{c.lastActivityType ? prettyType(String(c.lastActivityType)) : "—"}</td>
                 <td className="px-3 py-2 text-slate-400">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "—"}</td>
-                <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" title="Save" aria-label="Save" onClick={saveInlineEdit}><Save size={14} className="text-emerald-300" /></button><button className="crm-btn-ghost" title="Cancel" aria-label="Cancel" onClick={cancelInlineEdit}><X size={14} className="text-rose-300" /></button></div> : <button className="crm-btn-ghost" title="Open" aria-label="Open" onClick={() => openTray(c)}><Pencil size={14} /></button>}</td>
+                <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" title="Save" aria-label="Save" onClick={saveInlineEdit}><Save size={14} className="text-emerald-300" /></button><button className="crm-btn-ghost" title="Cancel" aria-label="Cancel" onClick={cancelInlineEdit}><X size={14} className="text-rose-300" /></button></div> : <button className="crm-btn-ghost" title="Open tray" aria-label="Open tray" onClick={() => openTray(c)}><CornerUpLeft size={14} /></button>}</td>
               </tr>
             );
           })}
@@ -364,6 +368,7 @@ export default function ContactsPage() {
               {!createMode && <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1.5" title="Delete" aria-label="Delete" onClick={() => askConfirm("Are you sure you want to delete this record?", () => { deleteFromTray(); })}><Trash2 size={14} /></button>}
             </div>
             <div className="mt-5 min-h-0 flex-1 space-y-3 overflow-auto pb-10">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300">Contact details</h3>
               {contactFields.map(([k, label, type]) => (
                 <div key={k}>
                   <label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">{label}</label>
@@ -390,7 +395,9 @@ export default function ContactsPage() {
               <div><label className="mb-1 block text-xs uppercase tracking-wider text-slate-400">Notes</label>{(editMode || createMode) ? <textarea className="crm-input min-h-28" value={draft.notes || ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} /> : <p className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm whitespace-pre-wrap">{draft.notes || "—"}</p>}</div>
 
               {!createMode && (
-                <div className="rounded-xl border border-neutral-800 p-3">
+                <>
+                  <h3 className="pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300">Activities</h3>
+                  <div className="rounded-xl border border-neutral-800 p-3">
                   <h3 className="mb-2 text-sm font-semibold text-slate-200">Log activity</h3>
                   <div className="grid gap-2 md:grid-cols-2">
                     <select className="crm-input" value={activityDraft.type || "email"} onChange={(e) => setActivityDraft({ ...activityDraft, type: e.target.value, contactId: selected.id })}>
@@ -426,6 +433,35 @@ export default function ContactsPage() {
                     {selectedActivities.length === 0 && <p className="text-xs text-slate-500">No activities yet.</p>}
                   </div>
                 </div>
+
+                <h3 className="pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300">Associated deals</h3>
+                <div className="rounded-xl border border-neutral-800 p-3">
+                  {deals.filter((d:any) => d.contactId === selected?.id).length > 0 ? (
+                    <div className="space-y-2">
+                      {deals.filter((d:any) => d.contactId === selected?.id).map((d:any) => (
+                        <button key={d.id} className="w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-left text-sm hover:bg-neutral-800" onClick={() => window.location.href = '/crm/deals'}>
+                          <span className="font-medium text-slate-100">{d.name || 'Untitled deal'}</span>
+                          <span className="ml-2 text-slate-400">• {d.stage || '—'}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : <p className="text-xs text-slate-500">No associated deals.</p>}
+                </div>
+
+                <h3 className="pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300">Completed tasks</h3>
+                <div className="rounded-xl border border-neutral-800 p-3">
+                  {tasks.filter((t:any) => (t.relatedType === 'contact' && t.relatedId === selected?.id) && (t.status === 'Completed' || t.done)).length > 0 ? (
+                    <div className="space-y-2">
+                      {tasks.filter((t:any) => (t.relatedType === 'contact' && t.relatedId === selected?.id) && (t.status === 'Completed' || t.done)).map((t:any) => (
+                        <div key={t.id} className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs">
+                          <p className="font-medium text-slate-200">{t.title || 'Task'}</p>
+                          <p className="text-slate-400">{t.type || 'task'}{t.dueDate ? ` • ${t.dueDate}` : ''}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : <p className="text-xs text-slate-500">No completed tasks.</p>}
+                </div>
+                </>
               )}
 
               {trayError && <p className="text-sm text-red-300">{trayError}</p>}

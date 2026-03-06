@@ -18,6 +18,8 @@ export default function DealsPage() {
   const [deals, setDeals] = useState<any[]>([]);
   const [contacts, setContacts] = useState<any[]>([]);
   const [dealStamps, setDealStamps] = useState<any[]>([]);
+  const [activities, setActivities] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [draggingDealId, setDraggingDealId] = useState<string | null>(null);
   const [hoverStage, setHoverStage] = useState<string | null>(null);
@@ -42,6 +44,8 @@ export default function DealsPage() {
     setDeals(d.deals || []);
     setDealStamps(d.dealStamps || []);
     setContacts(Array.isArray(c) ? c : c.contacts || []);
+    setActivities(await (await fetch('/api/crm/activities', { cache: 'no-store' })).json());
+    setTasks((await (await fetch('/api/crm/tasks', { cache: 'no-store' })).json()).tasks || []);
   };
   useEffect(() => { load(); }, []);
 
@@ -138,13 +142,13 @@ export default function DealsPage() {
             const editing = editingId === d.id;
             return (
               <tr key={d.id} className="border-b border-neutral-900 hover:bg-neutral-900/60">
-                <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(d)}>{editing ? <input className="crm-input" value={inlineDraft.name || ""} onChange={(e)=>setInlineDraft({...inlineDraft, name:e.target.value})} /> : (d.name || "Untitled deal")}</td>
+                <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(d)}>{editing ? <input className="crm-input" value={inlineDraft.name || ""} onChange={(e)=>setInlineDraft({...inlineDraft, name:e.target.value})} /> : <button className="font-medium text-sky-300 hover:text-sky-200" onClick={(e)=>{e.stopPropagation(); openTray(d);}}>{d.name || "Untitled deal"}</button>}</td>
                 <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <select className="crm-input" value={inlineDraft.contactId || ""} onChange={(e)=>setInlineDraft({...inlineDraft, contactId:e.target.value})}><option value="">Select linked contact *</option>{contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</select> : contactName(d.contactId)}</td>
                 <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <input className="crm-input" value={inlineDraft.company || ""} onChange={(e)=>setInlineDraft({...inlineDraft, company:e.target.value})} /> : (d.company || "—")}</td>
                 <td className="px-3 py-2 text-slate-300">{money(d.value)}</td>
                 <td className="px-3 py-2 text-emerald-300" onClick={() => !editing && startInlineEdit(d)}>{editing ? <select className="crm-input" value={inlineDraft.stage || STAGES[0]} onChange={(e)=>setInlineDraft({...inlineDraft, stage:e.target.value})}>{STAGES.map((s)=><option key={s} value={s}>{s}</option>)}</select> : d.stage}</td>
                 <td className="px-3 py-2 text-slate-400">{d.createdAt ? new Date(d.createdAt).toLocaleDateString() : "—"}</td>
-                <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" title="Save" aria-label="Save" onClick={saveInlineEdit}><Save size={14} className="text-emerald-300" /></button><button className="crm-btn-ghost" title="Cancel" aria-label="Cancel" onClick={cancelInlineEdit}><X size={14} className="text-rose-300" /></button></div> : <button className="crm-btn-ghost" title="Open" aria-label="Open" onClick={() => openTray(d)}><Pencil size={14} /></button>}</td>
+                <td className="px-3 py-2">{editing ? <div className="flex gap-2"><button className="crm-btn-ghost" title="Save" aria-label="Save" onClick={saveInlineEdit}><Save size={14} className="text-emerald-300" /></button><button className="crm-btn-ghost" title="Cancel" aria-label="Cancel" onClick={cancelInlineEdit}><X size={14} className="text-rose-300" /></button></div> : <button className="crm-btn-ghost" title="Open tray" aria-label="Open tray" onClick={() => openTray(d)}><CornerUpLeft size={14} /></button>}</td>
               </tr>
             );
           })}
@@ -268,6 +272,7 @@ export default function DealsPage() {
               {!createMode && <button className="crm-btn-ghost text-red-300 inline-flex items-center gap-1.5" title="Delete" aria-label="Delete" onClick={() => askConfirm("Are you sure you want to delete this record?", () => { deleteFromTray(); })}><Trash2 size={14} /></button>}
             </div>
             <div className="mt-5 min-h-0 flex-1 space-y-3 overflow-auto pb-10">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-300">Contact details</h3>
               <Field label="Deal name" editMode={editMode || createMode}><input className="crm-input" value={draft.name || ""} onChange={(e) => setDraft({ ...draft, name: e.target.value })} /></Field>
               <Field label="Company" editMode={editMode || createMode} read={!(editMode || createMode) ? (draft.company || "—") : undefined}><input className="crm-input" value={draft.company || ""} onChange={(e) => setDraft({ ...draft, company: e.target.value })} /></Field>
               <Field label="Linked contact" editMode={editMode || createMode} read={!(editMode || createMode) ? contactName(draft.contactId) : undefined}><select className="crm-input" value={draft.contactId || ""} onChange={(e) => setDraft({ ...draft, contactId: e.target.value })}><option value="">Select linked contact *</option>{contacts.map((c) => <option key={c.id} value={c.id}>{c.firstName} {c.lastName} {c.email ? `(${c.email})` : ""}</option>)}</select></Field>
@@ -290,6 +295,53 @@ export default function DealsPage() {
               <Field label="Next annual Day 2" editMode={editMode || createMode} read={draft.nextAnnualDay2Date || "—"}><input type="date" className="crm-input" value={draft.nextAnnualDay2Date || ""} onClick={openPicker} onFocus={openPicker} onChange={(e) => setDraft({ ...draft, nextAnnualDay2Date: e.target.value })} /></Field>
               <Field label="Next step" editMode={editMode || createMode} read={draft.nextStep || "—"}><input className="crm-input" value={draft.nextStep || ""} onChange={(e) => setDraft({ ...draft, nextStep: e.target.value })} /></Field>
               <Field label="Notes" editMode={editMode || createMode} read={draft.notes || "—"}><textarea className="crm-input min-h-28" value={draft.notes || ""} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} /></Field>
+
+              {!createMode && (
+                <>
+                  <h3 className="pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300">Activities</h3>
+                  <div className="rounded-xl border border-neutral-800 p-3">
+                    {activities.filter((a:any) => a.contactId === draft.contactId).length > 0 ? (
+                      <div className="space-y-2">
+                        {activities.filter((a:any) => a.contactId === draft.contactId).slice(0,8).map((a:any) => (
+                          <div key={a.id} className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs">
+                            <p className="font-medium text-slate-200">{a.type || 'activity'}</p>
+                            <p className="text-slate-400">{new Date(a.occurredAt || a.createdAt).toLocaleString()}</p>
+                            <p className="text-slate-300">{a.note || '—'}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : <p className="text-xs text-slate-500">No activities yet.</p>}
+                  </div>
+
+                  <h3 className="pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300">Associated deals</h3>
+                  <div className="rounded-xl border border-neutral-800 p-3">
+                    {deals.filter((x:any) => x.contactId === draft.contactId).length > 0 ? (
+                      <div className="space-y-2">
+                        {deals.filter((x:any) => x.contactId === draft.contactId).map((x:any) => (
+                          <button key={x.id} className="w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-left text-sm hover:bg-neutral-800" onClick={() => openTray(x)}>
+                            <span className="font-medium text-slate-100">{x.name || 'Untitled deal'}</span>
+                            <span className="ml-2 text-slate-400">• {x.stage || '—'}</span>
+                          </button>
+                        ))}
+                      </div>
+                    ) : <p className="text-xs text-slate-500">No associated deals.</p>}
+                  </div>
+
+                  <h3 className="pt-2 text-sm font-semibold uppercase tracking-wider text-slate-300">Completed tasks</h3>
+                  <div className="rounded-xl border border-neutral-800 p-3">
+                    {tasks.filter((t:any) => ((t.relatedType === 'deal' && t.relatedId === draft.id) || (t.relatedType === 'contact' && t.relatedId === draft.contactId)) && (t.status === 'Completed' || t.done)).length > 0 ? (
+                      <div className="space-y-2">
+                        {tasks.filter((t:any) => ((t.relatedType === 'deal' && t.relatedId === draft.id) || (t.relatedType === 'contact' && t.relatedId === draft.contactId)) && (t.status === 'Completed' || t.done)).map((t:any) => (
+                          <div key={t.id} className="rounded-md border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs">
+                            <p className="font-medium text-slate-200">{t.title || 'Task'}</p>
+                            <p className="text-slate-400">{t.type || 'task'}{t.dueDate ? ` • ${t.dueDate}` : ''}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : <p className="text-xs text-slate-500">No completed tasks.</p>}
+                  </div>
+                </>
+              )}
               {error && <p className="text-sm text-red-300">{error}</p>}
               {trayError && <p className="text-sm text-red-300">{trayError}</p>}
             </div>
