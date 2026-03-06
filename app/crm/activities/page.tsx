@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Activity, Plus, Save, Trash2, X } from "lucide-react";
+import { Activity, Plus, Save, Trash2, X, Mail, Phone, MessageSquare, Linkedin, Users, CalendarCheck2, CheckCheck } from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
 
 const TYPES = [
@@ -17,6 +17,18 @@ const TYPES = [
 const openPicker = (e: React.MouseEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => {
   const el = e.currentTarget as HTMLInputElement & { showPicker?: () => void };
   el.showPicker?.();
+};
+
+const typeIcon = (v?: string) => {
+  const t = String(v || "");
+  if (t === "email") return Mail;
+  if (t === "call") return Phone;
+  if (t === "text") return MessageSquare;
+  if (t === "linkedin") return Linkedin;
+  if (t === "in_person") return Users;
+  if (t === "meeting") return CalendarCheck2;
+  if (t === "task_completed") return CheckCheck;
+  return CalendarCheck2;
 };
 
 export default function ActivitiesPage() {
@@ -78,7 +90,7 @@ export default function ActivitiesPage() {
           <tbody>
             {sorted.map((a) => (
               <tr key={a.id} className="border-b border-neutral-900">
-                <td className="px-3 py-2">{TYPES.find((t) => t.value === a.type)?.label || a.type}</td>
+                <td className="px-3 py-2"><span className="inline-flex items-center gap-1.5">{(() => { const I = typeIcon(a.type); return <I size={13} />; })()}{TYPES.find((t) => t.value === a.type)?.label || a.type}</span></td>
                 <td className="px-3 py-2 text-slate-300">{contactName(a.contactId)}</td>
                 <td className="px-3 py-2 text-slate-300">{new Date(a.occurredAt || a.createdAt).toLocaleString()}</td>
                 <td className="px-3 py-2 text-slate-300">{a.note || "—"}</td>

@@ -1,12 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CheckSquare, Plus, Save, CornerUpLeft, Trash2, LayoutGrid, List, X, Pencil, Circle, CircleCheck } from "lucide-react";
+import { CheckSquare, Plus, Save, CornerUpLeft, Trash2, LayoutGrid, List, X, Pencil, Circle, CircleCheck, Mail, Phone, MessageSquare, Linkedin, Users, CalendarCheck2, CheckCheck } from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
 
 const TASK_STATUSES = ["Overdue", "Not started", "Completed", "Canceled"];
 const TASK_TYPES = ["email", "call", "text", "linkedin", "in_person", "meeting", "task_completed"];
 const prettyType = (v?: string) => String(v || "").split("_").map((s) => s ? s[0].toUpperCase() + s.slice(1) : s).join(" ");
+const typeIcon = (v?: string) => {
+  const t = String(v || "");
+  if (t === "email") return Mail;
+  if (t === "call") return Phone;
+  if (t === "text") return MessageSquare;
+  if (t === "linkedin") return Linkedin;
+  if (t === "in_person") return Users;
+  if (t === "meeting") return CalendarCheck2;
+  if (t === "task_completed") return CheckCheck;
+  return CalendarCheck2;
+};
 const openPicker = (e: React.MouseEvent<HTMLInputElement> | React.FocusEvent<HTMLInputElement>) => {
   const el = e.currentTarget as HTMLInputElement & { showPicker?: () => void };
   el.showPicker?.();
@@ -172,7 +183,7 @@ export default function TasksPage() {
                             />
                             <button draggable onDragStart={() => setDraggingTaskId(t.id)} onDragEnd={() => { setDraggingTaskId(null); setHoverTaskStatus(null); setHoverDrop(null); }} className={`crm-card w-full min-w-0 p-3 text-left cursor-grab transition-all duration-150 ${draggingTaskId === t.id ? 'scale-[1.02] opacity-70' : ''} ${fadingIds.includes(t.id) ? 'opacity-0' : 'opacity-100'}`} onClick={() => openTask(t)}>
                               <p className="truncate font-medium">{t.title}</p>
-                              <p className="truncate text-xs text-violet-300">Type: {prettyType(t.type || 'meeting')}</p>
+                              <p className="truncate text-xs text-violet-300 inline-flex items-center gap-1.5">{(() => { const I = typeIcon(t.type || 'meeting'); return <I size={12} />; })()} Type: {prettyType(t.type || 'meeting')}</p>
                               <p className="truncate text-xs text-emerald-300">{relatedLabel(t)}</p>
                               <p className="truncate text-xs text-slate-400">Due: {t.dueDate || '—'}</p>
                               <button type="button" className="mt-2 inline-flex md:hidden rounded border border-neutral-700 px-2 py-1 text-[11px] text-slate-300" onClick={(e) => { e.stopPropagation(); const next = prompt(`Move to status (${TASK_STATUSES.filter((s)=>s!=="Overdue").join(', ')})`, getTaskStatus(t)); if (!next) return; moveTaskStatus(t.id, next); }}>
@@ -211,7 +222,7 @@ export default function TasksPage() {
                       </button>
                     </td>
                     <td className="px-3 py-2" onClick={() => !editing && startInlineEdit(t)}>{editing ? <input className="crm-input" value={inlineDraft.title || ''} onChange={(e)=>setInlineDraft({...inlineDraft, title:e.target.value})} /> : t.title}</td>
-                    <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.type || 'meeting'} onChange={(e)=>setInlineDraft({...inlineDraft, type:e.target.value})}>{TASK_TYPES.map((s)=> <option key={s} value={s}>{prettyType(s)}</option>)}</select> : prettyType(t.type || 'meeting')}</td>
+                    <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.type || 'meeting'} onChange={(e)=>setInlineDraft({...inlineDraft, type:e.target.value})}>{TASK_TYPES.map((s)=> <option key={s} value={s}>{prettyType(s)}</option>)}</select> : <span className="inline-flex items-center gap-1.5">{(() => { const I = typeIcon(t.type || 'meeting'); return <I size={13} />; })()}{prettyType(t.type || 'meeting')}</span>}</td>
                     <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <select className="crm-input" value={inlineDraft.relatedId || ''} onChange={(e)=>setInlineDraft({...inlineDraft, relatedId:e.target.value})}>{inlineDraft.relatedType === 'deal' ? <><option value="">Select linked deal *</option>{deals.map((d)=> <option key={d.id} value={d.id}>{d.name || 'Untitled deal'}</option>)}</> : <><option value="">Select linked contact *</option>{contacts.map((c)=> <option key={c.id} value={c.id}>{c.firstName} {c.lastName}</option>)}</>}</select> : relatedLabel(t)}</td>
                     <td className="px-3 py-2 text-slate-300" onClick={() => !editing && startInlineEdit(t)}>{editing ? <input type="date" className="crm-input" value={inlineDraft.dueDate || ''} onClick={openPicker} onFocus={openPicker} onChange={(e)=>setInlineDraft({...inlineDraft, dueDate:e.target.value})} /> : (t.dueDate || '—')}</td>
                     <td className="px-3 py-2 text-slate-400">{t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "—"}</td>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Users, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Plus, Upload, Archive, Mail } from "lucide-react";
+import { Users, Save, Pencil, Trash2, X, CornerUpLeft, LayoutGrid, List, Plus, Upload, Archive, Mail, Phone, MessageSquare, Linkedin, CalendarCheck2, CheckCheck } from "lucide-react";
 import ConfirmDialog from "../ConfirmDialog";
 import Papa from "papaparse";
 
@@ -23,6 +23,17 @@ const openPicker = (e: React.MouseEvent<HTMLInputElement> | React.FocusEvent<HTM
   el.showPicker?.();
 };
 const gmailComposeUrl = (email?: string) => `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(String(email || ""))}`;
+const activityTypeIcon = (v?: string) => {
+  const t = String(v || "");
+  if (t === "email") return Mail;
+  if (t === "call") return Phone;
+  if (t === "text") return MessageSquare;
+  if (t === "linkedin") return Linkedin;
+  if (t === "in_person") return Users;
+  if (t === "meeting") return CalendarCheck2;
+  if (t === "task_completed") return CheckCheck;
+  return CalendarCheck2;
+};
 
 export default function ContactsPage() {
   const [items, setItems] = useState<Contact[]>([]);
@@ -395,7 +406,7 @@ export default function ContactsPage() {
                     {selectedActivities.map((a: any) => (
                       <div key={a.id} className="rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="font-semibold text-emerald-300">{String(a.type).replace('_', ' ')}</span>
+                          <span className="font-semibold text-emerald-300 inline-flex items-center gap-1.5">{(() => { const I = activityTypeIcon(a.type); return <I size={12} />; })()}{prettyType(String(a.type))}</span>
                           <span className="text-slate-400">{new Date(a.occurredAt || a.createdAt).toLocaleString()}</span>
                         </div>
                         <p className="mt-1 text-slate-300">{a.note || "—"}</p>
