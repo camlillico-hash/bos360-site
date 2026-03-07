@@ -40,6 +40,18 @@ export default function FellasPage() {
           />
         </div>
 
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="overflow-hidden rounded-2xl border border-neutral-700 bg-neutral-900">
+            <img src="/catchacoma-ski-1.jpg" alt="Ski approach across frozen Catchacoma Lake" className="h-full w-full object-cover" />
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-neutral-700 bg-neutral-900">
+            <img src="/catchacoma-ski-2.jpg" alt="Fellas pulling gear on the lake" className="h-full w-full object-cover" />
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-neutral-700 bg-neutral-900">
+            <img src="/catchacoma-ski-3.jpg" alt="Final stretch ski tracks to the cabin" className="h-full w-full object-cover" />
+          </div>
+        </div>
+
         <p className="mt-6 text-slate-400">
           The kind of weekend that reminds you: the best stories usually start where the easy route ends.
         </p>
