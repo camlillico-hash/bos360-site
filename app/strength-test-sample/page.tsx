@@ -1,5 +1,6 @@
 import { BriefcaseBusiness, Tag, Users, Compass, Cog, Sprout, Download } from "lucide-react";
 import Bos360SiteHeader from "@/app/components/Bos360SiteHeader";
+import { BOOKING_REDIRECT_PATH } from "@/lib/booking";
 
 export const metadata = {
   title: "Cam Lillico | Strength Test",
@@ -220,7 +221,7 @@ export default function StrengthTestSamplePage() {
           <p className="text-2xl font-semibold">Ready to strengthen your next 90 days?</p>
           <p className="mt-2 text-slate-300">Book a discovery meeting and we’ll walk through your results together.</p>
           <a
-            href="https://calendar.app.google/DyjWgFksVWqBURJS6"
+            href={BOOKING_REDIRECT_PATH}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 inline-block rounded bg-cyan-500 px-5 py-2.5 text-sm font-semibold text-black"
