@@ -3,6 +3,7 @@
 import { BriefcaseBusiness, Tag, Users, Compass, Cog, Sprout, User, Mail, Download, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import Bos360SiteHeader from "@/app/components/Bos360SiteHeader";
+import { BOOKING_REDIRECT_PATH } from "@/lib/booking";
 
 
 type SectionKey = "Business" | "Brand" | "Team" | "Strategy" | "Execution" | "Culture";
@@ -581,7 +582,7 @@ export default function StrengthTestPage() {
             <p className="text-2xl font-semibold">Ready to strengthen your next 90 days?</p>
             <p className="mt-2 text-slate-300">Book an intro call and we’ll walk through your results together.</p>
             <a
-              href="https://calendar.app.google/DyjWgFksVWqBURJS6"
+              href={BOOKING_REDIRECT_PATH}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 inline-block rounded bg-cyan-500 px-5 py-2.5 text-sm font-semibold text-black transition-all duration-150 hover:bg-cyan-400 hover:shadow-lg hover:shadow-cyan-500/25"
