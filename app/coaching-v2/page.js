@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import Bos360SiteHeader from "@/app/components/Bos360SiteHeader";
 import { blogPosts } from "@/app/coaching/blogPosts";
+import { BOOKING_REDIRECT_PATH } from "@/lib/booking";
 export const metadata = {
   title: "Cam Lillico | BOS360 Coaching",
   icons: {
@@ -34,7 +35,6 @@ export const metadata = {
   },
 };
 
-const BOOKING_URL = "https://calendar.app.google/DyjWgFksVWqBURJS6";
 const STRENGTH_TEST_URL = "/strength-test";
 const BLOG_URL = "/coaching/blog";
 const FEATURED_ARTICLE = blogPosts[0];
@@ -564,7 +564,7 @@ export default function CoachingV2Page() {
                   </div>
                   {index === 0 ? (
                     <a
-                      href={BOOKING_URL}
+                      href={BOOKING_REDIRECT_PATH}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-300 via-[#ed7d31] to-orange-500 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-slate-950 transition hover:opacity-90"
@@ -808,6 +808,7 @@ export default function CoachingV2Page() {
                   </span>
                   {item.quote}
                 </p>
+                
       <footer className="mt-5 px-4 text-xs font-semibold uppercase tracking-[0.14em] text-orange-200">
                   {item.source}
                 </footer>
@@ -874,7 +875,7 @@ export default function CoachingV2Page() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <PrimaryButton href={BOOKING_URL}>
+                <PrimaryButton href={BOOKING_REDIRECT_PATH}>
                   Book an intro call
                   <CalendarDays size={16} />
                 </PrimaryButton>
@@ -936,7 +937,7 @@ export default function CoachingV2Page() {
               Blog
             </Link>
             <a
-              href={BOOKING_URL}
+              href={BOOKING_REDIRECT_PATH}
               target="_blank"
               rel="noopener noreferrer"
               className="transition hover:text-orange-200"
