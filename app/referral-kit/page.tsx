@@ -22,13 +22,12 @@ import {
   Compass,
 } from "lucide-react";
 import CopyButton from "./CopyButton";
+import { BOOKING_REDIRECT_PATH } from "@/lib/booking";
 
 export const metadata = {
   title: "Referral Kit | Cam Lillico",
   robots: { index: false, follow: false },
 };
-
-const BOOKING_URL = "https://calendar.app.google/DyjWgFksVWqBURJS6";
 
 export default function ReferralKitPage() {
   return (
@@ -55,7 +54,7 @@ export default function ReferralKitPage() {
               Start Strength Test
             </a>
             <a
-              href={BOOKING_URL}
+              href={BOOKING_REDIRECT_PATH}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg bg-gradient-to-r from-orange-300 via-[#ed7d31] to-orange-500 px-3 py-2 text-xs font-semibold text-slate-950 transition hover:opacity-90"
@@ -458,7 +457,7 @@ export default function ReferralKitPage() {
               </a>
               <div className="flex flex-col gap-2">
                 <a
-                  href={BOOKING_URL}
+                  href={BOOKING_REDIRECT_PATH}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
@@ -582,7 +581,7 @@ export default function ReferralKitPage() {
               Click to copy my email address
             </a>
             <a
-              href={BOOKING_URL}
+              href={BOOKING_REDIRECT_PATH}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
