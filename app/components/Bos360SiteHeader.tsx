@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CalendarDays, Sparkles } from "lucide-react";
+import { BOOKING_REDIRECT_PATH } from "@/lib/booking";
 
-const BOOKING_URL = "https://calendar.app.google/DyjWgFksVWqBURJS6";
 const BLOG_URL = "/coaching/blog";
 const COACHING_URL = "/bos360";
 const STRENGTH_TEST_URL = "/strength-test";
@@ -64,7 +64,7 @@ export default function Bos360SiteHeader({ current }: { current: CurrentPage }) 
           )}
 
           <a
-            href={BOOKING_URL}
+            href={BOOKING_REDIRECT_PATH}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-300 via-[#ed7d31] to-orange-500 px-4 py-2 text-slate-950 transition hover:opacity-90"
@@ -128,7 +128,7 @@ export default function Bos360SiteHeader({ current }: { current: CurrentPage }) 
           )}
 
           <a
-            href={BOOKING_URL}
+            href={BOOKING_REDIRECT_PATH}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 rounded-lg bg-gradient-to-r from-orange-300 via-[#ed7d31] to-orange-500 px-2.5 py-1.5 text-slate-950 whitespace-nowrap"
